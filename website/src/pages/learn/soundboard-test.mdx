@@ -1,0 +1,31 @@
+---
+title: Soundboard Test
+layout: ../../layouts/MainLayout.astro
+---
+
+import { Soundboard, SoundboardGrid } from '../../docs/Soundboard';
+
+# Soundboard Test
+
+## Single Button
+
+<Soundboard client:idle sound="bd" />
+
+## With Label
+
+<Soundboard client:idle sound="sd" label="Snare" />
+
+## Grid
+
+<SoundboardGrid client:idle sounds={["bd", "sd", "hh", "cp"]} />
+
+## Grid with Labels
+
+<SoundboardGrid client:idle sounds={[
+  { sound: "bd", label: "Kick" },
+  { sound: "sd", label: "Snare" },
+  { sound: "hh", label: "Hi-Hat" },
+  { sound: "cp", label: "Clap" },
+  { sound: "metal", label: "Bell" },
+  { sound: "wood", label: "Wood" }
+]} />
