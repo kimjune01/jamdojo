@@ -1,0 +1,41 @@
+---
+const base = import.meta.env.BASE_URL;
+
+const activities = [
+  { title: 'Piano', href: `${base}learn/piano/`, icon: '🎹' },
+  { title: 'Guitar', href: `${base}learn/guitar/`, icon: '🎸' },
+  { title: 'Kalimba', href: `${base}learn/kalimba/`, icon: '🎵' },
+  { title: 'Ear Training', href: `${base}learn/ear-training/`, icon: '👂' },
+  { title: 'Rhythms', href: `${base}learn/euclidean-101/`, icon: '🥁' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<nav class="flex flex-col gap-1">
+  <a
+    href={base}
+    class="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors mb-2"
+  >
+    <span>←</span>
+    <span>JamDojo</span>
+  </a>
+
+  {activities.map((activity) => {
+    const isActive = currentPath.includes(activity.href.replace(base, '/'));
+    return (
+      <a
+        href={activity.href}
+        class:list={[
+          'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm',
+          isActive
+            ? 'bg-cyan-600 text-white'
+            : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+        ]}
+      >
+        <span class="text-lg">{activity.icon}</span>
+        <span>{activity.title}</span>
+      </a>
+    );
+  })}
+</nav>

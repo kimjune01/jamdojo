@@ -1,0 +1,45 @@
+---
+import HeadCommon from '../components/HeadCommon.astro';
+import ActivityNav from '../components/ActivityNav.astro';
+import '../docs/docs.css';
+
+type Props = {
+  frontmatter: {
+    title: string;
+  };
+};
+
+const { frontmatter } = Astro.props as Props;
+---
+
+<html lang="en" class="dark">
+  <head>
+    <HeadCommon />
+    <title>{frontmatter.title} - JamDojo</title>
+  </head>
+
+  <body class="min-h-screen m-0 text-gray-50 bg-background">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="w-56 bg-gray-900 border-r border-gray-800 p-4 hidden md:block fixed h-full">
+        <ActivityNav />
+      </aside>
+
+      <!-- Mobile header -->
+      <div class="md:hidden fixed top-0 left-0 right-0 bg-gray-900 border-b border-gray-800 p-3 z-50">
+        <div class="flex items-center justify-between">
+          <a href={import.meta.env.BASE_URL} class="text-gray-400 hover:text-white">← JamDojo</a>
+          <span class="font-bold">{frontmatter.title}</span>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <main class="flex-1 md:ml-56 p-6 pt-16 md:pt-6">
+        <div class="max-w-4xl mx-auto">
+          <h1 class="text-3xl font-bold mb-6">{frontmatter.title}</h1>
+          <slot />
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
