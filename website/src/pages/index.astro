@@ -1,35 +1,37 @@
 ---
 import HeadCommon from '../components/HeadCommon.astro';
 
+const base = import.meta.env.BASE_URL;
+
 const tools = [
   {
     title: 'Piano',
     description: 'Play piano with your keyboard and explore different sounds',
-    href: '/learn/piano/',
+    href: `${base}learn/piano/`,
     icon: '🎹',
   },
   {
     title: 'Guitar',
     description: 'Learn the guitar fretboard with keyboard controls',
-    href: '/learn/guitar/',
+    href: `${base}learn/guitar/`,
     icon: '🎸',
   },
   {
     title: 'Kalimba',
     description: 'Play the thumb piano with an intuitive layout',
-    href: '/learn/kalimba/',
+    href: `${base}learn/kalimba/`,
     icon: '🎵',
   },
   {
     title: 'Ear Training',
     description: 'Train your ear to recognize musical intervals',
-    href: '/learn/ear-training/',
+    href: `${base}learn/ear-training/`,
     icon: '👂',
   },
   {
     title: 'Euclidean Rhythms',
     description: 'Learn about mathematical patterns in music',
-    href: '/learn/euclidean-101/',
+    href: `${base}learn/euclidean-101/`,
     icon: '🥁',
   },
 ];
