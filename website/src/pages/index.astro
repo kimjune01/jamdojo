@@ -1,15 +1,70 @@
 ---
 import HeadCommon from '../components/HeadCommon.astro';
-import { Repl } from '../repl/Repl';
+
+const tools = [
+  {
+    title: 'Piano',
+    description: 'Play piano with your keyboard and explore different sounds',
+    href: '/learn/piano/',
+    icon: '🎹',
+  },
+  {
+    title: 'Guitar',
+    description: 'Learn the guitar fretboard with keyboard controls',
+    href: '/learn/guitar/',
+    icon: '🎸',
+  },
+  {
+    title: 'Kalimba',
+    description: 'Play the thumb piano with an intuitive layout',
+    href: '/learn/kalimba/',
+    icon: '🎵',
+  },
+  {
+    title: 'Ear Training',
+    description: 'Train your ear to recognize musical intervals',
+    href: '/learn/ear-training/',
+    icon: '👂',
+  },
+  {
+    title: 'Euclidean Rhythms',
+    description: 'Learn about mathematical patterns in music',
+    href: '/learn/euclidean-101/',
+    icon: '🥁',
+  },
+];
 ---
 
-<html lang="en" class="m-0 dark">
+<html lang="en" class="dark">
   <head>
     <HeadCommon />
-    <title>Strudel REPL</title>
+    <title>JamDojo - Interactive Music Learning</title>
   </head>
-  <body class="h-app-height bg-background m-0">
-    <Repl client:only="react" />
-    <a rel="me" href="https://social.toplap.org/@strudel" target="_blank" class="hidden">mastodon</a>
+  <body class="min-h-screen bg-background m-0 p-0">
+    <div class="max-w-5xl mx-auto px-6 py-12">
+      <header class="text-center mb-12">
+        <h1 class="text-5xl font-bold text-foreground mb-4">JamDojo</h1>
+        <p class="text-xl text-gray-400">Interactive music learning tools</p>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tools.map((tool) => (
+          <a
+            href={tool.href}
+            class="group block p-6 bg-lineHighlight rounded-xl border border-lineHighlight hover:border-cyan-500 transition-all duration-200 hover:scale-[1.02]"
+          >
+            <div class="text-4xl mb-4">{tool.icon}</div>
+            <h2 class="text-xl font-bold text-foreground mb-2 group-hover:text-cyan-400 transition-colors">
+              {tool.title}
+            </h2>
+            <p class="text-gray-400 text-sm">{tool.description}</p>
+          </a>
+        ))}
+      </div>
+
+      <footer class="mt-16 text-center text-gray-500 text-sm">
+        <p>Built with <a href="https://strudel.cc" class="text-cyan-500 hover:underline">Strudel</a></p>
+      </footer>
+    </div>
   </body>
 </html>
