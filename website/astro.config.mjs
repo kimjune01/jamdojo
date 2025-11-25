@@ -10,7 +10,7 @@ import bundleAudioWorkletPlugin from 'vite-plugin-bundle-audioworklet';
 import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
 
-const site = `https://kimjune01.github.io`; // root url without a path
+const site = `https://www.june.kim`; // root url without a path
 const base = '/jamdojo/'; // base path for GitHub Pages
 const baseNoTrailing = base.endsWith('/') ? base.slice(0, -1) : base;
 
