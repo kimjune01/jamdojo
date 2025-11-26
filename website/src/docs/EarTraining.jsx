@@ -50,6 +50,7 @@ export function EarTraining() {
   const initialized = useRef(false);
   const timerRef = useRef(null);
   const countdownRef = useRef(null);
+  const usedCombos = useRef(new Set());
 
   const initAudio = useCallback(async () => {
     if (!initialized.current) {
@@ -87,6 +88,7 @@ export function EarTraining() {
   const startGame = useCallback(async () => {
     setGameState('loading');
     await preloadPiano();
+    usedCombos.current.clear();
     setScore({ correct: 0, total: 0 });
     setRound(1);
     setGameState('playing');
@@ -121,10 +123,20 @@ export function EarTraining() {
       return;
     }
 
-    // Random interval
-    const interval = INTERVALS[Math.floor(Math.random() * INTERVALS.length)];
-    // Random root note between C3 (36) and G4 (55)
-    const root = 36 + Math.floor(Math.random() * 20);
+    // Generate unique combination
+    let interval, root, comboKey;
+    let attempts = 0;
+    const maxAttempts = 100;
+
+    do {
+      interval = INTERVALS[Math.floor(Math.random() * INTERVALS.length)];
+      // Random root note between C3 (36) and G4 (55)
+      root = 36 + Math.floor(Math.random() * 20);
+      comboKey = `${root}-${interval.semitones}`;
+      attempts++;
+    } while (usedCombos.current.has(comboKey) && attempts < maxAttempts);
+
+    usedCombos.current.add(comboKey);
 
     setCurrentInterval(interval);
     setRootNote(root);
