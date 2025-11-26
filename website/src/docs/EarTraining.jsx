@@ -173,6 +173,7 @@ export function EarTraining() {
   }, [gameState, currentInterval, stopCountdown]);
 
   const handleNext = useCallback(() => {
+    setTimeLeft(ANSWER_TIME_LIMIT); // Reset timer before changing state
     setGameState('playing');
     nextQuestion(round + 1);
   }, [round, nextQuestion]);
