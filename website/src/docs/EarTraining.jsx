@@ -368,7 +368,11 @@ export function EarTraining() {
                 {/* Strudel notation */}
                 <div className="bg-gray-800 rounded-lg p-3 font-mono text-sm inline-block">
                   <code>
-                    note("<span className="text-cyan-400">{semitoneToNote(rootNote)}</span> <span className="text-yellow-400">{semitoneToNote(rootNote + currentInterval?.semitones)}</span>").s("piano")
+                    {useStrudelNotation ? (
+                      <>note("<span className="text-cyan-400">{rootNote}</span> <span className="text-yellow-400">{rootNote + currentInterval?.semitones}</span>").s("piano")</>
+                    ) : (
+                      <>note("<span className="text-cyan-400">{semitoneToNote(rootNote)}</span> <span className="text-yellow-400">{semitoneToNote(rootNote + currentInterval?.semitones)}</span>").s("piano")</>
+                    )}
                   </code>
                 </div>
 
