@@ -209,16 +209,19 @@ export function EarTraining() {
 
   return (
     <div className="flex flex-col gap-6 max-w-xl mx-auto">
-      {/* Notation toggle */}
-      <div className="flex items-center justify-center gap-3">
-        <span className={`text-sm ${!useStrudelNotation ? 'text-white' : 'text-gray-500'}`}>Music Theory</span>
-        <button
-          onClick={() => setUseStrudelNotation(!useStrudelNotation)}
-          className={`relative w-12 h-6 rounded-full transition-colors ${useStrudelNotation ? 'bg-cyan-600' : 'bg-gray-600'}`}
-        >
-          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${useStrudelNotation ? 'left-7' : 'left-1'}`} />
-        </button>
-        <span className={`text-sm ${useStrudelNotation ? 'text-white' : 'text-gray-500'}`}>Semitones</span>
+      {/* Header with notation toggle */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <p className="text-gray-400">Train your ear to recognize musical intervals.</p>
+        <div className="flex items-center gap-2">
+          <span className={`text-xs ${!useStrudelNotation ? 'text-white' : 'text-gray-500'}`}>Theory</span>
+          <button
+            onClick={() => setUseStrudelNotation(!useStrudelNotation)}
+            className={`relative w-10 h-5 rounded-full transition-colors ${useStrudelNotation ? 'bg-cyan-600' : 'bg-gray-600'}`}
+          >
+            <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${useStrudelNotation ? 'left-5' : 'left-0.5'}`} />
+          </button>
+          <span className={`text-xs ${useStrudelNotation ? 'text-white' : 'text-gray-500'}`}>Semitones</span>
+        </div>
       </div>
 
       {/* Instructions - only show before starting */}
