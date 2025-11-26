@@ -47,10 +47,18 @@ export function EarTraining() {
   const [round, setRound] = useState(0);
   const [totalRounds] = useState(10);
   const [timeLeft, setTimeLeft] = useState(ANSWER_TIME_LIMIT);
+  const [useStrudelNotation, setUseStrudelNotation] = useState(false);
   const initialized = useRef(false);
   const timerRef = useRef(null);
   const countdownRef = useRef(null);
   const usedCombos = useRef(new Set());
+
+  const getIntervalLabel = (interval) => {
+    if (useStrudelNotation) {
+      return `+${interval.semitones}`;
+    }
+    return interval.short;
+  };
 
   const initAudio = useCallback(async () => {
     if (!initialized.current) {
@@ -201,6 +209,18 @@ export function EarTraining() {
 
   return (
     <div className="flex flex-col gap-6 max-w-xl mx-auto">
+      {/* Notation toggle */}
+      <div className="flex items-center justify-center gap-3">
+        <span className={`text-sm ${!useStrudelNotation ? 'text-white' : 'text-gray-500'}`}>Music Theory</span>
+        <button
+          onClick={() => setUseStrudelNotation(!useStrudelNotation)}
+          className={`relative w-12 h-6 rounded-full transition-colors ${useStrudelNotation ? 'bg-cyan-600' : 'bg-gray-600'}`}
+        >
+          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${useStrudelNotation ? 'left-7' : 'left-1'}`} />
+        </button>
+        <span className={`text-sm ${useStrudelNotation ? 'text-white' : 'text-gray-500'}`}>Semitones</span>
+      </div>
+
       {/* Instructions - only show before starting */}
       {gameState === 'idle' && (
         <div className="bg-background border border-lineHighlight rounded-lg p-4">
@@ -323,8 +343,8 @@ export function EarTraining() {
                       ${gameState === 'answered' ? 'cursor-default' : 'cursor-pointer'}
                     `}
                   >
-                    <div className="text-lg font-bold">{interval.short}</div>
-                    <div className="text-sm text-gray-300">{interval.name}</div>
+                    <div className="text-lg font-bold">{getIntervalLabel(interval)}</div>
+                    <div className="text-sm text-gray-300">{useStrudelNotation ? `${interval.semitones} semitone${interval.semitones > 1 ? 's' : ''}` : interval.name}</div>
                   </button>
                 );
               })}
@@ -337,11 +357,11 @@ export function EarTraining() {
                   <p className="text-green-400 text-xl font-bold">Correct! ✓</p>
                 ) : selectedAnswer === null ? (
                   <p className="text-yellow-400 text-xl">
-                    Time's up! It was <span className="font-bold">{currentInterval?.name}</span>
+                    Time's up! It was <span className="font-bold">{useStrudelNotation ? `+${currentInterval?.semitones}` : currentInterval?.name}</span>
                   </p>
                 ) : (
                   <p className="text-red-400 text-xl">
-                    It was <span className="font-bold">{currentInterval?.name}</span>
+                    It was <span className="font-bold">{useStrudelNotation ? `+${currentInterval?.semitones}` : currentInterval?.name}</span>
                   </p>
                 )}
 
