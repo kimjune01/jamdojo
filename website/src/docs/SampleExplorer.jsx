@@ -371,21 +371,22 @@ export function SampleExplorer() {
     <div className="flex flex-col gap-6">
       {/* Drum Machines Section */}
       <div className="flex flex-col gap-4">
-        <h3 className="text-lg font-bold">Drum Machines</h3>
-
-        {/* Pack Selector */}
-        <div className="flex items-center gap-4">
-          <label className="font-mono text-sm">Sample Pack:</label>
-          <select
-            value={selectedPack.id}
-            onChange={(e) => handlePackChange(e.target.value)}
-            className="px-3 py-2 rounded border border-lineHighlight bg-background text-foreground font-mono"
-          >
-            {DRUM_PACKS.map(pack => (
-              <option key={pack.id} value={pack.id}>{pack.name}</option>
-            ))}
-          </select>
-          {loading && <span className="text-sm text-gray-400">Loading samples...</span>}
+        {/* Header with Pack Selector */}
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold">Drum Machines</h3>
+          <div className="flex items-center gap-2">
+            {loading && <span className="text-sm text-gray-400">Loading...</span>}
+            <label className="font-mono text-sm text-gray-400">Sample Pack:</label>
+            <select
+              value={selectedPack.id}
+              onChange={(e) => handlePackChange(e.target.value)}
+              className="px-3 py-2 rounded border border-lineHighlight bg-background text-foreground font-mono text-sm"
+            >
+              {DRUM_PACKS.map(pack => (
+                <option key={pack.id} value={pack.id}>{pack.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Sound Grid */}
@@ -422,20 +423,21 @@ export function SampleExplorer() {
 
       {/* Other Samples Section */}
       <div className="flex flex-col gap-4">
-        <h3 className="text-lg font-bold">Other Samples</h3>
-
-        {/* Other Pack Selector */}
-        <div className="flex items-center gap-4">
-          <label className="font-mono text-sm">Sample Pack:</label>
-          <select
-            value={selectedOtherPack.id}
-            onChange={(e) => handleOtherPackChange(e.target.value)}
-            className="px-3 py-2 rounded border border-lineHighlight bg-background text-foreground font-mono"
-          >
-            {OTHER_PACKS.map(pack => (
-              <option key={pack.id} value={pack.id}>{pack.name}</option>
-            ))}
-          </select>
+        {/* Header with Pack Selector */}
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold">Other Samples</h3>
+          <div className="flex items-center gap-2">
+            <label className="font-mono text-sm text-gray-400">Sample Pack:</label>
+            <select
+              value={selectedOtherPack.id}
+              onChange={(e) => handleOtherPackChange(e.target.value)}
+              className="px-3 py-2 rounded border border-lineHighlight bg-background text-foreground font-mono text-sm"
+            >
+              {OTHER_PACKS.map(pack => (
+                <option key={pack.id} value={pack.id}>{pack.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Other Samples Grid */}

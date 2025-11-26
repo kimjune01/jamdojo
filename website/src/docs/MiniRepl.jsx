@@ -71,7 +71,12 @@ export function MiniRepl({
           });
         }
         if (punchcard) {
-          pat = pat.punchcard({ labels: !!punchcardLabels });
+          pat = pat.punchcard({
+            labels: punchcardLabels === true ? 1 : 0,
+            fill: 1,
+            stroke: 0,
+            background: '#1e1e1e',
+          });
         }
         return pat;
       },

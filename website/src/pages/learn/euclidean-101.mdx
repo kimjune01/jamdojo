@@ -13,7 +13,7 @@ In Strudel, you create them with the `euclid` function.
 
 Let's put 3 kicks across 8 steps:
 
-<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard />
+<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
 
 Hit play. You'll hear the beats distributed evenly: **X** . . **X** . . **X** .
 
@@ -23,37 +23,37 @@ The algorithm spreads 3 beats across 8 slots as evenly as it can.
 
 What happens when you change the values?
 
-<MiniRepl client:idle tune={`sound("bd").euclid(5, 8)`} punchcard />
+<MiniRepl client:idle tune={`sound("bd").euclid(5, 8)`} punchcard punchcardLabels={false} />
 
 Now you have 5 beats in 8 steps. More beats = denser rhythm.
 
 **Try it:** Change `5` to `2`. Then try `7`. Listen to how the feel changes.
 
-<MiniRepl client:idle tune={`sound("bd").euclid(2, 8)`} punchcard />
+<MiniRepl client:idle tune={`sound("bd").euclid(2, 8)`} punchcard punchcardLabels={false} />
 
 ## Classic Patterns
 
 Many traditional rhythms are euclidean. Here's the Cuban tresillo (3 over 8):
 
-<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard />
+<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
 
 The West African bell pattern (7 over 12):
 
-<MiniRepl client:idle tune={`sound("metal").euclid(7, 12)`} punchcard />
+<MiniRepl client:idle tune={`sound("metal").euclid(7, 12)`} punchcard punchcardLabels={false} />
 
 The clave (5 over 16):
 
-<MiniRepl client:idle tune={`sound("wood").euclid(5, 16)`} punchcard />
+<MiniRepl client:idle tune={`sound("rim").euclid(5, 16)`} punchcard punchcardLabels={false} />
 
 ## Adding Rotation
 
-The third parameter rotates the pattern. This shifts where it starts:
+Use `.euclidRot()` to rotate the pattern. This shifts where it starts:
 
-<MiniRepl client:idle tune={`sound("bd").euclid(3, 8, 0)`} punchcard />
+<MiniRepl client:idle tune={`sound("bd").euclidRot(3, 8, 0)`} punchcard punchcardLabels={false} />
 
 Now with rotation of 2:
 
-<MiniRepl client:idle tune={`sound("bd").euclid(3, 8, 2)`} punchcard />
+<MiniRepl client:idle tune={`sound("bd").euclidRot(3, 8, 2)`} punchcard punchcardLabels={false} />
 
 Same beats, different starting point. Rotation changes the feel without changing the density.
 
@@ -65,9 +65,9 @@ The magic happens when you combine multiple euclidean patterns:
 
 <MiniRepl client:idle tune={`stack(
   sound("bd").euclid(3, 8),
-  sound("sd").euclid(2, 8, 1),
-  sound("hh").euclid(5, 8, 2)
-)`} punchcard />
+  sound("sd").euclidRot(2, 8, 1),
+  sound("hh").euclidRot(5, 8, 2)
+)`} punchcard punchcardLabels={false} />
 
 Each sound has its own euclidean pattern. They interlock to create complex polyrhythms.
 
@@ -75,19 +75,19 @@ Each sound has its own euclidean pattern. They interlock to create complex polyr
 
 Euclidean patterns work with any sound, including melodic ones:
 
-<MiniRepl client:idle tune={`sound("arpy").euclid(3, 8).note("c3 e3 g3")`} punchcard />
+<MiniRepl client:idle tune={`note("c3 e3 g3").piano().euclid(3, 8)`} punchcard punchcardLabels={false} />
 
-<MiniRepl client:idle tune={`note("c2 e2 g2 b2").s("bass").euclid(5, 16)`} punchcard />
+<MiniRepl client:idle tune={`note("c2 e2 g2 b2").s("bass").euclid(5, 16)`} punchcard punchcardLabels={false} />
 
 ## Comparing Euclidean to Mini-Notation
 
 You can also write euclidean rhythms using mini-notation syntax `(beats, steps, offset)`:
 
-<MiniRepl client:idle tune={`sound("bd(3,8)")`} punchcard />
+<MiniRepl client:idle tune={`sound("bd(3,8)")`} punchcard punchcardLabels={false} />
 
 This is equivalent to:
 
-<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard />
+<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
 
 The mini-notation version is more compact, but the function version is easier to modify with patterns.
 
@@ -95,11 +95,11 @@ The mini-notation version is more compact, but the function version is easier to
 
 With the function version, you can pattern the parameters:
 
-<MiniRepl client:idle tune={`sound("bd").euclid("<3 5 7>", 8)`} punchcard />
+<MiniRepl client:idle tune={`sound("bd").euclid("<3 5 7>", 8)`} punchcard punchcardLabels={false} />
 
 The number of beats cycles through 3, 5, and 7 on each repetition.
 
-<MiniRepl client:idle tune={`sound("hh").euclid(5, "<8 16>", "<0 2 4>")`} punchcard />
+<MiniRepl client:idle tune={`sound("hh").euclidRot(5, "<8 16>", "<0 2 4>")`} punchcard punchcardLabels={false} />
 
 ## Challenge: Build a Beat
 
@@ -107,21 +107,21 @@ Create a four-part rhythm using euclidean patterns. Fill in the numbers:
 
 <MiniRepl client:idle tune={`stack(
   sound("bd").euclid(3, 8),
-  sound("sd").euclid(2, 8, 4),
+  sound("sd").euclidRot(2, 8, 4),
   sound("hh").euclid(7, 8),
-  sound("perc").euclid(3, 16)
-)`} punchcard />
+  sound("rim").euclid(3, 16)
+)`} punchcard punchcardLabels={false} />
 
 **Hints:**
 - Kick: `3, 8` or `4, 16` for a solid foundation
 - Snare: `2, 8` with rotation for backbeat
 - Hi-hat: denser works well—`5, 8` or `7, 8`
-- Perc: odd numbers create interest—`3, 16` or `5, 12`
+- Rim: odd numbers create interest—`3, 16` or `5, 12`
 
 ## What You Learned
 
 - `euclid(beats, steps)` distributes beats evenly
-- Third parameter rotates the pattern
+- `euclidRot(beats, steps, rotation)` adds rotation
 - Classic rhythms (tresillo, clave, bell pattern) are euclidean
 - Layering creates polyrhythms
 - Parameters can be patterned for variation
