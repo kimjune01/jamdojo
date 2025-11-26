@@ -11,15 +11,70 @@ if (typeof window !== 'undefined') {
   audioReady = initAudioOnFirstClick();
 }
 
-const INTERVALS = [
+const ALL_INTERVALS = [
   { semitones: 1, name: 'Minor 2nd', short: 'm2' },
   { semitones: 2, name: 'Major 2nd', short: 'M2' },
   { semitones: 3, name: 'Minor 3rd', short: 'm3' },
   { semitones: 4, name: 'Major 3rd', short: 'M3' },
   { semitones: 5, name: 'Perfect 4th', short: 'P4' },
+  { semitones: 6, name: 'Tritone', short: 'TT' },
   { semitones: 7, name: 'Perfect 5th', short: 'P5' },
+  { semitones: 8, name: 'Minor 6th', short: 'm6' },
+  { semitones: 9, name: 'Major 6th', short: 'M6' },
+  { semitones: 10, name: 'Minor 7th', short: 'm7' },
+  { semitones: 11, name: 'Major 7th', short: 'M7' },
   { semitones: 12, name: 'Octave', short: 'P8' },
 ];
+
+const DIFFICULTY_LEVELS = [
+  {
+    name: 'Level 1',
+    description: 'Perfect intervals',
+    intervals: [5, 7, 12], // P4, P5, P8
+    timeLimit: 10000,
+    roundsToAdvance: 8,
+  },
+  {
+    name: 'Level 2',
+    description: 'Add major intervals',
+    intervals: [4, 5, 7, 9, 12], // M3, P4, P5, M6, P8
+    timeLimit: 8000,
+    roundsToAdvance: 8,
+  },
+  {
+    name: 'Level 3',
+    description: 'Add minor intervals',
+    intervals: [3, 4, 5, 7, 8, 9, 12], // m3, M3, P4, P5, m6, M6, P8
+    timeLimit: 7000,
+    roundsToAdvance: 8,
+  },
+  {
+    name: 'Level 4',
+    description: 'Add 2nds',
+    intervals: [1, 2, 3, 4, 5, 7, 8, 9, 12], // m2, M2, m3, M3, P4, P5, m6, M6, P8
+    timeLimit: 6000,
+    roundsToAdvance: 8,
+  },
+  {
+    name: 'Level 5',
+    description: 'Add 7ths',
+    intervals: [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12], // All except tritone
+    timeLimit: 5000,
+    roundsToAdvance: 8,
+  },
+  {
+    name: 'Level 6',
+    description: 'All intervals',
+    intervals: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], // All
+    timeLimit: 5000,
+    roundsToAdvance: 10,
+  },
+];
+
+const getIntervalsForLevel = (levelIndex) => {
+  const level = DIFFICULTY_LEVELS[levelIndex] || DIFFICULTY_LEVELS[DIFFICULTY_LEVELS.length - 1];
+  return ALL_INTERVALS.filter(i => level.intervals.includes(i.semitones));
+};
 
 const NOTE_NAMES = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
@@ -39,19 +94,23 @@ const PRELOAD_NOTES = ['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4
 let pianoPreloaded = false;
 
 export function EarTraining() {
-  const [gameState, setGameState] = useState('idle'); // idle, loading, playing, answered, finished
+  const [gameState, setGameState] = useState('idle'); // idle, loading, playing, answered, levelUp, finished
   const [currentInterval, setCurrentInterval] = useState(null);
   const [rootNote, setRootNote] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [round, setRound] = useState(0);
-  const [totalRounds] = useState(10);
-  const [timeLeft, setTimeLeft] = useState(ANSWER_TIME_LIMIT);
+  const [level, setLevel] = useState(0);
   const [useStrudelNotation, setUseStrudelNotation] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(DIFFICULTY_LEVELS[0].timeLimit);
   const initialized = useRef(false);
   const timerRef = useRef(null);
   const countdownRef = useRef(null);
   const usedCombos = useRef(new Set());
+
+  const currentLevel = DIFFICULTY_LEVELS[level] || DIFFICULTY_LEVELS[DIFFICULTY_LEVELS.length - 1];
+  const currentIntervals = getIntervalsForLevel(level);
+  const totalRounds = currentLevel.roundsToAdvance;
 
   const getIntervalLabel = (interval) => {
     if (useStrudelNotation) {
@@ -93,15 +152,16 @@ export function EarTraining() {
     await playNote(secondNoteName, 0.6);
   }, [playNote]);
 
-  const startGame = useCallback(async () => {
+  const startGame = useCallback(async (startLevel = 0) => {
     setGameState('loading');
     await preloadPiano();
     usedCombos.current.clear();
     setScore({ correct: 0, total: 0 });
     setRound(1);
+    setLevel(startLevel);
     setGameState('playing');
-    nextQuestion(1);
-  }, [preloadPiano]);
+    nextQuestion(1, startLevel);
+  }, [preloadPiano, nextQuestion]);
 
   const stopCountdown = useCallback(() => {
     if (countdownRef.current) {
@@ -110,10 +170,10 @@ export function EarTraining() {
     }
   }, []);
 
-  const startCountdown = useCallback(() => {
+  const startCountdown = useCallback((timeLimit) => {
     // Always clear any existing timer first
     stopCountdown();
-    setTimeLeft(ANSWER_TIME_LIMIT);
+    setTimeLeft(timeLimit);
     countdownRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 100) {
@@ -124,9 +184,17 @@ export function EarTraining() {
     }, 100);
   }, [stopCountdown]);
 
-  const nextQuestion = useCallback((roundNum) => {
-    if (roundNum > totalRounds) {
-      setGameState('finished');
+  const nextQuestion = useCallback((roundNum, levelIdx) => {
+    const lvl = DIFFICULTY_LEVELS[levelIdx] || DIFFICULTY_LEVELS[DIFFICULTY_LEVELS.length - 1];
+    const intervals = getIntervalsForLevel(levelIdx);
+
+    if (roundNum > lvl.roundsToAdvance) {
+      // Level complete - check if more levels
+      if (levelIdx < DIFFICULTY_LEVELS.length - 1) {
+        setGameState('levelUp');
+      } else {
+        setGameState('finished');
+      }
       stopCountdown();
       return;
     }
@@ -137,7 +205,7 @@ export function EarTraining() {
     const maxAttempts = 100;
 
     do {
-      interval = INTERVALS[Math.floor(Math.random() * INTERVALS.length)];
+      interval = intervals[Math.floor(Math.random() * intervals.length)];
       // Random root note between C3 (36) and G4 (55)
       root = 36 + Math.floor(Math.random() * 20);
       comboKey = `${root}-${interval.semitones}`;
@@ -154,9 +222,9 @@ export function EarTraining() {
     // Play after a short delay, then start countdown
     setTimeout(() => {
       playInterval(root, interval);
-      startCountdown();
+      startCountdown(lvl.timeLimit);
     }, 300);
-  }, [playInterval, totalRounds, startCountdown, stopCountdown]);
+  }, [playInterval, startCountdown, stopCountdown]);
 
   const handleAnswer = useCallback((interval, timedOut = false) => {
     if (gameState !== 'playing') return;
@@ -173,10 +241,20 @@ export function EarTraining() {
   }, [gameState, currentInterval, stopCountdown]);
 
   const handleNext = useCallback(() => {
-    setTimeLeft(ANSWER_TIME_LIMIT); // Reset timer before changing state
+    setTimeLeft(currentLevel.timeLimit); // Reset timer before changing state
     setGameState('playing');
-    nextQuestion(round + 1);
-  }, [round, nextQuestion]);
+    nextQuestion(round + 1, level);
+  }, [round, level, currentLevel.timeLimit, nextQuestion]);
+
+  const handleNextLevel = useCallback(() => {
+    const newLevel = level + 1;
+    usedCombos.current.clear();
+    setScore({ correct: 0, total: 0 });
+    setRound(1);
+    setLevel(newLevel);
+    setGameState('playing');
+    nextQuestion(1, newLevel);
+  }, [level, nextQuestion]);
 
   // Handle timeout
   useEffect(() => {
@@ -240,12 +318,18 @@ export function EarTraining() {
 
       {/* Score */}
       {gameState !== 'idle' && (
-        <div className="flex justify-between items-center bg-background border border-lineHighlight rounded-lg p-4">
-          <div className="font-mono">
-            Round: <span className="text-cyan-400">{Math.min(round, totalRounds)}</span> / {totalRounds}
+        <div className="bg-background border border-lineHighlight rounded-lg p-4">
+          <div className="flex justify-between items-center mb-2">
+            <div className="font-bold text-cyan-400">{currentLevel.name}</div>
+            <div className="text-sm text-gray-400">{currentLevel.description}</div>
           </div>
-          <div className="font-mono">
-            Score: <span className="text-green-400">{score.correct}</span> / {score.total}
+          <div className="flex justify-between items-center">
+            <div className="font-mono text-sm">
+              Round: <span className="text-cyan-400">{Math.min(round, totalRounds)}</span> / {totalRounds}
+            </div>
+            <div className="font-mono text-sm">
+              Score: <span className="text-green-400">{score.correct}</span> / {score.total}
+            </div>
           </div>
         </div>
       )}
@@ -270,22 +354,50 @@ export function EarTraining() {
           </div>
         )}
 
-        {gameState === 'finished' && (
+        {gameState === 'levelUp' && (
           <div className="text-center space-y-4">
-            <h2 className="text-2xl font-bold">Training Complete!</h2>
+            <h2 className="text-2xl font-bold text-green-400">Level Complete!</h2>
             <p className="text-4xl font-mono">
               <span className="text-green-400">{score.correct}</span>
               <span className="text-gray-500"> / </span>
               <span>{score.total}</span>
             </p>
             <p className="text-lg text-gray-400">
-              {score.correct === score.total ? 'Perfect! 🎉' :
-               score.correct >= score.total * 0.8 ? 'Great job! 👏' :
-               score.correct >= score.total * 0.6 ? 'Good work! 👍' :
-               'Keep practicing! 💪'}
+              Ready for {DIFFICULTY_LEVELS[level + 1]?.name}?
+            </p>
+            <p className="text-sm text-gray-500">
+              {DIFFICULTY_LEVELS[level + 1]?.description}
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => startGame(0)}
+                className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
+              >
+                Restart
+              </button>
+              <button
+                onClick={handleNextLevel}
+                className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-colors"
+              >
+                Next Level →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {gameState === 'finished' && (
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold">All Levels Complete! 🎉</h2>
+            <p className="text-4xl font-mono">
+              <span className="text-green-400">{score.correct}</span>
+              <span className="text-gray-500"> / </span>
+              <span>{score.total}</span>
+            </p>
+            <p className="text-lg text-gray-400">
+              You've mastered all intervals!
             </p>
             <button
-              onClick={startGame}
+              onClick={() => startGame(0)}
               className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-colors"
             >
               Play Again
@@ -300,10 +412,10 @@ export function EarTraining() {
               <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all duration-100 ${
-                    timeLeft > 2000 ? 'bg-green-500' :
-                    timeLeft > 1000 ? 'bg-yellow-500' : 'bg-red-500'
+                    timeLeft > currentLevel.timeLimit * 0.4 ? 'bg-green-500' :
+                    timeLeft > currentLevel.timeLimit * 0.2 ? 'bg-yellow-500' : 'bg-red-500'
                   }`}
-                  style={{ width: `${(timeLeft / ANSWER_TIME_LIMIT) * 100}%` }}
+                  style={{ width: `${(timeLeft / currentLevel.timeLimit) * 100}%` }}
                 />
               </div>
             )}
@@ -320,7 +432,7 @@ export function EarTraining() {
 
             {/* Answer options */}
             <div className="grid grid-cols-2 gap-3">
-              {INTERVALS.map((interval) => {
+              {currentIntervals.map((interval) => {
                 const isSelected = selectedAnswer?.semitones === interval.semitones;
                 const isCorrect = currentInterval?.semitones === interval.semitones;
                 const showResult = gameState === 'answered';
