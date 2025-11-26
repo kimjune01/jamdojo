@@ -588,27 +588,15 @@ export function EarTraining() {
 
         {(gameState === 'playing' || gameState === 'answered') && (
           <div className="space-y-6">
-            {/* Timer bar */}
-            {gameState === 'playing' && (
-              <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden">
-                <div
-                  className={`h-full transition-all duration-100 ${
-                    timeLeft > currentLevel.timeLimit * 0.4 ? 'bg-green-500' :
-                    timeLeft > currentLevel.timeLimit * 0.2 ? 'bg-yellow-500' : 'bg-red-500'
-                  }`}
-                  style={{ width: `${(timeLeft / currentLevel.timeLimit) * 100}%` }}
-                />
-              </div>
-            )}
-
-            {/* Replay button */}
-            <div className="text-center">
-              <button
-                onClick={replayInterval}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-              >
-                Replay
-              </button>
+            {/* Timer bar - always visible */}
+            <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden">
+              <div
+                className={`h-full transition-all duration-100 ${
+                  timeLeft > currentLevel.timeLimit * 0.4 ? 'bg-green-500' :
+                  timeLeft > currentLevel.timeLimit * 0.2 ? 'bg-yellow-500' : 'bg-red-500'
+                }`}
+                style={{ width: `${(timeLeft / currentLevel.timeLimit) * 100}%` }}
+              />
             </div>
 
             {/* Answer options - adaptive grid */}
@@ -647,6 +635,16 @@ export function EarTraining() {
                   </button>
                 );
               })}
+            </div>
+
+            {/* Replay button */}
+            <div className="text-center">
+              <button
+                onClick={replayInterval}
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              >
+                Replay
+              </button>
             </div>
 
             {/* Feedback */}
