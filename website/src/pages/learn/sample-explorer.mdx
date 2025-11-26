@@ -1,0 +1,60 @@
+---
+title: Sample Explorer
+layout: ../../layouts/JamDojoLayout.astro
+---
+
+import { SampleExplorer } from '../../docs/SampleExplorer';
+
+Explore the built-in drum machines and sounds. Click any sound to hear it and see the Strudel code.
+
+<SampleExplorer client:idle />
+
+## About the Sounds
+
+<div className="grid grid-cols-2 gap-4 text-sm">
+<div>
+
+**Drums**
+- **bd** - Bass drum / Kick
+- **sd** - Snare drum
+- **cp** - Clap
+- **rim** - Rimshot
+
+**Hi-hats & Cymbals**
+- **hh** - Closed hi-hat
+- **oh** - Open hi-hat
+- **cr** - Crash
+- **rd** - Ride
+
+</div>
+<div>
+
+**Toms**
+- **ht** - High tom
+- **mt** - Medium tom
+- **lt** - Low tom
+
+**Percussion**
+- **cb** - Cowbell
+- **sh** - Shaker
+- **tb** - Tambourine
+- **misc** - Miscellaneous
+
+</div>
+</div>
+
+## Using Banks
+
+When you select a drum machine like TR-909, the code uses `.bank()`:
+
+```js
+sound("bd").bank("RolandTR909")
+```
+
+This tells Strudel to use that specific drum machine's sounds instead of the defaults.
+
+## Next Steps
+
+- [Samples](/learn/samples) - Load custom samples
+- [Effects](/learn/effects) - Add reverb, delay, filters
+- [Mini-Notation](/learn/mini-notation) - Create patterns
