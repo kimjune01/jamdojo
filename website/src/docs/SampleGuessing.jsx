@@ -148,20 +148,23 @@ const generateLevel = (levelIndex) => {
   // For levels 6+, use sounds across multiple packs
   const dynamicLevelNum = levelIndex - FIXED_LEVELS.length;
 
-  // Level 6: bd, sd, hh from 3 packs = 9 options
-  // Level 7+: add more sounds progressively
+  // Level 6: bd, sd, hh from 3 packs = 9 options (single-step)
+  // Level 7+: two-step selection (pick sound, then pick machine)
   const baseSounds = ['bd', 'sd', 'hh'];
   const additionalSounds = ['oh', 'cp', 'rim', 'cb', 'cr', 'rd', 'ht', 'mt', 'lt'];
   const soundCount = Math.min(3 + dynamicLevelNum, baseSounds.length + additionalSounds.length);
   const sounds = [...baseSounds, ...additionalSounds].slice(0, soundCount);
 
+  const isTwoStep = levelIndex > FIXED_LEVELS.length; // Level 7+ uses two-step
+
   return {
     id: levelIndex,
     name: `Level ${levelIndex + 1}`,
-    description: `${sounds.length} sounds across machines`,
+    description: isTwoStep ? `${sounds.length} sounds, identify machine` : `${sounds.length} sounds across machines`,
     sounds,
     roundsToAdvance: 10,
     useRandomPack: true,
+    twoStep: isTwoStep,
   };
 };
 
@@ -243,7 +246,10 @@ export function SampleGuessing() {
   const [currentPack, setCurrentPack] = useState(null);
   const [selectedPack, setSelectedPack] = useState(null); // For fixed levels where user picks pack
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [currentOptions, setCurrentOptions] = useState([]); // For Level 6+: array of {sound, pack} objects
+  const [currentOptions, setCurrentOptions] = useState([]); // For Level 6: array of {sound, pack} objects
+  const [twoStepMode, setTwoStepMode] = useState(false); // For Level 7+: two-step selection
+  const [selectedSound, setSelectedSound] = useState(null); // For Level 7+: first step selection
+  const [availablePacks, setAvailablePacks] = useState([]); // For Level 7+: packs to choose from in step 2
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [round, setRound] = useState(0);
   const [level, setLevel] = useState(0);
@@ -377,9 +383,7 @@ export function SampleGuessing() {
     let sample, pack, options;
 
     if (lvl.useRandomPack) {
-      // Level 6+: Each sound appears from multiple packs
-      // For 3 sounds × 3 packs = 9 options in a 3x3 grid
-      const numPacks = 3;
+      const numPacks = lvl.twoStep ? 5 : 3; // Level 7+ uses 5 packs, Level 6 uses 3
 
       // Get packs that have all the required sounds, then shuffle and pick 3
       const eligiblePacks = BANKED_PACKS.filter(p =>
@@ -388,23 +392,37 @@ export function SampleGuessing() {
       const shuffledPacks = [...eligiblePacks].sort(() => Math.random() - 0.5);
       const selectedPacks = shuffledPacks.slice(0, numPacks);
 
-      // Create all combinations: each sound from each pack
-      options = [];
-      for (const sound of samples) {
-        for (const p of selectedPacks) {
-          options.push({ sound, pack: p });
+      if (lvl.twoStep) {
+        // Level 7+: Two-step selection mode
+        // Pick a random sound and pack as the correct answer
+        sample = samples[Math.floor(Math.random() * samples.length)];
+        pack = selectedPacks[Math.floor(Math.random() * selectedPacks.length)];
+
+        setTwoStepMode(true);
+        setSelectedSound(null);
+        setAvailablePacks(selectedPacks);
+        setCurrentOptions([]);
+      } else {
+        // Level 6: Single-step with 3x3 grid
+        // Create all combinations: each sound from each pack
+        options = [];
+        for (const sound of samples) {
+          for (const p of selectedPacks) {
+            options.push({ sound, pack: p });
+          }
         }
+
+        // Shuffle the options
+        options = options.sort(() => Math.random() - 0.5);
+
+        // Pick one option as the correct answer
+        const correctOption = options[Math.floor(Math.random() * options.length)];
+        sample = correctOption.sound;
+        pack = correctOption.pack;
+
+        setTwoStepMode(false);
+        setCurrentOptions(options);
       }
-
-      // Shuffle the options
-      options = options.sort(() => Math.random() - 0.5);
-
-      // Pick one option as the correct answer
-      const correctOption = options[Math.floor(Math.random() * options.length)];
-      sample = correctOption.sound;
-      pack = correctOption.pack;
-
-      setCurrentOptions(options);
     } else {
       // Fixed levels (1-5): Use the user-selected pack for all sounds
       pack = selectedPack;
@@ -445,7 +463,7 @@ export function SampleGuessing() {
     setSelectedAnswer(answer);
     setGameState('answered');
 
-    // For Level 6+, answer is {sound, pack}. For fixed levels, answer is just the sound string.
+    // For Level 6 (single-step), answer is {sound, pack}. For fixed levels, answer is just the sound string.
     const isCorrect = currentOptions.length > 0
       ? (answer.sound === currentSample && answer.pack.id === currentPack.id)
       : (answer === currentSample);
@@ -463,6 +481,37 @@ export function SampleGuessing() {
       }, 500);
     }
   }, [gameState, currentSample, currentPack, currentOptions, stopRepeat, round, level, nextQuestion]);
+
+  // Two-step mode: Step 1 - select sound
+  const handleSoundSelect = useCallback((sound) => {
+    if (gameState !== 'playing') return;
+    setSelectedSound(sound);
+  }, [gameState]);
+
+  // Two-step mode: Step 2 - select pack (final answer)
+  const handlePackSelect = useCallback((pack) => {
+    if (gameState !== 'playing' || !selectedSound) return;
+
+    stopRepeat();
+    const answer = { sound: selectedSound, pack };
+    setSelectedAnswer(answer);
+    setGameState('answered');
+
+    const isCorrect = selectedSound === currentSample && pack.id === currentPack.id;
+
+    setScore(prev => ({
+      correct: prev.correct + (isCorrect ? 1 : 0),
+      total: prev.total + 1
+    }));
+
+    if (isCorrect) {
+      // Auto-advance on correct answer after showing green
+      setTimeout(() => {
+        setGameState('playing');
+        nextQuestion(round + 1, level);
+      }, 500);
+    }
+  }, [gameState, selectedSound, currentSample, currentPack, stopRepeat, round, level, nextQuestion]);
 
   const handleNext = useCallback(() => {
     setGameState('playing');
@@ -724,9 +773,111 @@ export function SampleGuessing() {
               </button>
             </div>
 
-            {/* Answer options - Level 6+ uses currentOptions, fixed levels use currentSamples */}
-            {currentOptions.length > 0 ? (
-              // Level 6+: Each option has its own pack - use larger grid
+            {/* Answer options - Level 7+ uses two-step, Level 6 uses single grid, fixed levels use currentSamples */}
+            {twoStepMode ? (
+              // Level 7+: Two-step selection
+              <div className="space-y-4">
+                {/* Step 1: Sound selection */}
+                <div>
+                  <div className="text-xs text-gray-500 mb-2 text-center">
+                    {gameState === 'answered' ? 'Answer:' : (selectedSound ? 'Sound selected - now pick the machine:' : 'Step 1: Pick the sound')}
+                  </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {currentSamples.map((sound) => {
+                      const isThisSound = selectedSound === sound;
+                      const showResult = gameState === 'answered';
+                      const isCorrectSound = sound === currentSample;
+
+                      let bgColor = 'bg-gray-700 hover:bg-gray-600';
+                      if (showResult) {
+                        if (isCorrectSound && selectedAnswer?.sound === sound) {
+                          bgColor = selectedAnswer?.pack?.id === currentPack.id ? 'bg-green-600' : 'bg-yellow-600';
+                        } else if (selectedAnswer?.sound === sound && !isCorrectSound) {
+                          bgColor = 'bg-red-600';
+                        } else if (isCorrectSound) {
+                          bgColor = 'bg-green-600/50';
+                        } else {
+                          bgColor = 'bg-gray-800';
+                        }
+                      } else if (isThisSound) {
+                        bgColor = 'bg-cyan-600';
+                      }
+
+                      return (
+                        <button
+                          key={sound}
+                          onClick={() => {
+                            if (gameState === 'answered') {
+                              // Play this sound with the correct pack so user can compare
+                              playSample(sound, currentPack);
+                            } else {
+                              handleSoundSelect(sound);
+                            }
+                          }}
+                          className={`
+                            p-3 rounded-lg font-mono text-center transition-all cursor-pointer
+                            ${bgColor}
+                          `}
+                        >
+                          <div className="text-sm font-bold">{getSampleLabel(sound)}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Step 2: Pack selection - only show when sound is selected or answered */}
+                {(selectedSound || gameState === 'answered') && (
+                  <div>
+                    <div className="text-xs text-gray-500 mb-2 text-center">
+                      {gameState === 'answered' ? '' : 'Step 2: Pick the drum machine'}
+                    </div>
+                    <div className="grid grid-cols-5 gap-2">
+                      {availablePacks.map((pack) => {
+                        const showResult = gameState === 'answered';
+                        const isCorrectPack = pack.id === currentPack.id;
+                        const isSelectedPack = selectedAnswer?.pack?.id === pack.id;
+
+                        let bgColor = 'bg-gray-700 hover:bg-gray-600';
+                        let labelColor = 'text-white';
+                        if (showResult) {
+                          if (isCorrectPack && isSelectedPack) {
+                            bgColor = 'bg-green-600';
+                          } else if (isSelectedPack && !isCorrectPack) {
+                            bgColor = 'bg-red-600';
+                          } else if (isCorrectPack) {
+                            bgColor = 'bg-green-600/50';
+                          } else {
+                            bgColor = 'bg-gray-800';
+                          }
+                        }
+
+                        return (
+                          <button
+                            key={pack.id}
+                            onClick={() => {
+                              if (gameState === 'answered') {
+                                // Play the correct sound with this pack so user can compare machines
+                                playSample(currentSample, pack);
+                              } else {
+                                handlePackSelect(pack);
+                              }
+                            }}
+                            className={`
+                              p-4 rounded-lg text-center transition-all cursor-pointer
+                              ${bgColor}
+                            `}
+                          >
+                            <div className={`text-base font-bold ${labelColor}`}>{pack.name}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : currentOptions.length > 0 ? (
+              // Level 6: Each option has its own pack - use larger grid
               <div className="grid grid-cols-3 gap-3">
                 {currentOptions.map((option, idx) => {
                   const isSelected = selectedAnswer && selectedAnswer.sound === option.sound && selectedAnswer.pack.id === option.pack.id;
@@ -813,9 +964,13 @@ export function SampleGuessing() {
             )}
 
             {/* Feedback - only show details on wrong answer */}
-            {gameState === 'answered' && (currentOptions.length > 0
-              ? !(selectedAnswer && selectedAnswer.sound === currentSample && selectedAnswer.pack.id === currentPack.id)
-              : selectedAnswer !== currentSample) && (
+            {gameState === 'answered' && (
+              twoStepMode
+                ? !(selectedAnswer && selectedAnswer.sound === currentSample && selectedAnswer.pack.id === currentPack.id)
+                : currentOptions.length > 0
+                  ? !(selectedAnswer && selectedAnswer.sound === currentSample && selectedAnswer.pack.id === currentPack.id)
+                  : selectedAnswer !== currentSample
+            ) && (
               <div className="text-center space-y-3">
                 <p className="text-red-400 text-xl">
                   It was <span className="font-bold">{getSampleLabel(currentSample)}</span>
@@ -847,8 +1002,8 @@ export function SampleGuessing() {
         )}
       </div>
 
-      {/* Sound pool reference - show during game (not for Level 6+ since options already show packs) */}
-      {gameState !== 'idle' && gameState !== 'loading' && gameState !== 'selectPack' && currentOptions.length === 0 && (
+      {/* Sound pool reference - show during game (not for Level 6+ since options already show packs/sounds) */}
+      {gameState !== 'idle' && gameState !== 'loading' && gameState !== 'selectPack' && currentOptions.length === 0 && !twoStepMode && (
         <div className="bg-background border border-lineHighlight rounded-lg p-4">
           <div className="text-xs text-gray-500 mb-2">Sounds in this level:</div>
           <div className="flex flex-wrap gap-2">
