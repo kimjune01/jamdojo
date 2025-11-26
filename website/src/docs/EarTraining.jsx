@@ -32,8 +32,14 @@ const semitoneToNote = (semitone) => {
 const AUTO_ADVANCE_DELAY = 2000;
 const ANSWER_TIME_LIMIT = 5000;
 
+// Preload notes in the range we use (C3 to G5)
+const PRELOAD_NOTES = ['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5'];
+
+// Module-level flag to track if piano is preloaded
+let pianoPreloaded = false;
+
 export function EarTraining() {
-  const [gameState, setGameState] = useState('idle'); // idle, playing, answered, finished
+  const [gameState, setGameState] = useState('idle'); // idle, loading, playing, answered, finished
   const [currentInterval, setCurrentInterval] = useState(null);
   const [rootNote, setRootNote] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -52,6 +58,17 @@ export function EarTraining() {
     }
   }, []);
 
+  const preloadPiano = useCallback(async () => {
+    if (pianoPreloaded) return;
+    await initAudio();
+    const ac = getAudioContext();
+    // Preload all notes by playing them silently
+    for (const note of PRELOAD_NOTES) {
+      await superdough({ s: 'piano', note, gain: 0 }, ac.currentTime + 0.01, 0.01);
+    }
+    pianoPreloaded = true;
+  }, [initAudio]);
+
   const playNote = useCallback(async (note, delay = 0) => {
     await initAudio();
     const ac = getAudioContext();
@@ -68,12 +85,13 @@ export function EarTraining() {
   }, [playNote]);
 
   const startGame = useCallback(async () => {
-    await initAudio();
+    setGameState('loading');
+    await preloadPiano();
     setScore({ correct: 0, total: 0 });
     setRound(1);
     setGameState('playing');
     nextQuestion(1);
-  }, [initAudio]);
+  }, [preloadPiano]);
 
   const stopCountdown = useCallback(() => {
     if (countdownRef.current) {
@@ -206,6 +224,13 @@ export function EarTraining() {
             >
               Start Training
             </button>
+          </div>
+        )}
+
+        {gameState === 'loading' && (
+          <div className="text-center py-8">
+            <div className="text-xl text-gray-400 mb-2">Loading piano...</div>
+            <div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
         )}
 
