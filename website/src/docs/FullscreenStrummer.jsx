@@ -286,7 +286,7 @@ export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }
 export function getStrummerURL(chords, baseUrl = '') {
   const validChords = chords.filter(c => CHORD_VOICINGS[c]);
   if (validChords.length === 0) return null;
-  return `${baseUrl}learn/strummer/?chords=${validChords.join(',')}`;
+  return `${baseUrl}/learn/strummer/?chords=${validChords.join(',')}`;
 }
 
 // Export chord voicings for validation

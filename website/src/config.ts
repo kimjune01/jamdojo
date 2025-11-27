@@ -39,8 +39,92 @@ export const ALGOLIA = {
   apiKey: 'd5044f9d21b80e7721e5b0067a8730b1',
 };
 
-export type SidebarLang = Record<string, { text: string; link: string }[]>;
+// Activity item with optional icon and description for home page display
+export type ActivityItem = {
+  text: string;
+  link: string;
+  icon?: string;
+  description?: string;
+};
+
+export type SidebarSection = {
+  title: string;
+  icon?: string;
+  items: ActivityItem[];
+};
+
+export type SidebarLang = Record<string, ActivityItem[]>;
 export type Sidebar = Record<(typeof KNOWN_LANGUAGE_CODES)[number], SidebarLang>;
+
+// Shared activity definitions - single source of truth for sidebar and home page
+export const ACTIVITIES: SidebarSection[] = [
+  {
+    title: 'Interactive Tools',
+    icon: '🎮',
+    items: [
+      { text: 'Piano', link: 'learn/piano', icon: '🎹', description: 'Play piano with your keyboard and explore different sounds' },
+      { text: 'Guitar', link: 'learn/guitar', icon: '🎸', description: 'Learn the guitar fretboard with keyboard controls' },
+      { text: 'Sample Quiz', link: 'learn/sample-guessing', icon: '🎯', description: 'Test your ability to identify drum and sample sounds' },
+      { text: 'Ear Training', link: 'learn/ear-training', icon: '👂', description: 'Train your ear to recognize musical intervals' },
+      { text: 'Euclidean Rhythms', link: 'learn/euclidean-101', icon: '🥁', description: 'Learn about mathematical patterns in music' },
+    ],
+  },
+  {
+    title: 'Workshop',
+    icon: '📚',
+    items: [
+      { text: 'First Sounds', link: 'workshop/first-sounds', icon: '🔊', description: 'Start making sounds with Strudel' },
+      { text: 'First Notes', link: 'workshop/first-notes', icon: '🎵', description: 'Learn to play musical notes and melodies' },
+      { text: 'First Effects', link: 'workshop/first-effects', icon: '✨', description: 'Add effects to transform your sounds' },
+      { text: 'Pattern Effects', link: 'workshop/pattern-effects', icon: '🔄', description: 'Create dynamic patterns with effects' },
+      { text: 'Recap', link: 'workshop/recap', icon: '📝', description: 'Review what you have learned' },
+    ],
+  },
+  {
+    title: 'Making Sound',
+    icon: '🎧',
+    items: [
+      { text: 'Samples', link: 'learn/samples', icon: '📀', description: 'Work with audio samples and drum kits' },
+      { text: 'Synths', link: 'learn/synths', icon: '🎛️', description: 'Create sounds with synthesizers' },
+      { text: 'Audio Effects', link: 'learn/effects', icon: '🎚️', description: 'Apply reverb, delay, filters and more' },
+      { text: 'MIDI & OSC', link: 'learn/input-output', icon: '🔌', description: 'Connect to external devices and software' },
+    ],
+  },
+  {
+    title: 'Pattern Functions',
+    icon: '⚡',
+    items: [
+      { text: 'Introduction', link: 'functions/intro', icon: '📖', description: 'Overview of pattern manipulation' },
+      { text: 'Creating Patterns', link: 'learn/factories', icon: '🏭', description: 'Build patterns from scratch' },
+      { text: 'Time Modifiers', link: 'learn/time-modifiers', icon: '⏱️', description: 'Control timing and rhythm' },
+      { text: 'Control Parameters', link: 'functions/value-modifiers', icon: '🎛️', description: 'Modify pattern values dynamically' },
+      { text: 'Signals', link: 'learn/signals', icon: '📈', description: 'Use continuous signals for modulation' },
+      { text: 'Random Modifiers', link: 'learn/random-modifiers', icon: '🎲', description: 'Add randomness and variation' },
+      { text: 'Conditional Modifiers', link: 'learn/conditional-modifiers', icon: '❓', description: 'Apply conditional logic to patterns' },
+      { text: 'Tonal Functions', link: 'learn/tonal', icon: '🎼', description: 'Work with scales, chords and harmony' },
+    ],
+  },
+  {
+    title: 'More Topics',
+    icon: '📚',
+    items: [
+      { text: 'Mini-Notation', link: 'learn/mini-notation', icon: '✏️', description: 'Learn the compact pattern syntax' },
+      { text: 'Visual Feedback', link: 'learn/visual-feedback', icon: '👁️', description: 'See your patterns visualized' },
+      { text: 'Hydra Visuals', link: 'learn/hydra', icon: '🌊', description: 'Create live visuals with Hydra' },
+      { text: 'Recipes', link: 'recipes/recipes', icon: '🍳', description: 'Ready-to-use code snippets and examples' },
+    ],
+  },
+];
+
+// Convert ACTIVITIES to sidebar format
+const activitiesToSidebar = (activities: SidebarSection[]): SidebarLang => {
+  const sidebar: SidebarLang = {};
+  for (const section of activities) {
+    sidebar[section.title] = section.items.map(({ text, link }) => ({ text, link }));
+  }
+  return sidebar;
+};
+
 export const SIDEBAR: Sidebar = {
   de: {
     Workshop: [
@@ -53,70 +137,5 @@ export const SIDEBAR: Sidebar = {
       { text: 'Mehr Seiten auf Englisch', link: 'workshop/getting-started' },
     ],
   },
-  en: {
-    Presentation: [
-      { text: 'What is Strudel?', link: 'workshop/getting-started' },
-      { text: 'Showcase', link: 'intro/showcase' },
-      { text: 'Blog', link: 'blog' },
-      /* { text: 'Community Bakery', link: 'bakery' }, */
-    ],
-    Workshop: [
-      // { text: 'Getting Started', link: 'workshop/getting-started' },
-      { text: 'First Sounds', link: 'workshop/first-sounds' },
-      { text: 'First Notes', link: 'workshop/first-notes' },
-      { text: 'First Effects', link: 'workshop/first-effects' },
-      { text: 'Pattern Effects', link: 'workshop/pattern-effects' },
-      { text: 'Recap', link: 'workshop/recap' },
-      { text: 'Workshop in German', link: 'de/workshop/getting-started' },
-    ],
-    'Making Sound': [
-      { text: 'Samples', link: 'learn/samples' },
-      { text: 'Synths', link: 'learn/synths' },
-      { text: 'Audio Effects', link: 'learn/effects' },
-      { text: 'MIDI & OSC', link: 'learn/input-output' },
-    ],
-    More: [
-      { text: 'Recipes', link: 'recipes/recipes' },
-      { text: 'Mini-Notation', link: 'learn/mini-notation' },
-      { text: 'Visual Feedback', link: 'learn/visual-feedback' },
-      { text: 'Offline', link: 'learn/pwa' },
-      { text: 'Patterns', link: 'technical-manual/patterns' },
-      { text: 'Mondo Notation', link: 'learn/mondo-notation' },
-      { text: 'Music metadata', link: 'learn/metadata' },
-      { text: 'CSound', link: 'learn/csound' },
-      { text: 'Hydra', link: 'learn/hydra' },
-      { text: 'Input Devices', link: 'learn/input-devices' },
-      { text: 'Device Motion', link: 'learn/devicemotion' },
-    ],
-    'Pattern Functions': [
-      { text: 'Introduction', link: 'functions/intro' },
-      { text: 'Creating Patterns', link: 'learn/factories' },
-      { text: 'Time Modifiers', link: 'learn/time-modifiers' },
-      { text: 'Control Parameters', link: 'functions/value-modifiers' },
-      { text: 'Signals', link: 'learn/signals' },
-      { text: 'Random Modifiers', link: 'learn/random-modifiers' },
-      { text: 'Conditional Modifiers', link: 'learn/conditional-modifiers' },
-      { text: 'Accumulation', link: 'learn/accumulation' },
-      { text: 'Tonal Functions', link: 'learn/tonal' },
-      { text: 'Stepwise Functions', link: 'learn/stepwise' },
-    ],
-    Understand: [
-      { text: 'Coding syntax', link: 'learn/code' },
-      { text: 'Pitch', link: 'understand/pitch' },
-      { text: 'Xen Harmonic Functions', link: 'learn/xen' },
-      { text: 'Cycles', link: 'understand/cycles' },
-      { text: 'Voicings', link: 'understand/voicings' },
-      { text: 'Pattern Alignment', link: 'technical-manual/alignment' },
-      { text: 'Strudel vs Tidal', link: 'learn/strudel-vs-tidal' },
-    ],
-    Development: [
-      { text: 'Strudel in your Project', link: 'technical-manual/project-start' },
-      { text: 'Packages', link: 'technical-manual/packages' },
-      { text: 'REPL', link: 'technical-manual/repl' },
-      { text: 'Sounds', link: 'technical-manual/sounds' },
-      { text: 'Docs', link: 'technical-manual/docs' },
-      { text: 'Testing', link: 'technical-manual/testing' },
-      // { text: 'Internals', link: 'technical-manual/internals' },
-    ],
-  },
+  en: activitiesToSidebar(ACTIVITIES),
 };

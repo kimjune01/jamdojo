@@ -262,7 +262,7 @@ export function GuitarStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }) {
         />
         {filteredChords && filteredChords.length > 0 && (
           <a
-            href={`learn/strummer/?chords=${filteredChords.join(',')}`}
+            href={`/learn/strummer/?chords=${filteredChords.join(',')}`}
             className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg flex items-center gap-2 whitespace-nowrap"
           >
             <span>Fullscreen</span>
