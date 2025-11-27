@@ -22,18 +22,24 @@ export function StrumZone({
     isActive: false,
     centerX: 0,
     centerY: 0,
-    lastDirection: null,
+    lastQuadrant: null, // Track which quadrant we're in (up/down/left/right)
+    lastAudioDirection: null, // Track last audio direction to alternate
     lastTime: 0,
     lastX: 0,
     lastY: 0,
   });
 
-  const getDirectionFromAngle = (angle) => {
+  const getQuadrantFromAngle = (angle) => {
     const deg = angle * (180 / Math.PI);
     if (deg >= -45 && deg < 45) return 'right';
     if (deg >= 45 && deg < 135) return 'down';
     if (deg >= -135 && deg < -45) return 'up';
     return 'left';
+  };
+
+  // Get initial audio direction based on movement
+  const getInitialAudioDirection = (quadrant) => {
+    return (quadrant === 'up' || quadrant === 'left') ? 'up' : 'down';
   };
 
   // Calculate velocity from pointer speed (pixels per ms)
@@ -62,7 +68,8 @@ export function StrumZone({
       isActive: true,
       centerX: rect.left + rect.width / 2,
       centerY: rect.top + rect.height / 2,
-      lastDirection: null,
+      lastQuadrant: null,
+      lastAudioDirection: null,
       lastTime: performance.now(),
       lastX: e.clientX,
       lastY: e.clientY,
@@ -78,14 +85,24 @@ export function StrumZone({
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
     if (distance > threshold) {
-      const angle = Math.atan2(deltaY, deltaX);
-      const direction = getDirectionFromAngle(angle);
+      const quadrant = getQuadrantFromAngle(Math.atan2(deltaY, deltaX));
 
-      if (strumState.current.lastDirection !== direction) {
-        const audioDirection = (direction === 'up' || direction === 'left') ? 'up' : 'down';
+      // Trigger strum when quadrant changes
+      if (strumState.current.lastQuadrant !== quadrant) {
         const velocity = calculateVelocity(e);
+
+        let audioDirection;
+        if (strumState.current.lastAudioDirection === null) {
+          // First strum - determine direction from movement
+          audioDirection = getInitialAudioDirection(quadrant);
+        } else {
+          // Subsequent strums - alternate direction
+          audioDirection = strumState.current.lastAudioDirection === 'down' ? 'up' : 'down';
+        }
+
         onStrum(notes, audioDirection, velocity);
-        strumState.current.lastDirection = direction;
+        strumState.current.lastQuadrant = quadrant;
+        strumState.current.lastAudioDirection = audioDirection;
       }
     }
 
@@ -100,7 +117,8 @@ export function StrumZone({
       zoneRef.current.releasePointerCapture(e.pointerId);
     }
     strumState.current.isActive = false;
-    strumState.current.lastDirection = null;
+    strumState.current.lastQuadrant = null;
+    strumState.current.lastAudioDirection = null;
   };
 
   return (
