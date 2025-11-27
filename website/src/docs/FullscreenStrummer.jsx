@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useStrudelSound } from './useStrudelSound';
 import useClient from '@src/useClient.mjs';
+import { getAudioContext, superdough } from '@strudel/webaudio';
 
 // Common guitar chord voicings (low E to high E, null = muted string)
 const CHORD_VOICINGS = {
@@ -160,10 +161,12 @@ export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }
     sound,
     loading,
     playStrum,
+    initAudio,
   } = useStrudelSound({ defaultSound, notes: ALL_CHORD_NOTES });
 
   const [activeChord, setActiveChord] = useState(null);
   const [chords, setChords] = useState([]);
+  const [audioStarted, setAudioStarted] = useState(false);
 
   // Parse chords from URL on mount
   useEffect(() => {
@@ -174,6 +177,18 @@ export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }
       setChords(parsedChords);
     }
   }, []);
+
+  const handleStartAudio = async () => {
+    await initAudio();
+    // Play a quick hi-hat to confirm audio is working
+    try {
+      const ac = getAudioContext();
+      superdough({ s: 'hh' }, ac.currentTime + 0.01, 0.1);
+    } catch (e) {
+      console.error('Start sound error:', e);
+    }
+    setAudioStarted(true);
+  };
 
   const handleStrum = useCallback((notes, direction) => {
     const playableNotes = notes.filter(n => n !== null);
@@ -206,6 +221,22 @@ export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }
           className="px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-700"
         >
           Go Back
+        </button>
+      </div>
+    );
+  }
+
+  // Show start screen on mobile to unlock audio
+  if (!audioStarted) {
+    return (
+      <div className="fixed inset-0 bg-gray-950 flex flex-col items-center justify-center text-white p-4">
+        <p className="text-2xl mb-2 font-bold">{chords.join(' - ')}</p>
+        <p className="text-gray-400 mb-8">Tap to start</p>
+        <button
+          onClick={handleStartAudio}
+          className="w-32 h-32 rounded-full bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-400 flex items-center justify-center text-6xl shadow-lg shadow-cyan-500/30 transition-all active:scale-95"
+        >
+          ▶
         </button>
       </div>
     );

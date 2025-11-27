@@ -107,5 +107,6 @@ export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
     noteOn,
     noteOff,
     playStrum,
+    initAudio,
   };
 }
