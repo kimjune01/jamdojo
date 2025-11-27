@@ -1,0 +1,28 @@
+---
+import HeadCommon from '../../components/HeadCommon.astro';
+import '../../docs/docs.css';
+import { FullscreenStrummer } from '../../docs/FullscreenStrummer.jsx';
+---
+
+<html lang="en" class="dark">
+  <head>
+    <HeadCommon />
+    <title>Chord Strummer - JamDojo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <style>
+      /* Prevent pull-to-refresh and overscroll on mobile */
+      html, body {
+        overscroll-behavior: none;
+        touch-action: none;
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body class="m-0 text-gray-50 bg-gray-950">
+    <FullscreenStrummer client:only="react" />
+  </body>
+</html>

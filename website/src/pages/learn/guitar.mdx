@@ -3,8 +3,19 @@ title: Guitar
 layout: ../../layouts/JamDojoLayout.astro
 ---
 
-import { Guitar } from '../../docs/Guitar';
+import { GuitarStrummer } from '../../docs/GuitarStrummer';
+import { GuitarWithPick } from '../../docs/GuitarWithPick';
 
-Play the guitar fretboard using your keyboard.
+## Interactive Guitar
 
-<Guitar client:idle />
+Select frets with shift-click or long-press, then strum by dragging through the strum zone on the right.
+
+<GuitarWithPick client:idle />
+
+---
+
+## Chord Strummer
+
+Strum preset chords by clicking and dragging in any direction.
+
+<GuitarStrummer client:idle />

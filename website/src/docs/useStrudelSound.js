@@ -61,6 +61,30 @@ export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
     }
   }, [sound, initAudio]);
 
+  // Play multiple notes with staggered timing (for strumming)
+  // direction: 'down' plays low to high, 'up' plays high to low
+  // strumSpeed: milliseconds between each note (default 20ms)
+  const playStrum = useCallback(async (notesArray, direction = 'down', strumSpeed = 20) => {
+    await initAudio();
+    try {
+      const ac = getAudioContext();
+      const baseTime = ac.currentTime + 0.01;
+      const orderedNotes = direction === 'up' ? [...notesArray].reverse() : notesArray;
+
+      orderedNotes.forEach((note, i) => {
+        const t = baseTime + (i * strumSpeed / 1000);
+        superdough({ s: sound, note }, t, 1.5);
+      });
+
+      // Set the last note for display (root note of chord)
+      if (notesArray.length > 0) {
+        setLastNote(notesArray[0]);
+      }
+    } catch (e) {
+      console.error('Strum error:', e);
+    }
+  }, [sound, initAudio]);
+
   const noteOn = useCallback((note) => {
     if (loading) return;
     if (!activeNotes.includes(note)) {
@@ -82,5 +106,6 @@ export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
     loading,
     noteOn,
     noteOff,
+    playStrum,
   };
 }

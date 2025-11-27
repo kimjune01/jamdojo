@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { useStrudelSound } from './useStrudelSound';
 import { SoundSelector, CodeDisplay } from './SoundSelector';
 import useClient from '@src/useClient.mjs';
@@ -6,12 +6,12 @@ import useClient from '@src/useClient.mjs';
 // Standard guitar tuning (low to high): E2, A2, D3, G3, B3, E4
 // Each fret adds a semitone
 const STRINGS = [
-  { open: 'E2', row: 'z', name: 'Low E' },   // 6th string (thickest)
-  { open: 'A2', row: 'a', name: 'A' },        // 5th string
-  { open: 'D3', row: 'q', name: 'D' },        // 4th string
-  { open: 'G3', row: 'Z', name: 'G' },        // 3rd string (shift)
-  { open: 'B3', row: 'A', name: 'B' },        // 2nd string (shift)
-  { open: 'E4', row: 'Q', name: 'High E' },   // 1st string (thinnest, shift)
+  { open: 'E2', name: 'Low E' },   // 6th string (thickest)
+  { open: 'A2', name: 'A' },        // 5th string
+  { open: 'D3', name: 'D' },        // 4th string
+  { open: 'G3', name: 'G' },        // 3rd string
+  { open: 'B3', name: 'B' },        // 2nd string
+  { open: 'E4', name: 'High E' },   // 1st string (thinnest)
 ];
 
 // Note names for calculating frets
@@ -37,34 +37,12 @@ const getNoteAtFret = (openNote, fret) => {
   return semitoneToNote(openSemitone + fret);
 };
 
-// Keyboard rows for frets (0-8 frets)
-const FRET_KEYS = {
-  'z': ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.'],
-  'a': ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-  'q': ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o'],
-  'Z': ['Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>'],
-  'A': ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-  'Q': ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O'],
-};
-
-// Build complete keyMap
-const buildKeyMap = () => {
-  const map = {};
-  STRINGS.forEach(({ open, row }) => {
-    const keys = FRET_KEYS[row];
-    if (keys) {
-      keys.forEach((key, fret) => {
-        map[key] = getNoteAtFret(open, fret);
-      });
-    }
-  });
-  return map;
-};
-
-const keyMap = buildKeyMap();
+const NUM_FRETS = 8;
 
 // Get all notes for preloading
-const ALL_NOTES = [...new Set(Object.values(keyMap))];
+const ALL_NOTES = STRINGS.flatMap(({ open }) =>
+  Array.from({ length: NUM_FRETS + 1 }, (_, fret) => getNoteAtFret(open, fret))
+);
 
 export function Guitar({ defaultSound = 'gm_acoustic_guitar_nylon' }) {
   const {
@@ -77,46 +55,10 @@ export function Guitar({ defaultSound = 'gm_acoustic_guitar_nylon' }) {
     noteOff,
   } = useStrudelSound({ defaultSound, notes: ALL_NOTES });
 
-  const heldKeys = useRef(new Set());
-
-  // Keyboard handlers - need to handle shift for uppercase
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.repeat) return;
-
-      // Get the actual key with shift consideration
-      let key = e.key;
-
-      if (keyMap[key] && !heldKeys.current.has(key)) {
-        heldKeys.current.add(key);
-        noteOn(keyMap[key]);
-      }
-    };
-
-    const handleKeyUp = (e) => {
-      let key = e.key;
-
-      if (keyMap[key]) {
-        heldKeys.current.delete(key);
-        noteOff(keyMap[key]);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [noteOn, noteOff]);
-
   const client = useClient();
   if (!client) {
     return <div>Loading guitar...</div>;
   }
-
-  const NUM_FRETS = 8;
 
   return (
     <div className="flex flex-col gap-4">
@@ -139,53 +81,46 @@ export function Guitar({ defaultSound = 'gm_acoustic_guitar_nylon' }) {
           ))}
 
           {/* Strings - reversed so high E is on top visually */}
-          {[...STRINGS].reverse().map(({ open, row, name }) => {
-            const keys = FRET_KEYS[row]?.slice(0, NUM_FRETS + 1) || [];
-            const isShiftRow = row === row.toUpperCase();
-
+          {[...STRINGS].reverse().map(({ open, name }, stringIndex) => {
             return (
-              <React.Fragment key={row}>
+              <React.Fragment key={name}>
                 {/* String name */}
                 <div className="text-right pr-2 text-sm font-mono text-amber-200 flex items-center justify-end">
-                  {name} {isShiftRow && <span className="text-xs ml-1">(⇧)</span>}
+                  {name}
                 </div>
 
                 {/* Frets */}
-                {keys.map((key, fret) => {
+                {Array.from({ length: NUM_FRETS + 1 }, (_, fret) => {
                   const note = getNoteAtFret(open, fret);
                   const isActive = activeNotes.includes(note);
-                  const hasKey = key !== '';
 
                   return (
                     <button
-                      key={`${row}-${fret}`}
-                      onMouseDown={() => hasKey && noteOn(note)}
-                      onMouseUp={() => hasKey && noteOff(note)}
-                      onMouseLeave={() => hasKey && noteOff(note)}
-                      disabled={!hasKey}
+                      key={`${name}-${fret}`}
+                      onMouseDown={() => noteOn(note)}
+                      onMouseUp={() => noteOff(note)}
+                      onMouseLeave={() => noteOff(note)}
                       className={`
                         h-8
                         border-r-2 border-amber-950
                         ${fret === 0 ? 'border-l-4 border-l-amber-950' : ''}
-                        ${!hasKey
-                          ? 'bg-amber-800 cursor-default'
-                          : isActive
-                            ? 'bg-cyan-400 z-10'
-                            : fret === 0
-                              ? 'bg-amber-100 hover:bg-amber-200'
-                              : 'bg-amber-700 hover:bg-amber-600'
+                        ${isActive
+                          ? 'bg-cyan-400 z-10'
+                          : fret === 0
+                            ? 'bg-amber-100 hover:bg-amber-200'
+                            : 'bg-amber-700 hover:bg-amber-600'
                         }
                         transition-all duration-75
-                        ${hasKey ? 'cursor-pointer' : ''}
+                        cursor-pointer
                         relative
                       `}
                     >
                       {/* String line */}
                       <div className={`absolute top-1/2 left-0 right-0 h-0.5 ${
                         isActive ? 'bg-cyan-600' :
-                        STRINGS.indexOf(STRINGS.find(s => s.row === row)) < 3
-                          ? 'bg-amber-300'
-                          : 'bg-amber-200'
+                        stringIndex < 3
+                          ? 'bg-amber-200'
+                          : 'bg-amber-300'
                       }`} />
 
                       {/* Active note indicator */}
@@ -197,13 +132,6 @@ export function Guitar({ defaultSound = 'gm_acoustic_guitar_nylon' }) {
                       {isActive && (
                         <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xs font-bold text-white z-10">
                           {note.replace(/[0-9]/g, '')}
-                        </span>
-                      )}
-
-                      {/* Key label */}
-                      {hasKey && (
-                        <span className={`absolute bottom-0 right-0.5 text-xs font-mono ${isActive ? 'text-cyan-900' : 'text-amber-900 opacity-50'}`}>
-                          {key}
                         </span>
                       )}
 
@@ -221,12 +149,6 @@ export function Guitar({ defaultSound = 'gm_acoustic_guitar_nylon' }) {
       </div>
 
       <CodeDisplay sound={sound} lastNote={lastNote} />
-
-      <div className="text-sm text-gray-400 font-mono space-y-1">
-        <p><b>Lower strings (no shift):</b> Z-row = Low E, A-row = A, Q-row = D</p>
-        <p><b>Higher strings (with Shift):</b> Z-row = G, A-row = B, Q-row = High E</p>
-        <p>Keys across each row = frets (0-12)</p>
-      </div>
     </div>
   );
 }
