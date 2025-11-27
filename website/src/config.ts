@@ -105,6 +105,16 @@ export const ACTIVITIES: SidebarSection[] = [
     ],
   },
   {
+    title: 'Genre Studies',
+    icon: '🎸',
+    items: [
+      { text: 'Harmony', link: 'learn/harmony', icon: '🎶', description: 'Learn chords, voicings, and jazz harmony' },
+      { text: 'Rock & Pop', link: 'learn/rock-pop', icon: '🎤', description: 'Classic rock patterns and pop production' },
+      { text: 'Electronic Dance Music', link: 'learn/edm', icon: '🎧', description: 'House, techno, trance, and more' },
+      { text: 'Metal', link: 'learn/metal', icon: '🤘', description: 'Heavy riffs, blast beats, and power' },
+    ],
+  },
+  {
     title: 'More Topics',
     icon: '📚',
     items: [

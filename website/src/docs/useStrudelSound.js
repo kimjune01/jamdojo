@@ -64,16 +64,19 @@ export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
   // Play multiple notes with staggered timing (for strumming)
   // direction: 'down' plays low to high, 'up' plays high to low
   // strumSpeed: milliseconds between each note (default 20ms)
-  const playStrum = useCallback(async (notesArray, direction = 'down', strumSpeed = 20) => {
+  // velocity: 0-1 value controlling gain (default 0.8)
+  const playStrum = useCallback(async (notesArray, direction = 'down', strumSpeed = 20, velocity = 0.8) => {
     await initAudio();
     try {
       const ac = getAudioContext();
       const baseTime = ac.currentTime + 0.01;
       const orderedNotes = direction === 'up' ? [...notesArray].reverse() : notesArray;
+      // Clamp velocity between 0.3 and 1.0 for audible range
+      const gain = Math.max(0.3, Math.min(1.0, velocity));
 
       orderedNotes.forEach((note, i) => {
         const t = baseTime + (i * strumSpeed / 1000);
-        superdough({ s: sound, note }, t, 1.5);
+        superdough({ s: sound, note, gain }, t, 1.5);
       });
 
       // Set the last note for display (root note of chord)

@@ -1,6 +1,7 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useStrudelSound } from './useStrudelSound';
 import { SoundSelector, CodeDisplay } from './SoundSelector';
+import { StrumZone } from './StrumZone';
 import useClient from '@src/useClient.mjs';
 
 // Common guitar chord voicings (low E to high E, null = muted string)
@@ -82,77 +83,8 @@ const CHORD_CATEGORIES = [
   { name: 'Min7', chords: ['Am7', 'Bm7', 'Dm7', 'Em7', 'Gm7'] },
 ];
 
-function StrumZone({ chord, notes, onStrum, isActive }) {
-  const zoneRef = useRef(null);
-  const strumState = useRef({
-    isActive: false,
-    centerX: 0,
-    centerY: 0,
-    lastAngle: null, // Track angle in radians from center
-    lastDirection: null,
-  });
-
-  const STRUM_THRESHOLD = 15; // pixels from center needed to trigger strum
-
-  // Get direction based on angle from center (in radians)
-  // Divides circle into 4 quadrants: up, down, left, right
-  const getDirectionFromAngle = (angle) => {
-    // angle is in radians, 0 = right, PI/2 = down, PI = left, -PI/2 = up
-    const deg = angle * (180 / Math.PI);
-    if (deg >= -45 && deg < 45) return 'right';
-    if (deg >= 45 && deg < 135) return 'down';
-    if (deg >= -135 && deg < -45) return 'up';
-    return 'left';
-  };
-
-  const handlePointerDown = (e) => {
-    if (!zoneRef.current) return;
-    zoneRef.current.setPointerCapture(e.pointerId);
-
-    // Get center of the element
-    const rect = zoneRef.current.getBoundingClientRect();
-    strumState.current = {
-      isActive: true,
-      centerX: rect.left + rect.width / 2,
-      centerY: rect.top + rect.height / 2,
-      lastAngle: null,
-      lastDirection: null,
-    };
-  };
-
-  const handlePointerMove = (e) => {
-    if (!strumState.current.isActive) return;
-
-    const { centerX, centerY } = strumState.current;
-    const deltaX = e.clientX - centerX;
-    const deltaY = e.clientY - centerY;
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-    if (distance > STRUM_THRESHOLD) {
-      const angle = Math.atan2(deltaY, deltaX);
-      const direction = getDirectionFromAngle(angle);
-
-      // Trigger strum if direction changed
-      if (strumState.current.lastDirection !== direction) {
-        // Map left/right to up/down for the audio (left = up strum, right = down strum)
-        const audioDirection = (direction === 'up' || direction === 'left') ? 'up' : 'down';
-        onStrum(notes, audioDirection);
-        strumState.current.lastDirection = direction;
-        strumState.current.lastAngle = angle;
-      }
-    }
-  };
-
-  const handlePointerUp = (e) => {
-    if (zoneRef.current) {
-      zoneRef.current.releasePointerCapture(e.pointerId);
-    }
-    strumState.current.isActive = false;
-    strumState.current.lastDirection = null;
-    strumState.current.lastAngle = null;
-  };
-
-  // Get notes for display (showing string positions)
+// Chord button with string diagram
+function ChordButton({ chord, notes, onStrum, isActive }) {
   const stringNames = ['E', 'A', 'D', 'G', 'B', 'e'];
   const noteDisplay = notes.map((note, i) => ({
     string: stringNames[i],
@@ -161,14 +93,11 @@ function StrumZone({ chord, notes, onStrum, isActive }) {
   }));
 
   return (
-    <div
-      ref={zoneRef}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
+    <StrumZone
+      notes={notes}
+      onStrum={onStrum}
+      isActive={isActive}
       className={`
-        select-none touch-none cursor-grab active:cursor-grabbing
         flex flex-col items-center justify-center
         rounded-xl p-4 min-w-[80px] min-h-[120px]
         transition-all duration-150
@@ -201,7 +130,7 @@ function StrumZone({ chord, notes, onStrum, isActive }) {
       <div className={`mt-2 text-xs ${isActive ? 'text-cyan-200' : 'text-gray-500'}`}>
         drag to strum
       </div>
-    </div>
+    </StrumZone>
   );
 }
 
@@ -223,10 +152,10 @@ export function GuitarStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }) {
     ? chordFilter.trim().split(/\s+/).filter(c => CHORD_VOICINGS[c])
     : null;
 
-  const handleStrum = useCallback((notes, direction) => {
+  const handleStrum = useCallback((notes, direction, velocity = 0.8) => {
     // Filter out muted strings
     const playableNotes = notes.filter(n => n !== null);
-    playStrum(playableNotes, direction);
+    playStrum(playableNotes, direction, 20, velocity);
 
     // Find chord name for display
     const chordName = Object.entries(CHORD_VOICINGS).find(
@@ -274,7 +203,7 @@ export function GuitarStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }) {
         {filteredChords ? (
           <div className="grid grid-cols-4 gap-2">
             {filteredChords.map((chord, index) => (
-              <StrumZone
+              <ChordButton
                 key={`${chord}-${index}`}
                 chord={chord}
                 notes={CHORD_VOICINGS[chord]}
@@ -289,7 +218,7 @@ export function GuitarStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }) {
               <h3 className="text-sm font-semibold text-gray-400 mb-2">{category.name}</h3>
               <div className="grid grid-cols-4 gap-2">
                 {category.chords.map(chord => (
-                  <StrumZone
+                  <ChordButton
                     key={chord}
                     chord={chord}
                     notes={CHORD_VOICINGS[chord]}

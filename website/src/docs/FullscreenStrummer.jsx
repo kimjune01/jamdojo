@@ -1,5 +1,6 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useStrudelSound } from './useStrudelSound';
+import { StrumZone } from './StrumZone';
 import useClient from '@src/useClient.mjs';
 import { getAudioContext, superdough } from '@strudel/webaudio';
 
@@ -71,75 +72,14 @@ const ALL_CHORD_NOTES = [...new Set(
     .filter(n => n !== null)
 )];
 
-function FullscreenStrumZone({ chord, notes, onStrum, isActive }) {
-  const zoneRef = useRef(null);
-  const strumState = useRef({
-    isActive: false,
-    centerX: 0,
-    centerY: 0,
-    lastDirection: null,
-  });
-
-  const STRUM_THRESHOLD = 15;
-
-  const getDirectionFromAngle = (angle) => {
-    const deg = angle * (180 / Math.PI);
-    if (deg >= -45 && deg < 45) return 'right';
-    if (deg >= 45 && deg < 135) return 'down';
-    if (deg >= -135 && deg < -45) return 'up';
-    return 'left';
-  };
-
-  const handlePointerDown = (e) => {
-    if (!zoneRef.current) return;
-    zoneRef.current.setPointerCapture(e.pointerId);
-
-    const rect = zoneRef.current.getBoundingClientRect();
-    strumState.current = {
-      isActive: true,
-      centerX: rect.left + rect.width / 2,
-      centerY: rect.top + rect.height / 2,
-      lastDirection: null,
-    };
-  };
-
-  const handlePointerMove = (e) => {
-    if (!strumState.current.isActive) return;
-
-    const { centerX, centerY } = strumState.current;
-    const deltaX = e.clientX - centerX;
-    const deltaY = e.clientY - centerY;
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-    if (distance > STRUM_THRESHOLD) {
-      const angle = Math.atan2(deltaY, deltaX);
-      const direction = getDirectionFromAngle(angle);
-
-      if (strumState.current.lastDirection !== direction) {
-        const audioDirection = (direction === 'up' || direction === 'left') ? 'up' : 'down';
-        onStrum(notes, audioDirection);
-        strumState.current.lastDirection = direction;
-      }
-    }
-  };
-
-  const handlePointerUp = (e) => {
-    if (zoneRef.current) {
-      zoneRef.current.releasePointerCapture(e.pointerId);
-    }
-    strumState.current.isActive = false;
-    strumState.current.lastDirection = null;
-  };
-
+// Fullscreen chord button
+function FullscreenChordButton({ chord, notes, onStrum, isActive }) {
   return (
-    <div
-      ref={zoneRef}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
+    <StrumZone
+      notes={notes}
+      onStrum={onStrum}
+      isActive={isActive}
       className={`
-        select-none touch-none cursor-grab active:cursor-grabbing
         flex flex-col items-center justify-center
         rounded-2xl flex-1 min-h-0
         transition-all duration-150
@@ -152,7 +92,7 @@ function FullscreenStrumZone({ chord, notes, onStrum, isActive }) {
       <span className={`text-4xl md:text-6xl font-bold ${isActive ? 'text-white' : 'text-gray-100'}`}>
         {chord}
       </span>
-    </div>
+    </StrumZone>
   );
 }
 
@@ -190,9 +130,9 @@ export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }
     setAudioStarted(true);
   };
 
-  const handleStrum = useCallback((notes, direction) => {
+  const handleStrum = useCallback((notes, direction, velocity = 0.8) => {
     const playableNotes = notes.filter(n => n !== null);
-    playStrum(playableNotes, direction);
+    playStrum(playableNotes, direction, 20, velocity);
 
     const chordName = Object.entries(CHORD_VOICINGS).find(
       ([, voicing]) => JSON.stringify(voicing) === JSON.stringify(notes)
@@ -269,7 +209,7 @@ export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }
       {/* Chord grid */}
       <div className={`flex-1 grid ${getGridClass()} gap-3 p-3`}>
         {chords.map((chord, index) => (
-          <FullscreenStrumZone
+          <FullscreenChordButton
             key={`${chord}-${index}`}
             chord={chord}
             notes={CHORD_VOICINGS[chord]}
