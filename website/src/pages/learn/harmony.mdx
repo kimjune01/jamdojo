@@ -62,6 +62,252 @@ Notation: `C` = C major, `Cm` = C minor. You can also write `C-` for minor.
 
 ---
 
+## Pop & Rock Progressions
+
+Before diving into jazz, let's explore the chord progressions that power most popular music. These use simple major and minor chords—no fancy extensions needed.
+
+### The I-V-vi-IV: The Most Popular Progression
+
+This four-chord progression appears in hundreds of hit songs:
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Songs using I-V-vi-IV:**
+- "Let It Be" — The Beatles
+- "No Woman No Cry" — Bob Marley
+- "With or Without You" — U2
+- "Someone Like You" — Adele
+- "Demons" — Imagine Dragons
+
+Try it in different keys:
+
+**In G:**
+
+<MiniRepl client:idle tune={`chord("<G D Em C>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**In D:**
+
+<MiniRepl client:idle tune={`chord("<D A Bm G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+---
+
+### The I-vi-IV-V: The 50s Progression
+
+This "doo-wop" progression defined 1950s rock and roll:
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Songs using I-vi-IV-V:**
+- "Stand By Me" — Ben E. King
+- "Every Breath You Take" — The Police
+- "Earth Angel" — The Penguins
+
+---
+
+### The vi-IV-I-V: The Emotional Minor Start
+
+Starting on the minor chord creates a more emotional, melancholic feel:
+
+<MiniRepl client:idle tune={`chord("<Am F C G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Songs using vi-IV-I-V:**
+- "Despacito" — Luis Fonsi
+- "Africa" — Toto
+- "Grenade" — Bruno Mars
+
+---
+
+### The I-IV: The Two-Chord Wonder
+
+Sometimes two chords are all you need:
+
+<MiniRepl client:idle tune={`chord("<C F C F>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Songs using mostly I-IV:**
+- "Achy Breaky Heart" — Billy Ray Cyrus
+- "Jamming" — Bob Marley
+- Many folk and country songs
+
+---
+
+### Adding Bass to Pop Progressions
+
+Make your progressions fuller by adding a bass line with `rootNotes()`:
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").layer(
+  x => x.voicing(),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600)
+).room(.5)`} punchcard punchcardLabels={false} />
+
+**With a simple drum beat:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<C G Am F>").voicing().gain(0.6),
+  chord("<C G Am F>").rootNotes(2).note().s('sawtooth').lpf(600),
+  sound("bd bd bd bd"),
+  sound("~ sd ~ sd")
+).room(.4).cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+### Power Chords: Rock Guitar Sound
+
+In rock music, "power chords" use just the root and fifth—no third. This creates an ambiguous sound that works with distortion:
+
+<MiniRepl client:idle tune={`chord("<C5 G5 A5 F5>").voicing()
+  .s('sawtooth')
+  .distort(2)
+  .lpf(1500)
+  .room(.3)`} punchcard punchcardLabels={false} />
+
+**Classic rock riff:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<E5 E5 A5 E5 E5 B5 A5 E5>").voicing()
+    .s('sawtooth')
+    .distort(2.5)
+    .lpf(1200)
+    .gain(0.6),
+  sound("bd ~ bd ~ bd ~ bd bd"),
+  sound("~ ~ sd ~ ~ ~ sd ~")
+).room(.3).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+### Strumming Patterns
+
+Add rhythm to your chords with `.struct()`:
+
+**Basic strum (all beats):**
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing()
+  .struct("x x x x")
+  .room(.5)`} punchcard punchcardLabels={false} />
+
+**Down-up strum pattern:**
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing()
+  .struct("x ~ [x x] ~")
+  .room(.5)`} punchcard punchcardLabels={false} />
+
+**Syncopated rhythm:**
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing()
+  .struct("x ~ x ~ ~ x ~ x")
+  .room(.5)`} punchcard punchcardLabels={false} />
+
+---
+
+### Complete Pop Song Structure
+
+Here's a full pop arrangement with drums, bass, and chords:
+
+<MiniRepl client:idle tune={`stack(
+  // Chords
+  chord("<C G Am F>").voicing()
+    .struct("[~ x] [~ x]")
+    .gain(0.5),
+
+  // Bass
+  chord("<C G Am F>").rootNotes(2).note()
+    .s('sawtooth')
+    .lpf(500)
+    .gain(0.6),
+
+  // Drums
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd"),
+  sound("hh*8").gain(0.4)
+).room(.4).cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+### Acoustic Ballad Style
+
+Softer, arpeggiated chords for ballads:
+
+<MiniRepl client:idle tune={`n("0 1 2 1 0 1 2 1").chord("<C G Am F>").voicing()
+  .room(.5)
+  .cpm(25)`} punchcard punchcardLabels={false} />
+
+**With bass:**
+
+<MiniRepl client:idle tune={`stack(
+  n("0 1 2 1 0 1 2 1").chord("<C G Am F>").voicing().gain(0.5),
+  chord("<C G Am F>").rootNotes(2).note().s('sawtooth').lpf(400)
+).room(.5).cpm(25)`} punchcard punchcardLabels={false} />
+
+---
+
+### Minor Key Pop
+
+Many modern pop songs use minor keys for emotional depth:
+
+**Am-Em-F-G (minor progression):**
+
+<MiniRepl client:idle tune={`chord("<Am Em F G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Cm-Ab-Eb-Bb (darker feel):**
+
+<MiniRepl client:idle tune={`chord("<Cm Ab Eb Bb>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**With full arrangement:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<Am Em F G>").voicing().struct("[~ x] [~ x]").gain(0.5),
+  chord("<Am Em F G>").rootNotes(2).note().s('sawtooth').lpf(500),
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd"),
+  sound("hh").euclid(8,8).gain(0.3)
+).room(.4).cpm(28)`} punchcard punchcardLabels={false} />
+
+---
+
+### Country & Folk Progressions
+
+Country music often uses the I-IV-V progression:
+
+<MiniRepl client:idle tune={`chord("<G G C D>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Country train beat:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<G G C D>").voicing().struct("x ~ x ~").gain(0.5),
+  chord("<G G C D>").rootNotes(2).note().s('sawtooth').lpf(500),
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd"),
+  sound("hh").euclid(8,8).gain(0.4)
+).room(.4).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+### Reggae: Offbeat Chords
+
+Reggae emphasizes the offbeats (the "and" of each beat):
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing()
+  .struct("~ x ~ x ~ x ~ x")
+  .room(.5)
+  .cpm(22)`} punchcard punchcardLabels={false} />
+
+**With reggae drums:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<C G Am F>").voicing().struct("~ x ~ x ~ x ~ x").gain(0.5),
+  chord("<C G Am F>").rootNotes(2).note().s('sawtooth').lpf(500),
+  sound("bd ~ ~ bd ~ ~ bd ~"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").gain(0.8),
+  sound("hh").euclid(8,8).gain(0.3)
+).room(.4).cpm(22)`} punchcard punchcardLabels={false} />
+
+---
+
+## Moving to Jazz: Adding the Seventh
+
+Now that you're comfortable with basic progressions, let's add more color. Jazz adds a **seventh note** to chords for richness.
+
+---
+
 ## Seventh Chords: The Jazz Sound
 
 Jazz rarely uses plain major/minor chords. It adds a **seventh note** for richness:
