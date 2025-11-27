@@ -118,16 +118,210 @@ Create a four-part rhythm using euclidean patterns. Fill in the numbers:
 - Hi-hat: denser works well—`5, 8` or `7, 8`
 - Rim: odd numbers create interest—`3, 16` or `5, 12`
 
+## Genre Explorations
+
+### Jazz Swing Feel (130 BPM)
+
+Jazz often uses uneven subdivisions. Try this swing-inspired pattern:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(2, 8),
+  sound("hh").euclidRot(5, 12, 1),
+  sound("rim").euclidRot(3, 8, 2),
+  sound("sd").euclidRot(2, 8, 4)
+).cpm(32.5)`} punchcard punchcardLabels={false} />
+
+The 12-step hi-hat creates a triplet feel against the 8-step kick.
+
+### Blues Shuffle (88 BPM)
+
+Blues shuffles have a distinctive loping feel. The 3-over-4 pattern captures this:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 16),
+  sound("sd").euclidRot(2, 8, 4),
+  sound("hh").euclid(6, 12),
+  sound("rim").euclidRot(3, 16, 2)
+).cpm(22)`} punchcard punchcardLabels={false} />
+
+### Afrobeat (110 BPM)
+
+Afrobeat layers multiple interlocking patterns. Each instrument has its own euclidean cycle:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 16),
+  sound("sd").euclidRot(3, 8, 4),
+  sound("hh").euclid(9, 16),
+  sound("metal").euclidRot(7, 12, 3),
+  sound("rim").euclidRot(5, 16, 1)
+).cpm(27.5)`} punchcard punchcardLabels={false} />
+
+### Reggae One Drop (75 BPM)
+
+Reggae emphasizes the third beat. Use rotation to shift the snare:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(2, 8, 2),
+  sound("sd").euclidRot(1, 4, 2),
+  sound("hh").euclid(8, 8),
+  sound("rim").euclidRot(3, 16, 4)
+).cpm(18.75)`} punchcard punchcardLabels={false} />
+
+### Bossa Nova (140 BPM)
+
+Bossa nova uses the classic 3-3-2 pattern. Layer it with subtle percussion:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(3, 8),
+  sound("rim").euclidRot(5, 16, 2),
+  sound("hh").euclidRot(7, 16, 1),
+  sound("sd").euclidRot(2, 8, 3)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+### Drum & Bass (174 BPM)
+
+Fast, syncopated patterns with offbeat snares:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 16, 0),
+  sound("sd").euclidRot(2, 16, 6),
+  sound("hh").euclid(11, 16),
+  sound("rim").euclidRot(5, 16, 3)
+).cpm(43.5)`} punchcard punchcardLabels={false} />
+
+### House Four-on-the-Floor (124 BPM)
+
+Even house music benefits from euclidean accents:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 4),
+  sound("sd").euclidRot(2, 8, 4),
+  sound("hh").euclid(8, 8),
+  sound("oh").euclidRot(2, 8, 2)
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+### Funk Breakbeat (105 BPM)
+
+Funk uses dense, syncopated patterns with ghost notes:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(5, 16, 0),
+  sound("sd").euclidRot(4, 16, 4),
+  sound("hh").euclid(13, 16),
+  sound("rim").euclidRot(7, 16, 2)
+).cpm(26.25)`} punchcard punchcardLabels={false} />
+
+### 80s Pop (118 BPM) — LinnDrum
+
+The LinnDrum defined the sound of 80s pop. Clean, punchy, and precise:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("LinnDrum").euclid(4, 8),
+  sound("sd").bank("LinnDrum").euclidRot(2, 8, 4),
+  sound("hh").bank("LinnDrum").euclid(8, 8),
+  sound("cp").bank("LinnDrum").euclidRot(2, 16, 8)
+).cpm(29.5)`} punchcard punchcardLabels={false} />
+
+### Classic House (124 BPM) — TR-909
+
+The Roland TR-909 is the sound of house music. Four-on-the-floor with open hats:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("sd").bank("RolandTR909").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR909").euclid(8, 8),
+  sound("oh").bank("RolandTR909").euclidRot(2, 8, 2),
+  sound("cp").bank("RolandTR909").euclidRot(1, 4, 2)
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+### Hip Hop (90 BPM) — TR-808
+
+The TR-808's deep kick and snappy snare define hip hop:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclidRot(3, 16, 0),
+  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR808").euclid(6, 8),
+  sound("oh").bank("RolandTR808").euclidRot(2, 16, 6),
+  sound("cp").bank("RolandTR808").euclidRot(2, 16, 4)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Electro (125 BPM) — TR-808
+
+Electro uses the 808 with more mechanical, robotic patterns:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclid(4, 16),
+  sound("sd").bank("RolandTR808").euclidRot(4, 16, 4),
+  sound("hh").bank("RolandTR808").euclid(12, 16),
+  sound("cp").bank("RolandTR808").euclidRot(2, 8, 4),
+  sound("cb").bank("RolandTR808").euclidRot(3, 16, 2)
+).cpm(31.25)`} punchcard punchcardLabels={false} />
+
+### Techno (138 BPM) — TR-909
+
+Hard, driving techno with relentless energy:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("sd").bank("RolandTR909").euclidRot(2, 16, 8),
+  sound("hh").bank("RolandTR909").euclid(16, 16),
+  sound("oh").bank("RolandTR909").euclidRot(4, 16, 2),
+  sound("rim").bank("RolandTR909").euclidRot(5, 16, 1)
+).cpm(34.5)`} punchcard punchcardLabels={false} />
+
+### New Wave (120 BPM) — TR-707
+
+The TR-707 brought digital crispness to 80s new wave:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR707").euclid(4, 8),
+  sound("sd").bank("RolandTR707").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR707").euclid(8, 8),
+  sound("rim").bank("RolandTR707").euclidRot(3, 16, 2),
+  sound("cb").bank("RolandTR707").euclidRot(2, 16, 6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+### Lo-Fi (72 BPM) — TR-606
+
+The TR-606's gritty sound is perfect for lo-fi beats:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR606").euclidRot(3, 8, 0),
+  sound("sd").bank("RolandTR606").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR606").euclid(5, 8),
+  sound("oh").bank("RolandTR606").euclidRot(2, 8, 3)
+).cpm(18)`} punchcard punchcardLabels={false} />
+
+### Modern Pop (100 BPM) — Mixed
+
+Modern pop often layers different drum machines:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclid(3, 8),
+  sound("sd").bank("RolandTR909").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR909").euclid(8, 8),
+  sound("cp").bank("LinnDrum").euclidRot(2, 16, 8),
+  sound("rim").bank("RolandTR707").euclidRot(3, 16, 2)
+).cpm(25)`} punchcard punchcardLabels={false} />
+
+### Trap (140 BPM half-time) — TR-808
+
+Trap uses the 808 with rolling hi-hats and sparse kicks:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclidRot(2, 16, 0),
+  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR808").euclid(14, 16),
+  sound("oh").bank("RolandTR808").euclidRot(3, 16, 4)
+).cpm(17.5)`} punchcard punchcardLabels={false} />
+
 ## What You Learned
 
 - `euclid(beats, steps)` distributes beats evenly
 - `euclidRot(beats, steps, rotation)` adds rotation
+- `.cpm(bpm/4)` sets the tempo (cycles per minute)
+- `.bank("DrumMachine")` selects classic drum machine sounds
 - Classic rhythms (tresillo, clave, bell pattern) are euclidean
 - Layering creates polyrhythms
-- Parameters can be patterned for variation
-
-## Next Steps
-
-- [Mini-Notation](/learn/mini-notation) — The full pattern language
-- [Effects](/learn/effects) — Add reverb, delay, filters
-- [Samples](/learn/samples) — Use different sounds
+- Different genres emerge from specific BPM and pattern combinations
