@@ -106,6 +106,7 @@ The `[x x]` plays two chords quickly on beat 3—creating a push.
 
 The `@3` makes each chord last 3 beats, with one quick change.
 
+
 **Try it:** Create a reggae feel by putting chords on the offbeats: `"~ x ~ x"`. How does it change the energy?
 
 <MiniRepl client:idle tune={`chord("<C F G C>").struct("~ x ~ x").voicing().s("piano")`} punchcard punchcardLabels={false} />
@@ -160,6 +161,7 @@ C → D → E → F moves by steps. It feels flowing, connected.
 
 C → F is a 4th leap. Strong, decisive movement.
 
+
 **Large leaps (dramatic):**
 
 <MiniRepl client:idle tune={`chord("<C F# C F#>").voicing().s("piano")`} punchcard punchcardLabels={false} />
@@ -167,6 +169,7 @@ C → F is a 4th leap. Strong, decisive movement.
 C → F# is a tritone (half the octave). Maximum tension, very dramatic.
 
 **Try it:** Create a progression that moves in small steps, then add one big leap for emphasis. Notice how the leap stands out.
+
 
 ---
 
@@ -176,9 +179,11 @@ You can keep chords changing while the bass stays still—or vice versa:
 
 **Changing chords, static bass:**
 
-<MiniRepl client:idle tune={`chord("<C C/E C/G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`chord("<C Am F G>").voicing().stack(
+  "c2".note().s('sawtooth').lpf(600)
+).s("piano")`} punchcard punchcardLabels={false} />
 
-The chords change color, but all share the C bass note. Creates cohesion.
+Chords change, but bass stays on C. Creates a pedal point effect.
 
 **Static chords, moving bass:**
 
@@ -211,6 +216,9 @@ A 4-bar phrase can tell a story: stable → moving → tension → resolution.
 <MiniRepl client:idle tune={`chord("<C G C F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 C → G feels like a question. C → F feels like an answer. Pairing them creates conversation.
+
+
+
 
 ---
 
@@ -423,6 +431,9 @@ Top voices move down (C → G), bass moves up. Creates balance.
 <MiniRepl client:idle tune={`chord("<C^7 Eb^7 Ab^7 Db^7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 Jumpy! Distant roots make voicings leap.
+
+
+
 
 **Step 2: Add anchor (smooth it out):**
 
@@ -844,7 +855,9 @@ Ddim creates passing motion between two C chords.
 
 <MiniRepl client:idle tune={`chord("<C G Am F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
+
 **Step 2: Identify which chords to change (one at a time!):**
+
 
 Let's change G to G7 (add tension):
 
@@ -1670,4 +1683,5 @@ Ready to deepen your skills?
 The best way to improve is to compose every day. Start small—a 4-bar loop. Experiment. Break rules. Let Strudel surprise you with generative ideas. Save what works, learn from what doesn't.
 
 Happy composing!
+
 
