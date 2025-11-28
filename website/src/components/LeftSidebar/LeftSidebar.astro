@@ -13,44 +13,89 @@ const baseNoTrailing = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL
 
 const langCode = getLanguageFromURL(currentPage) || 'en';
 const sidebar = SIDEBAR[langCode];
+
+// Check if current page is in this section
+const checkSectionActive = (children: any[]) => {
+  return children.some((child) => currentPageMatch === child.link);
+};
 ---
 
 <nav aria-labelledby="grid-left" class="max-h-full overflow-auto pb-20 text-foreground">
   <ul>
     {
-      Object.entries(sidebar).map(([header, children]) => (
-        <li>
-          <div class="nav-group pb-4">
-            <h2>{header}</h2>
-            <ul>
-              {children.map((child) => {
-                const url = `${baseNoTrailing}/${child.link}${child.link.endsWith('/') ? '' : '/'}`;
-                return (
-                  <li class="">
-                    <a
-                      class={`pl-4 py-0.5 w-full hover:bg-lineHighlight block${
-                        currentPageMatch === child.link ? ' bg-lineHighlight' : ''
-                      }`}
-                      href={url}
-                      aria-current={currentPageMatch === child.link ? 'page' : false}
-                    >
-                      {child.text}
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </li>
-      ))
+      Object.entries(sidebar).map(([header, children], index) => {
+        const sectionId = `sidebar-section-${index}`;
+        const isActive = checkSectionActive(children);
+        return (
+          <li>
+            <div class="nav-group pb-2">
+              <button
+                class="accordion-header w-full text-left px-2 py-2 hover:bg-lineHighlight flex items-center justify-between group"
+                aria-expanded={isActive ? "true" : "false"}
+                aria-controls={sectionId}
+              >
+                <h2 class="font-semibold text-sm">{header}</h2>
+                <svg
+                  class="accordion-icon w-4 h-4 transition-transform"
+                  style={isActive ? "transform: rotate(90deg)" : ""}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              <ul id={sectionId} class="accordion-content" style={isActive ? "" : "display: none;"}>
+                {children.map((child) => {
+                  const url = `${baseNoTrailing}/${child.link}${child.link.endsWith('/') ? '' : '/'}`;
+                  return (
+                    <li class="">
+                      <a
+                        class={`pl-6 py-1 w-full hover:bg-lineHighlight block text-sm${
+                          currentPageMatch === child.link ? ' bg-lineHighlight font-medium' : ''
+                        }`}
+                        href={url}
+                        aria-current={currentPageMatch === child.link ? 'page' : false}
+                      >
+                        {child.text}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </li>
+        );
+      })
     }
   </ul>
 </nav>
 
 <script is:inline>
 window.addEventListener('DOMContentLoaded', () => {
+  // Setup accordion functionality
+  const accordionHeaders = document.querySelectorAll('.accordion-header');
+  accordionHeaders.forEach((header) => {
+    header.addEventListener('click', () => {
+      const content = header.nextElementSibling;
+      const icon = header.querySelector('.accordion-icon');
+      const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+      if (isExpanded) {
+        content.style.display = 'none';
+        header.setAttribute('aria-expanded', 'false');
+        icon.style.transform = 'rotate(0deg)';
+      } else {
+        content.style.display = 'block';
+        header.setAttribute('aria-expanded', 'true');
+        icon.style.transform = 'rotate(90deg)';
+      }
+    });
+  });
+
+  // Scroll to active item
   var target = document.querySelector('[aria-current="page"]');
-  const nav = document.querySelector('.nav-groups');
+  const nav = document.querySelector('nav[aria-labelledby="grid-left"]');
   if (nav && target && target.offsetTop > window.innerHeight - 100) {
     nav.scrollTop = target.offsetTop;
   }

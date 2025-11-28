@@ -1,0 +1,352 @@
+---
+title: Demoscene Music
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+The demoscene emerged from computer hobbyists who pushed hardware to its limits—creating music and visuals that fit in kilobytes, not megabytes. This guide covers chiptune, tracker music, and keygen styles.
+
+## The Sound of Limitations
+
+### What is Demoscene Music?
+
+Born in the 1980s, the demoscene grew from cracking groups who added custom intros to pirated software. These "cracktros" evolved into an art form—demos that showcased programming and audio skills within severe constraints: 3-4 audio channels, limited memory, and primitive sound chips.
+
+Famous groups like Future Crew, Fairlight, and TRSI created iconic soundtracks. The constraints bred creativity—if you only have 3 channels, you learn tricks to make them sound like more.
+
+### The Classic Waveforms
+
+Chip music uses simple waveforms. Each has a distinct character:
+
+**Square wave** - Bright and hollow, the NES and Game Boy sound:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").s("square")
+  .decay(0.1).sustain(0.3)`} punchcard punchcardLabels={false} />
+
+**Triangle wave** - Softer and rounder, used for bass on NES:
+
+<MiniRepl client:idle tune={`note("c3 c3 g3 c3").s("triangle")
+  .decay(0.2).sustain(0.5)`} punchcard punchcardLabels={false} />
+
+**Sawtooth wave** - Harsh and rich, the aggressive C64 lead:
+
+<MiniRepl client:idle tune={`note("c4 eb4 g4 c5").s("sawtooth")
+  .decay(0.1).sustain(0.4).lpf(2000)`} punchcard punchcardLabels={false} />
+
+## Chiptune Fundamentals
+
+### Arpeggios - The Demoscene Signature
+
+With only 3-4 channels, you can't play full chords. The solution? Arpeggios—cycling through chord notes so fast they blend together. This is THE defining technique of chip music:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5 g4 e4").fast(4)
+  .s("square").decay(0.05)`} punchcard punchcardLabels={false} />
+
+Minor arpeggio for darker moods:
+
+<MiniRepl client:idle tune={`note("a3 c4 e4 a4 e4 c4").fast(4)
+  .s("square").decay(0.05)`} punchcard punchcardLabels={false} />
+
+Seventh chord arpeggio for that jazzy chip feel:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 b4 g4 e4").fast(4)
+  .s("triangle").decay(0.04)`} punchcard punchcardLabels={false} />
+
+### The SID Sound (Commodore 64)
+
+The C64's SID chip had 3 voices, a resonant filter, and ring modulation. It became legendary for its warm, aggressive sound.
+
+Recreate the SID with filter sweeps:
+
+<MiniRepl client:idle tune={`note("c3 eb3 g3 c4 g3 eb3").fast(4)
+  .s("sawtooth")
+  .lpf(sine.range(400, 3000).fast(2))
+  .lpq(8)
+  .decay(0.08)`} punchcard punchcardLabels={false} />
+
+Classic SID bass with portamento:
+
+<MiniRepl client:idle tune={`note("c2 c2 eb2 g2")
+  .s("sawtooth")
+  .lpf(800).lpq(5)
+  .decay(0.15).sustain(0.3)
+  .slide(1)`} punchcard punchcardLabels={false} />
+
+### Chiptune Drums
+
+No drum samples? No problem. Use noise and pitched oscillators:
+
+**Hi-hat** - Short noise burst with high-pass:
+
+<MiniRepl client:idle tune={`sound("white").decay(0.02)
+  .hpf(8000).gain(0.4)
+  .struct("x*8")`} punchcard punchcardLabels={false} />
+
+**Snare** - Noise with lowpass:
+
+<MiniRepl client:idle tune={`sound("white").decay(0.08)
+  .lpf(4000).gain(0.6)
+  .struct("~ x")`} punchcard punchcardLabels={false} />
+
+**Kick** - Pitched sine wave sweep:
+
+<MiniRepl client:idle tune={`note("c1").s("sine")
+  .decay(0.1).gain(1.2)
+  .struct("x ~ x ~")`} punchcard punchcardLabels={false} />
+
+All together—minimal chip drums:
+
+<MiniRepl client:idle tune={`stack(
+  note("c1").s("sine").decay(0.1).gain(1),
+  sound("white").decay(0.07).struct("~ x").lpf(3500).gain(0.6),
+  sound("white").decay(0.02).struct("x*8").gain(0.3).hpf(7000)
+).cpm(65)`} punchcard punchcardLabels={false} />
+
+## Tracker Music (Amiga Era)
+
+### The MOD Format Legacy
+
+The Amiga's 4-channel sample playback launched tracker music. ProTracker, FastTracker II, and Scream Tracker let artists compose using samples arranged in vertical "patterns." Musicians like Purple Motion and Jogeir Liljedahl created MOD masterpieces.
+
+Trackers used short samples creatively—pitch-shifting sounds across octaves:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5 g4 e4 c4 e4")
+  .s("piano")
+  .decay(0.1).sustain(0.2)`} punchcard punchcardLabels={false} />
+
+### Tracker Effects
+
+**Vibrato** - Essential for expressive leads:
+
+<MiniRepl client:idle tune={`note("c4 ~ e4 ~ g4 ~ e4 ~")
+  .s("sawtooth")
+  .vib(4).vibmod(0.2)
+  .lpf(2500)
+  .decay(0.2).sustain(0.4)`} punchcard punchcardLabels={false} />
+
+**Portamento** - Sliding between notes:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .s("sawtooth")
+  .slide(2)
+  .lpf(2000)
+  .decay(0.15)`} punchcard punchcardLabels={false} />
+
+## Keygen & Cracktro Music
+
+### The Keygen Sound
+
+Keygen music is pure nostalgia—uplifting melodies at 150-180 BPM with bright synths and relentless arpeggios. It's designed to play in tiny executables while you wait for a serial number.
+
+Fast arpeggio chord progression:
+
+<MiniRepl client:idle tune={`note("<c4 e4 g4 c5> <f4 a4 c5 f5> <g4 b4 d5 g5> <e4 g4 b4 e5>")
+  .fast(4).s("square")
+  .decay(0.05).gain(0.5)
+  .cpm(75)`} punchcard punchcardLabels={false} />
+
+### Building a Keygen Track
+
+Layer the elements: arpeggio, bass, simple drums:
+
+<MiniRepl client:idle tune={`stack(
+  // Fast arpeggio chords
+  note("<c4 e4 g4 c5> <f4 a4 c5 f5> <g4 b4 d5 g5> <e4 g4 b4 e5>")
+    .fast(4).s("square").decay(0.05).gain(0.5),
+  // Punchy bass
+  note("<c2 f2 g2 e2>").s("sawtooth").lpf(800).decay(0.15),
+  // Simple drums
+  sound("bd").struct("x x x x"),
+  sound("white").decay(0.02).struct("x*8").gain(0.25).hpf(7000)
+).cpm(75)`} punchcard punchcardLabels={false} />
+
+### Cracktro Intro
+
+Classic cracktro sound—dramatic filter sweep:
+
+<MiniRepl client:idle tune={`note("c3 c3 c3 c3 eb3 eb3 g3 g3")
+  .s("sawtooth")
+  .lpf(sine.range(300, 4000).slow(4))
+  .lpq(10)
+  .distort(0.3)
+  .cpm(70)`} punchcard punchcardLabels={false} />
+
+## Sound Design Techniques
+
+### ZZFX Chip Sounds
+
+Strudel's ZZFX synth creates authentic retro sounds. The `z_` prefix gives you chip-style synthesis:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").s("z_square")
+  .decay(0.1)`} punchcard punchcardLabels={false} />
+
+<MiniRepl client:idle tune={`note("c3 eb3 g3 c4").s("z_sawtooth")
+  .decay(0.12)`} punchcard punchcardLabels={false} />
+
+### Bit Crushing
+
+Reduce bit depth for that crunchy lo-fi sound:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").s("z_sawtooth")
+  .zcrush(0.4)
+  .decay(0.1)`} punchcard punchcardLabels={false} />
+
+Extreme crush for harsh 8-bit grit:
+
+<MiniRepl client:idle tune={`note("c3 c3 eb3 g3").s("z_square")
+  .zcrush(0.7)
+  .decay(0.08)`} punchcard punchcardLabels={false} />
+
+### Filter Techniques
+
+Sweeping filters add movement and life:
+
+**Rising filter for buildups:**
+
+<MiniRepl client:idle tune={`note("c3 c3 eb3 g3").fast(2)
+  .s("sawtooth")
+  .lpf(saw.range(400, 4000).slow(4))
+  .lpq(6)
+  .cpm(65)`} punchcard punchcardLabels={false} />
+
+**Resonant acid filter:**
+
+<MiniRepl client:idle tune={`note("c3 c3 eb3 c3 c3 g3 c3 eb3")
+  .s("sawtooth")
+  .lpf(sine.range(300, 2000).fast(2))
+  .lpq(15)
+  .cpm(70)`} punchcard punchcardLabels={false} />
+
+### Detuning for Width
+
+Layer slightly detuned oscillators for a fatter sound:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 e4 g4 c5").s("sawtooth").detune(-10),
+  note("c4 e4 g4 c5").s("sawtooth").detune(10)
+).decay(0.15).lpf(3000).gain(0.5)`} punchcard punchcardLabels={false} />
+
+## Complete Tracks
+
+### C64 SID Style
+
+Three voices: lead melody, arpeggio, and bass with filter sweep:
+
+<MiniRepl client:idle tune={`stack(
+  // Lead melody
+  note("c5 ~ eb5 ~ g5 ~ eb5 c5")
+    .s("sawtooth")
+    .decay(0.1).sustain(0.3)
+    .lpf(2500),
+  // Arpeggio pad
+  note("c4 eb4 g4 c5 g4 eb4").fast(4)
+    .s("triangle")
+    .decay(0.04).gain(0.4),
+  // Bass with filter
+  note("c2 c2 eb2 g2")
+    .s("sawtooth")
+    .lpf(sine.range(400, 1200).fast(2))
+    .decay(0.15)
+).room(0.15).cpm(65)`} punchcard punchcardLabels={false} />
+
+### Amiga MOD Style
+
+Four-channel arrangement with sampled feel:
+
+<MiniRepl client:idle tune={`stack(
+  // Ch1: Bass
+  note("c2 c2 ~ c2 f2 f2 ~ f2")
+    .s("sawtooth").lpf(600).decay(0.12),
+  // Ch2: Chords/arps
+  note("<c4 e4 g4> <f4 a4 c5>").fast(4)
+    .s("triangle").decay(0.06).gain(0.5),
+  // Ch3: Lead
+  note("g4 ~ c5 ~ eb5 ~ c5 g4")
+    .s("square").decay(0.15).sustain(0.2),
+  // Ch4: Drums
+  stack(
+    sound("bd").struct("x ~ x ~"),
+    sound("white").decay(0.06).struct("~ x").lpf(3000).gain(0.5)
+  )
+).cpm(60)`} punchcard punchcardLabels={false} />
+
+### Modern Keygen Banger
+
+Full production keygen track:
+
+<MiniRepl client:idle tune={`stack(
+  // Main arpeggio
+  note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
+    .fast(4).s("square").decay(0.04).gain(0.4),
+  // Counter arpeggio
+  note("<g4 c5 e5 g5> <e4 a4 c5 e5> <c5 f5 a5 c6> <d5 g5 b5 d6>")
+    .fast(4).s("triangle").decay(0.03).gain(0.3),
+  // Bassline
+  note("<c2 a1 f2 g2>").s("sawtooth")
+    .lpf(700).decay(0.12).gain(0.8),
+  // Drums
+  stack(
+    sound("bd").struct("x x x x"),
+    sound("white").decay(0.05).struct("~ x").lpf(4000).gain(0.5),
+    sound("white").decay(0.02).struct("x*8").gain(0.2).hpf(6000)
+  ),
+  // Lead melody
+  note("~ ~ g5 ~ ~ c6 ~ g5 ~ ~ e5 ~ ~ ~ ~ ~")
+    .s("square").decay(0.08).sustain(0.2).gain(0.6)
+).room(0.2).cpm(80)`} punchcard punchcardLabels={false} />
+
+### Chillout Chip
+
+Slower, melancholic chip tune:
+
+<MiniRepl client:idle tune={`stack(
+  // Slow arpeggio
+  note("a3 c4 e4 a4 e4 c4").fast(4)
+    .s("triangle").decay(0.08).gain(0.5),
+  // Sparse melody
+  note("e5 ~ ~ c5 ~ ~ a4 ~ ~ ~ ~ ~ ~ ~ ~ ~")
+    .s("square").decay(0.2).sustain(0.4)
+    .vib(3).vibmod(0.15),
+  // Soft bass
+  note("a1 ~ ~ ~ e2 ~ ~ ~")
+    .s("triangle").decay(0.3).gain(0.6),
+  // Minimal drums
+  stack(
+    sound("bd").struct("x ~ ~ ~"),
+    sound("white").decay(0.03).struct("~ ~ x ~").lpf(2000).gain(0.3)
+  )
+).room(0.3).cpm(40)`} punchcard punchcardLabels={false} />
+
+## Quick Reference
+
+### Waveform Guide
+
+| Waveform | Character | Best For |
+|----------|-----------|----------|
+| square | Bright, hollow | NES leads, Game Boy |
+| triangle | Soft, round | Bass, pads |
+| sawtooth | Harsh, rich | Aggressive leads, SID |
+| z_square | Retro chip | Authentic 8-bit |
+| white/noise | Unpitched | Drums, effects |
+
+### BPM by Style
+
+| Style | BPM | cpm Value | Feel |
+|-------|-----|-----------|------|
+| Chiptune | 120-140 | 60-70 | Bouncy, playful |
+| Keygen | 150-180 | 75-90 | Uplifting, energetic |
+| Cracktro | 130-160 | 65-80 | Dramatic, bold |
+| Slow chip | 80-100 | 40-50 | Melancholic |
+
+## What You Learned
+
+- Classic chip waveforms: square, triangle, sawtooth
+- Fast arpeggios simulate chords with one voice
+- Noise percussion replaces drum samples
+- Filter sweeps add movement and character
+- ZZFX (`z_square`, `z_sawtooth`) for authentic chip sounds
+- `.zcrush()` for bit-crushing lo-fi effect
+- Demoscene BPMs: chiptune ~130, keygen ~160
+- Layer and detune for wider sounds
+- 3-4 channel arrangements maximize limited resources

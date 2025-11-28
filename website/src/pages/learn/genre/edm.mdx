@@ -1,0 +1,750 @@
+---
+title: Electronic Dance Music
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+Electronic Dance Music (EDM) encompasses a vast range of styles, from four-on-the-floor house to breakbeat-heavy drum & bass. This guide covers the essential techniques, sound design, and genre-specific patterns with references to classic tracks that defined each genre.
+
+## The Foundation: Four-on-the-Floor
+
+Most EDM genres share a common foundation—the kick drum on every beat. This pattern originated in disco and became the heartbeat of house, techno, and trance:
+
+<MiniRepl client:idle tune={`sound("bd bd bd bd").cpm(31)`} punchcard punchcardLabels={false} />
+
+## The Roland TR-909: The Sound of Dance Music
+
+The Roland TR-909 drum machine, released in 1983, became the defining sound of house and techno. Its punchy kick, crisp snare, and metallic hi-hats appear on countless classic tracks:
+
+- **"Strings of Life"** by Derrick May (1987) — a Detroit techno anthem
+- **"Vogue"** by Madonna (1990) — brought the 909 to mainstream pop
+- **"Show Me Love"** by Robin S (1990) — helped bring house to the mainstream
+- **"Revolution 909"** by Daft Punk (1997) — a tribute to the machine itself
+
+<MiniRepl client:idle tune={`sound("bd").bank("RolandTR909").euclid(4, 4).cpm(31)`} punchcard punchcardLabels={false} />
+
+## Building a Basic Beat
+
+### Step 1: Kick on Every Beat
+
+<MiniRepl client:idle tune={`sound("bd").bank("RolandTR909").euclid(4, 4).cpm(31)`} punchcard punchcardLabels={false} />
+
+### Step 2: Add Off-beat Hi-hats
+
+The off-beat hi-hat creates forward momentum—essential to house music:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclid(4, 4).late(0.125)
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+### Step 3: Claps on 2 and 4
+
+The backbeat drives the groove:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclid(8, 8),
+  sound("cp").bank("RolandTR909").euclidRot(2, 4, 2)
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+### Step 4: Open Hi-hats for Lift
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclid(8, 8),
+  sound("oh").bank("RolandTR909").euclidRot(2, 8, 2),
+  sound("cp").bank("RolandTR909").euclidRot(2, 4, 2)
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+---
+
+## Sound Design Essentials
+
+### Bass Sounds
+
+**Sub Bass** — Pure low-end foundation used in deep house and UK garage:
+
+<MiniRepl client:idle tune={`note("c1 c1 c1 eb1")
+  .s("sine")
+  .lpf(200)
+  .gain(0.8)
+  .cpm(31)`} punchcard punchcardLabels={false} />
+
+**Saw Bass** — Gritty and present, common in techno and electro:
+
+<MiniRepl client:idle tune={`note("c2 c2 eb2 c2")
+  .s("sawtooth")
+  .lpf(800)
+  .lpq(3)
+  .attack(0.01)
+  .decay(0.2)
+  .sustain(0.4)
+  .cpm(31)`} punchcard punchcardLabels={false} />
+
+**Reese Bass** — The signature neurofunk/D&B sound. Created by layering two slightly detuned sawtooth waves, causing phase cancellation that creates a swirling, animated texture:
+
+<MiniRepl client:idle tune={`note("c2 c2 eb2 c2")
+  .s("sawtooth")
+  .superimpose(add(.02))
+  .lpf(sine.range(400, 1200).fast(2))
+  .lpq(4)
+  .distort(1.5)
+  .gain(0.5)
+  .cpm(44)`} punchcard punchcardLabels={false} />
+
+**Wobble Bass** — Made famous by Skrillex and dubstep. The "wobble" comes from modulating a low-pass filter with an LFO. Add distortion and high resonance for aggressive sounds:
+
+<MiniRepl client:idle tune={`note("c2")
+  .s("sawtooth")
+  .lpf(sine.range(200, 2000).fast(4))
+  .lpq(8)
+  .distort(2)
+  .gain(0.6)
+  .cpm(35)`} punchcard punchcardLabels={false} />
+
+**Growl Bass** — Brostep's aggressive mid-range sound. Uses FM synthesis and heavy distortion:
+
+<MiniRepl client:idle tune={`note("c2")
+  .s("sawtooth")
+  .fm(sine.range(1, 8).fast(6))
+  .fmh(2)
+  .lpf(sine.range(300, 2500).fast(8))
+  .lpq(10)
+  .distort(3)
+  .gain(0.5)
+  .cpm(35)`} punchcard punchcardLabels={false} />
+
+### Lead Sounds
+
+**Supersaw Lead** — Multiple detuned sawtooth waves, the signature sound of trance and future bass. Pioneered in the 1990s with the Roland JP-8000:
+
+<MiniRepl client:idle tune={`note("c4 eb4 g4 c5")
+  .s("supersaw")
+  .attack(0.01)
+  .release(0.3)
+  .room(0.3)
+  .cpm(35)`} punchcard punchcardLabels={false} />
+
+**Pluck Lead** — Short, percussive sounds:
+
+<MiniRepl client:idle tune={`note("c5 eb5 g5 bb5")
+  .s("sawtooth")
+  .lpf(3000)
+  .attack(0.001)
+  .decay(0.15)
+  .sustain(0)
+  .room(0.2)
+  .cpm(31)`} punchcard punchcardLabels={false} />
+
+**Trance Arp** — Rapid arpeggiated patterns with delay, heard in tracks like Tiësto's "Adagio for Strings" and Paul van Dyk's "For An Angel":
+
+<MiniRepl client:idle tune={`note("c4 eb4 g4 c5 g4 eb4".fast(2))
+  .s("sawtooth")
+  .lpf(2000)
+  .attack(0.001)
+  .decay(0.1)
+  .sustain(0.2)
+  .delay(0.3)
+  .delaytime(0.166)
+  .cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+## Effects for EDM
+
+### Sidechain Compression
+
+The pumping effect that makes EDM breathe—the bass ducks when the kick hits. Heard prominently in Daft Punk's "One More Time":
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  note("c2").s("sawtooth").lpf(600)
+    .gain(perlin.range(0.2, 0.8).fast(4))
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+### Filter Sweeps
+
+Build tension with filter sweeps—essential for buildups and drops:
+
+<MiniRepl client:idle tune={`note("c3")
+  .s("sawtooth")
+  .lpf(sine.range(200, 8000).slow(4))
+  .lpq(8)
+  .room(0.3)
+  .gain(0.5)
+  .cpm(15)`} punchcard punchcardLabels={false} />
+
+### Delay for Rhythm
+
+Synced delay adds rhythmic interest:
+
+<MiniRepl client:idle tune={`note("c5 ~ eb5 ~")
+  .s("sawtooth")
+  .lpf(3000)
+  .decay(0.1)
+  .sustain(0)
+  .delay(0.5)
+  .delaytime(0.25)
+  .delayfeedback(0.4)
+  .cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+## Genre Deep Dives
+
+### House (120-130 BPM)
+
+House music originated in Chicago in the mid-1980s, pioneered by DJs like Frankie Knuckles and producers like Marshall Jefferson. It combines four-on-the-floor beats with soul and disco influences.
+
+**Classic Tracks:**
+- "Can You Feel It" by Mr. Fingers (Larry Heard, 1986) — one of the first house records
+- "Move Your Body" by Marshall Jefferson (1986) — "the house music anthem"
+- "Big Fun" by Inner City (Kevin Saunderson, 1988)
+
+**Classic House:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclid(8, 8).gain(0.6),
+  sound("oh").bank("RolandTR909").euclidRot(2, 8, 2).gain(0.5),
+  sound("cp").bank("RolandTR909").euclidRot(2, 4, 2)
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+---
+
+### Deep House (118-125 BPM)
+
+Deep house emerged from Chicago, pioneered by Larry Heard (Mr. Fingers) and Marshall Jefferson. It features jazzy seventh and ninth chords, soulful vocals, and a more laid-back feel than mainroom house.
+
+**Classic Tracks:**
+- "Mystery of Love" by Mr. Fingers (1985)
+- "Someday" by CeCe Rogers (1987) — one of the greatest dance records of all time
+- "In The Trees" by Faze Action (1997)
+
+**Characteristics:** Rhodes piano, lush pads with long attack/release, warm bass, 110-125 BPM
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclid(8, 8).gain(0.5),
+  sound("cp").bank("RolandTR909").euclidRot(2, 4, 2).gain(0.6),
+  note("<c3,eb3,g3,bb3> <f3,ab3,c4,eb4>")
+    .s("sawtooth")
+    .lpf(800)
+    .attack(0.05)
+    .decay(0.3)
+    .sustain(0.3)
+    .gain(0.4)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+### Tech House (122-130 BPM)
+
+Tech house emerged in the 1990s as a fusion of house grooves with techno's rugged basslines and steely beats. It's warm, funky, and hypnotic.
+
+**Classic Tracks:**
+- "Percolator" by Cajmere/Green Velvet (1992)
+- "Body Language" by M.A.N.D.Y. vs Booka Shade (2005)
+- "Losing It" by Fisher (2018) — brought tech house to mainstream EDM
+- "Cola" by CamelPhat & Elderbrook (2017)
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclid(12, 16).gain(0.5),
+  sound("rim").bank("RolandTR909").euclidRot(3, 16, 2).gain(0.6),
+  sound("cp").bank("RolandTR909").euclidRot(2, 8, 4)
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+---
+
+### Acid House (120-130 BPM)
+
+Acid house was born in Chicago around 1986 when Phuture (DJ Pierre, Spanky, Herb J) accidentally discovered the squelchy sound of the Roland TB-303 bass synthesizer. The 303 was originally designed to simulate bass guitars but became a dance music icon.
+
+**Classic Tracks:**
+- "Acid Tracks" by Phuture (1987) — the first acid house track
+- "Voodoo Ray" by A Guy Called Gerald (1988) — Manchester acid anthem
+- "Da Funk" by Daft Punk (1995) — distorted 303
+
+**Characteristics:** Resonant filter sweeps (high lpq), squelchy bass, repetitive patterns. The TB-303's "accent" function boosts both volume and filter resonance for spiky peaks.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("oh").bank("RolandTR909").euclidRot(2, 8, 2).gain(0.4),
+  note("c2 c2 c3 c2 eb2 c2 c3 g1")
+    .s("sawtooth")
+    .lpf(sine.range(300, 4000).fast(2))
+    .lpq(18)
+    .attack(0.001)
+    .decay(0.08)
+    .sustain(0.1)
+    .gain("0.7 0.5 0.8 0.5 0.6 0.5 0.9 0.5")
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+---
+
+### Techno (130-150 BPM)
+
+Techno originated in Detroit in the mid-1980s, created by the "Belleville Three": Juan Atkins, Derrick May, and Kevin Saunderson. Derrick May described it as "George Clinton and Kraftwerk caught in an elevator."
+
+**Classic Tracks:**
+- "Strings of Life" by Derrick May (1987) — raised techno's profile in Europe
+- "No UFOs" by Juan Atkins (1985)
+- "Big Fun" by Inner City (Kevin Saunderson, 1988)
+
+**Detroit Techno:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclid(16, 16).gain(0.4),
+  sound("oh").bank("RolandTR909").euclidRot(4, 16, 2).gain(0.4),
+  sound("cp").bank("RolandTR909").euclidRot(2, 8, 4)
+).cpm(34)`} punchcard punchcardLabels={false} />
+
+**Minimal Techno** — Stripped down, hypnotic:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclidRot(5, 16, 0).gain(0.4),
+  sound("rim").bank("RolandTR909").euclidRot(3, 16, 4).gain(0.5)
+).cpm(32)`} punchcard punchcardLabels={false} />
+
+**Industrial Techno** — Harder, distorted, darker:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4).distort(1.5),
+  sound("hh").bank("RolandTR909").euclid(16, 16).gain(0.4),
+  sound("sd").bank("RolandTR909").euclidRot(3, 8, 2).distort(2),
+  note("c1*4").s("sawtooth").lpf(400).distort(3).gain(0.4)
+).cpm(36)`} punchcard punchcardLabels={false} />
+
+---
+
+### Trance (138-150 BPM)
+
+Trance emerged in Germany in the early 1990s, characterized by euphoric melodies, soaring synths, and emotional buildups. The tempo typically ranges from 128-142 BPM, with uplifting trance specifically at 138-142 BPM.
+
+**Classic Tracks:**
+- "For An Angel" by Paul van Dyk (1994)
+- "Children" by Robert Miles (1995)
+- "Adagio for Strings" by Tiësto (2005)
+- "Café Del Mar" by Energy 52 (1993)
+
+**Uplifting Trance (138 BPM):**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("oh").bank("RolandTR909").euclidRot(2, 8, 2).gain(0.4),
+  note("<c4,eb4,g4> <eb4,g4,bb4> <f4,ab4,c5> <g4,bb4,d5>")
+    .s("supersaw")
+    .lpf(4000)
+    .attack(0.1)
+    .release(0.4)
+    .room(0.4)
+    .gain(0.3)
+).cpm(34.5)`} punchcard punchcardLabels={false} />
+
+**Trance with Arp:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclid(8, 8).gain(0.4),
+  sound("cp").bank("RolandTR909").euclidRot(2, 4, 2).gain(0.6),
+  note("c4 eb4 g4 c5 g4 eb4 c4 eb4".fast(2))
+    .s("sawtooth")
+    .lpf(3000)
+    .attack(0.001)
+    .decay(0.1)
+    .sustain(0.1)
+    .delay(0.3)
+    .delaytime(0.109)
+    .gain(0.4)
+).cpm(34.5)`} punchcard punchcardLabels={false} />
+
+---
+
+### Psytrance (140-150 BPM)
+
+Psytrance (psychedelic trance) emerged from the Goa trance scene in India. It features driving basslines, complex layered synths, and hypnotic, trippy textures.
+
+**Classic Artists:**
+- Infected Mushroom — Israeli duo known for innovative sound design
+- Astrix — progressive psytrance with euphoric melodies
+- Shpongle — psychedelic downtempo/psytrance fusion
+
+**Characteristics:** 140-150 BPM, rolling 16th-note bassline, acid-style filter modulation, complex percussion, trippy FX
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  note("c2*16")
+    .s("sawtooth")
+    .lpf(sine.range(300, 2500).fast(4))
+    .lpq(12)
+    .phaser(sine.range(0.5, 4).slow(4))
+    .gain("1 0.5 0.7 0.5".fast(4))
+    .gain(0.5)
+).cpm(36)`} punchcard punchcardLabels={false} />
+
+---
+
+### Drum & Bass (170-180 BPM)
+
+Drum & bass emerged from the UK jungle scene in the early 1990s. It features fast breakbeats (170-180 BPM) and heavy basslines.
+
+**Classic Tracks:**
+- "Inner City Life" by Goldie (1994) — one of the genre's most iconic tracks
+- "Timeless" album by Goldie (1995) — brought D&B to mainstream attention
+- "Demon's Theme" by LTJ Bukem (1992) — one of the first recognizable D&B tracks
+
+**Basic D&B:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 16, 0),
+  sound("sd").euclidRot(2, 16, 8),
+  sound("hh").euclid(14, 16).gain(0.5)
+).cpm(44)`} punchcard punchcardLabels={false} />
+
+---
+
+### Liquid Drum & Bass (170-175 BPM)
+
+Liquid D&B is a smoother, more musical subgenre with jazz and soul influences. Hospital Records is a key label.
+
+**Classic Tracks:**
+- "Even If" by Calibre — considered the pinnacle of liquid D&B
+- "Horizons" by LTJ Bukem
+- "Moving With You" by Netsky (2010)
+
+**Characteristics:** Jazzy chords, soulful vocals, rolling basslines, atmospheric textures
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 16, 0),
+  sound("sd").euclidRot(2, 16, 8),
+  sound("hh").euclid(12, 16).gain(0.4),
+  note("<c3,eb3,g3> <f3,ab3,c4>")
+    .s("sawtooth")
+    .lpf(1500)
+    .attack(0.1)
+    .release(0.3)
+    .room(0.3)
+    .gain(0.3)
+).cpm(43)`} punchcard punchcardLabels={false} />
+
+---
+
+### Neurofunk (175-180 BPM)
+
+Neurofunk is a dark, technical D&B subgenre that emerged around 1997-1998. It features complex "neuro" basslines (variations on the "reese bass"), robotic sound effects, and a dystopian/sci-fi mood.
+
+**Classic Tracks:**
+- "Wormhole" album by Ed Rush & Optical — credited with creating neurofunk
+- "Messiah" by Konflict — a neurofunk anthem
+- "Stigma" by Noisia — Dutch trio known for pristine production
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(5, 16, 0),
+  sound("sd").euclidRot(3, 16, 4),
+  sound("hh").euclid(14, 16).gain(0.4),
+  note("c2*8")
+    .s("sawtooth")
+    .superimpose(add(.015))
+    .lpf(sine.range(200, 1800).fast(8))
+    .lpq(6)
+    .distort(2.5)
+    .gain(0.4)
+).cpm(44)`} punchcard punchcardLabels={false} />
+
+---
+
+### Dubstep (140 BPM, half-time)
+
+Dubstep emerged from London's underground in the early 2000s, characterized by sparse rhythms, heavy sub-bass, and the snare on beat 3 (half-time feel).
+
+**UK Dubstep Classic:**
+- "Midnight Request Line" by Skream (2005) — a genre-defining track
+
+**Characteristics:** 140 BPM, half-time feel, emphasis on sub-bass, sparse arrangement
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(2, 8, 0),
+  sound("sd").euclidRot(1, 4, 2),
+  sound("hh").euclid(8, 8).gain(0.4)
+).cpm(17.5)`} punchcard punchcardLabels={false} />
+
+**Dubstep with Wobble:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(2, 8, 0),
+  sound("sd").euclidRot(1, 4, 2),
+  note("c2 ~ c2 ~")
+    .s("sawtooth")
+    .lpf(sine.range(150, 1800).fast(4))
+    .lpq(12)
+    .distort(1.5)
+    .gain(0.6)
+).cpm(17.5)`} punchcard punchcardLabels={false} />
+
+---
+
+### Brostep (140-150 BPM)
+
+Brostep is an aggressive American dubstep variant that emphasizes mid-range frequencies over sub-bass. It features metallic sounds and high-energy drops.
+
+**Classic Tracks:**
+- "Scary Monsters and Nice Sprites" by Skrillex (2010) — Grammy-winning track that defined the sound
+- "Cinema" (Skrillex Remix) by Benny Benassi
+- "X-Rated" album by Excision (2012)
+
+**Characteristics:** Aggressive mid-range "growl" bass, metal-influenced, robotic sounds, complex fills. Uses FM synthesis for metallic textures.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 8, 0),
+  sound("sd").euclidRot(1, 4, 2),
+  note("c2 c2 c2 c2".fast(2))
+    .s("sawtooth")
+    .fm(sine.range(2, 10).fast(8))
+    .fmh(3)
+    .lpf(sine.range(300, 3000).fast(8))
+    .lpq(10)
+    .distort(3)
+    .gain(0.5)
+).cpm(17.5)`} punchcard punchcardLabels={false} />
+
+---
+
+### Riddim (140-150 BPM)
+
+Riddim is a minimalist dubstep subgenre featuring repetitive, hypnotic bass patterns. Unlike brostep's varied sound design, riddim uses simple patterns that "respond to one another."
+
+**Classic Tracks:**
+- "German Engineering" EP by Virtual Riot (2018)
+
+**Characteristics:** Minimalist, repetitive triplet patterns, heavy snare and kick
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ ~ ~"),
+  sound("~ ~ ~ ~ sd ~ ~ ~"),
+  note("c2 ~ c2 c2 ~ c2 c2 ~")
+    .s("square")
+    .lpf(500)
+    .distort(3)
+    .gain(0.6)
+).cpm(17.5)`} punchcard punchcardLabels={false} />
+
+---
+
+### Future Bass (140-160 BPM)
+
+Future bass emerged in the early 2010s, combining elements of trap and dubstep with pop appeal. It features bright supersaw chords, vocal chops, and wobbly synths.
+
+**Classic Tracks:**
+- "You & Me" (Flume Remix) by Disclosure (2013) — first mainstream future bass hit
+- "Never Be Like You" by Flume (2016)
+- "Light" by San Holo (2016)
+- "Roses" by The Chainsmokers (2015)
+
+**Characteristics:** Supersaw chords with filter modulation (the "wobbly" effect), 808 drums, vocal chops, emotional melodies. Sidechain compression creates the pumping chord sound.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 8, 0),
+  sound("sd").euclidRot(1, 4, 2),
+  note("<c4,eb4,g4,bb4> <f4,ab4,c5,eb5>")
+    .s("supersaw")
+    .lpf(sine.range(800, 5000).fast(0.5))
+    .vib(4)
+    .vibmod(0.02)
+    .attack(0.02)
+    .release(0.4)
+    .room(0.4)
+    .gain(perlin.range(0.2, 0.5).fast(4))
+).cpm(18)`} punchcard punchcardLabels={false} />
+
+---
+
+### EDM Trap (140 BPM, half-time)
+
+EDM trap fuses hip-hop trap production with electronic dance music elements. It emerged around 2012 with releases from TNGHT, Flosstradamus, and RL Grime.
+
+**Classic Tracks:**
+- "Original Don" (Flosstradamus Remix) by Major Lazer (2012) — helped define the genre
+- "Core" by RL Grime (2014)
+- "Turn Down for What" by DJ Snake & Lil Jon (2013)
+
+**Characteristics:** TR-808 drums, booming 808 bass, fast hi-hat rolls, syncopated rhythms
+
+**Basic Trap:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclidRot(2, 16, 0),
+  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR808").euclid(14, 16).gain(0.5)
+).cpm(17.5)`} punchcard punchcardLabels={false} />
+
+**Trap with 808 Bass:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclidRot(2, 16, 0),
+  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR808").euclid(14, 16).gain(0.4),
+  note("c1 ~ ~ ~ c1 ~ c1 ~")
+    .s("sine")
+    .decay(0.5)
+    .sustain(0.3)
+    .gain(0.8)
+).cpm(17.5)`} punchcard punchcardLabels={false} />
+
+**Hi-hat Rolls** — A signature trap technique:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclidRot(2, 16, 0),
+  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR808").fast("<1 1 1 4>").gain(0.5)
+).cpm(17.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Complete Tracks by Genre
+
+### House Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclid(8, 8).gain(0.5),
+  sound("oh").bank("RolandTR909").euclidRot(2, 8, 2).gain(0.4),
+  sound("cp").bank("RolandTR909").euclidRot(2, 4, 2).gain(0.7),
+
+  // Bass
+  note("c2 c2 eb2 c2")
+    .s("sawtooth")
+    .lpf(700)
+    .attack(0.01)
+    .decay(0.2)
+    .sustain(0.4)
+    .gain(0.5),
+
+  // Chords
+  note("<c3,eb3,g3> <f3,ab3,c4>")
+    .s("sawtooth")
+    .lpf(1200)
+    .attack(0.05)
+    .decay(0.2)
+    .sustain(0.3)
+    .room(0.2)
+    .gain(0.25)
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+### Techno Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd").bank("RolandTR909").euclid(4, 4).gain(1.1),
+  sound("hh").bank("RolandTR909").euclid(16, 16).gain(0.4),
+  sound("oh").bank("RolandTR909").euclidRot(4, 16, 2).gain(0.35),
+  sound("cp").bank("RolandTR909").euclidRot(2, 8, 4).gain(0.6),
+  sound("rim").bank("RolandTR909").euclidRot(5, 16, 1).gain(0.4),
+
+  // Bass
+  note("c2*8")
+    .s("sawtooth")
+    .lpf(sine.range(300, 800).fast(2))
+    .lpq(5)
+    .gain(0.4)
+).cpm(34)`} punchcard punchcardLabels={false} />
+
+### Trance Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd").bank("RolandTR909").euclid(4, 4),
+  sound("hh").bank("RolandTR909").euclid(8, 8).gain(0.4),
+  sound("oh").bank("RolandTR909").euclidRot(2, 8, 2).gain(0.35),
+  sound("cp").bank("RolandTR909").euclidRot(2, 4, 2).gain(0.6),
+
+  // Arp
+  note("c4 eb4 g4 c5 g4 eb4".fast(2))
+    .s("sawtooth")
+    .lpf(3000)
+    .attack(0.001)
+    .decay(0.1)
+    .sustain(0.1)
+    .delay(0.3)
+    .delaytime(0.108)
+    .gain(0.3),
+
+  // Pad
+  note("<c3,eb3,g3> <f3,ab3,c4>")
+    .s("supersaw")
+    .lpf(2000)
+    .attack(0.3)
+    .release(0.5)
+    .room(0.4)
+    .gain(0.2)
+).cpm(34.5)`} punchcard punchcardLabels={false} />
+
+### D&B Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd").euclidRot(4, 16, 0),
+  sound("sd").euclidRot(2, 16, 8),
+  sound("hh").euclid(14, 16).gain(0.4),
+  sound("oh").euclidRot(2, 16, 4).gain(0.3),
+
+  // Bass
+  note("c2 ~ c2 c2 ~ c2 ~ c2")
+    .s("sawtooth")
+    .lpf(sine.range(400, 1200).fast(4))
+    .lpq(5)
+    .gain(0.5),
+
+  // Pad
+  note("<c4,eb4,g4>")
+    .s("sawtooth")
+    .lpf(1500)
+    .attack(0.1)
+    .release(0.3)
+    .room(0.3)
+    .gain(0.2)
+).cpm(44)`} punchcard punchcardLabels={false} />
+
+---
+
+## EDM Quick Reference
+
+| Genre | BPM | Feel | Key Elements |
+|-------|-----|------|--------------|
+| House | 120-130 | 4/4 | Off-beat hats, claps on 2&4 |
+| Deep House | 118-125 | 4/4 | Jazzy 7th chords, sub bass |
+| Tech House | 122-130 | 4/4 | Minimal, hypnotic loops |
+| Acid House | 120-130 | 4/4 | TB-303 squelch, high resonance |
+| Techno | 130-150 | 4/4 | Industrial, dark, driving |
+| Trance | 138-150 | 4/4 | Arps, supersaws, euphoric |
+| Psytrance | 140-150 | 4/4 | Rolling bass, trippy FX |
+| D&B | 170-180 | Breakbeat | Fast breaks, heavy bass |
+| Liquid D&B | 170-175 | Breakbeat | Jazzy, soulful, smooth |
+| Neurofunk | 175-180 | Breakbeat | Dark, technical, reese bass |
+| Dubstep | 140 | Half-time | Sub bass, sparse |
+| Brostep | 140-150 | Half-time | Mid-range growl, aggressive |
+| Riddim | 140-150 | Half-time | Minimal, repetitive |
+| Future Bass | 140-160 | Half-time | Supersaw chords, wobbly |
+| Trap | 140 | Half-time | 808s, hi-hat rolls |
+
+## What You Learned
+
+- The TR-909 defined house and techno sounds
+- The TB-303 created acid house's squelchy bass (high `.lpq()` resonance, accent patterns)
+- Four-on-the-floor vs half-time feel differentiates genres
+- `.lpf()` with `sine.range().fast()` creates filter sweeps and wobbles
+- `.lpq()` (resonance) at high values (12-18) creates acid sounds
+- `.superimpose(add(.02))` creates detuned reese bass for neurofunk
+- `.fm()` and `.fmh()` add metallic/growl textures for brostep
+- `.vib()` and `.vibmod()` add movement to supersaws
+- `.phaser()` creates trippy psytrance textures
+- `.distort()` adds grit and aggression to bass sounds
+- Supersaw is essential for trance and future bass
+- D&B uses breakbeats at 170-180 BPM
+- Dubstep/trap use half-time feel at 140 BPM
+- Each genre has specific BPM ranges and sonic characteristics

@@ -1,0 +1,750 @@
+---
+title: Rock & Pop
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+Rock and pop music have shaped modern culture for over 60 years. From the guitar-driven power of classic rock to the polished production of modern pop, this guide covers essential techniques, sounds, and patterns across subgenres.
+
+## The Rock Foundation
+
+Rock's foundation is the backbeat—snare on beats 2 and 4, kick emphasizing 1 and 3, with steady eighth-note hi-hats:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8")
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+This pattern forms the basis of rock from the 1950s to today.
+
+## Guitar Sounds
+
+### Clean Guitar
+
+Bright, chimey tone for arpeggios and chord work:
+
+<MiniRepl client:idle tune={`note("<c3,e3,g3> <a2,c3,e3> <f2,a2,c3> <g2,b2,d3>")
+  .s("sawtooth")
+  .lpf(3000)
+  .attack(0.01)
+  .decay(0.3)
+  .sustain(0.5)
+  .room(0.3)
+  .gain(0.4)
+  .cpm(30)`} punchcard punchcardLabels={false} />
+
+### Crunchy Overdrive
+
+Classic rock tone with warm distortion:
+
+<MiniRepl client:idle tune={`note("e3 e3 g3 a3 g3 e3 d3 e3")
+  .s("sawtooth")
+  .distort(2)
+  .lpf(2500)
+  .attack(0.01)
+  .decay(0.2)
+  .sustain(0.6)
+  .gain(0.5)
+  .cpm(30)`} punchcard punchcardLabels={false} />
+
+### Power Chords
+
+Root + fifth, the foundation of rock rhythm guitar:
+
+<MiniRepl client:idle tune={`stack(
+  note("e2 e2 a2 a2 d3 d3 a2 a2"),
+  note("b2 b2 e3 e3 a3 a3 e3 e3")
+).s("sawtooth")
+  .distort(2.5)
+  .lpf(2000)
+  .attack(0.01)
+  .decay(0.15)
+  .sustain(0.7)
+  .cpm(30)`} punchcard punchcardLabels={false} />
+
+### Fuzz Guitar
+
+60s/70s psychedelic tone with heavy saturation:
+
+<MiniRepl client:idle tune={`note("e3 g3 a3 g3")
+  .s("sawtooth")
+  .distort(4)
+  .lpf(1800)
+  .lpq(3)
+  .room(0.2)
+  .gain(0.4)
+  .cpm(28)`} punchcard punchcardLabels={false} />
+
+## Bass Sounds
+
+### Rock Bass
+
+Punchy, fundamental tone:
+
+<MiniRepl client:idle tune={`note("e1 e1 g1 a1 e1 e1 d1 e1")
+  .s("sawtooth")
+  .lpf(800)
+  .attack(0.01)
+  .decay(0.2)
+  .sustain(0.6)
+  .gain(0.7)
+  .cpm(30)`} punchcard punchcardLabels={false} />
+
+### Post-Punk Melodic Bass
+
+High-register bass carrying the melody (Joy Division style):
+
+<MiniRepl client:idle tune={`note("e3 b3 g3 e3 d3 e3 g3 b3")
+  .s("sawtooth")
+  .lpf(1500)
+  .attack(0.01)
+  .decay(0.3)
+  .sustain(0.4)
+  .room(0.3)
+  .gain(0.6)
+  .cpm(30)`} punchcard punchcardLabels={false} />
+
+### Synth Bass (80s Pop)
+
+Minimoog-style bass for synth-pop:
+
+<MiniRepl client:idle tune={`note("c2 c2 c2 c3 eb2 eb2 f2 g2")
+  .s("sawtooth")
+  .lpf(sine.range(400, 1200).fast(0.5))
+  .lpq(5)
+  .attack(0.001)
+  .decay(0.15)
+  .sustain(0.3)
+  .gain(0.6)
+  .cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+## Genre Deep Dives
+
+### Classic Rock (120-140 BPM)
+
+Classic rock draws from blues with swinging grooves, pentatonic riffs, and powerful backbeats. Drum sounds are often large and roomy.
+
+**Classic Tracks:**
+- "Back in Black" by AC/DC — steady backbeat with offbeat hi-hat accents
+- "Rock and Roll" by Led Zeppelin — Bonham's powerful drumming
+- "Satisfaction" by The Rolling Stones — syncopated guitar riff
+
+**Characteristics:** Pentatonic scales, blues influences, powerful drums, guitar-driven
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ bd ~ bd ~ bd bd"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.5),
+  note("e2 e2 g2 a2 e2 e2 d2 e2")
+    .s("sawtooth")
+    .distort(2)
+    .lpf(2000)
+    .gain(0.5)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+**With Lead Guitar:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ bd ~ bd ~ bd bd"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.4),
+  note("e2*4").s("sawtooth").distort(2).lpf(1500).gain(0.4),
+  note("e4 g4 a4 b4 a4 g4 e4 d4")
+    .s("sawtooth")
+    .distort(1.5)
+    .lpf(3000)
+    .room(0.2)
+    .gain(0.4)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+### Punk Rock (150-180 BPM)
+
+Punk emerged in the mid-70s as a raw, aggressive reaction to progressive rock excess. Fast tempos, power chords, and relentless downstrokes define the sound.
+
+**Classic Tracks:**
+- "Blitzkrieg Bop" by Ramones (~175 BPM) — "Hey! Ho! Let's Go!"
+- "Anarchy in the U.K." by Sex Pistols (~150 BPM)
+- "London Calling" by The Clash
+
+**Characteristics:** Fast tempo, power chords, downstroke strumming, simple structures, raw energy
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 4),
+  sound("sd").euclidRot(2, 4, 2),
+  sound("hh").euclid(8, 8).gain(0.5),
+  note("e2*8")
+    .s("sawtooth")
+    .distort(3)
+    .lpf(1500)
+    .attack(0.001)
+    .decay(0.08)
+    .sustain(0.3)
+    .gain(0.6)
+).cpm(44)`} punchcard punchcardLabels={false} />
+
+**With Chord Changes:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 4),
+  sound("sd").euclidRot(2, 4, 2),
+  sound("hh").euclid(8, 8).gain(0.5),
+  stack(
+    note("<e2!4 a2!2 b2!2>*2"),
+    note("<b2!4 e3!2 f#3!2>*2")
+  ).s("sawtooth")
+    .distort(3)
+    .lpf(1500)
+    .attack(0.001)
+    .decay(0.08)
+    .sustain(0.3)
+    .gain(0.5)
+).cpm(44)`} punchcard punchcardLabels={false} />
+
+---
+
+### Post-Punk (120-140 BPM)
+
+Post-punk emerged in the late 70s with bands like Joy Division, Siouxsie and the Banshees, and The Cure. Bass carries the melody, guitars are sparse and atmospheric, drums are mechanical.
+
+**Classic Tracks:**
+- "Love Will Tear Us Apart" by Joy Division — Peter Hook's melodic bass
+- "A Forest" by The Cure — atmospheric and hypnotic
+- "She's Lost Control" by Joy Division — driving bass, sparse guitar
+
+**Characteristics:** Bass-driven melodies, reverb-drenched guitars, angular rhythms, dark atmosphere
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ bd ~ ~ bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.3),
+  note("e3 b3 g3 e3 d3 e3 g3 a3")
+    .s("sawtooth")
+    .lpf(1800)
+    .attack(0.01)
+    .decay(0.3)
+    .sustain(0.4)
+    .room(0.4)
+    .gain(0.6)
+).cpm(33)`} punchcard punchcardLabels={false} />
+
+**With Sparse Guitar:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ bd ~ ~ bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.3),
+  note("e3 b3 g3 e3 d3 e3 g3 a3")
+    .s("sawtooth")
+    .lpf(1800)
+    .room(0.4)
+    .gain(0.5),
+  note("~ e5 ~ ~ ~ b4 ~ ~")
+    .s("sawtooth")
+    .lpf(2500)
+    .room(0.6)
+    .delay(0.4)
+    .delaytime(0.375)
+    .delayfeedback(0.4)
+    .gain(0.3)
+).cpm(33)`} punchcard punchcardLabels={false} />
+
+---
+
+### New Wave / Synth-Pop (110-130 BPM)
+
+Synth-pop brought electronic instruments to the forefront—synthesizers replaced guitars, drum machines replaced drummers. The sound is polished, melodic, and often melancholic.
+
+**Classic Tracks:**
+- "Blue Monday" by New Order — TR-808 drums, sequenced synths
+- "Enjoy the Silence" by Depeche Mode — atmospheric and textured
+- "Take On Me" by a-ha — bright synths, iconic hook
+
+**Equipment:** Roland TR-808/909, Minimoog, Juno-106, DX7
+
+**Characteristics:** Drum machines, synth bass, arpeggiated synths, polished production
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclid(4, 8),
+  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR808").euclid(8, 8).gain(0.4),
+  note("c2 c2 g2 c2 eb2 eb2 g2 eb2")
+    .s("sawtooth")
+    .lpf(600)
+    .attack(0.001)
+    .decay(0.15)
+    .sustain(0.3)
+    .gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+**With Synth Arp:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclid(4, 8),
+  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR808").euclid(8, 8).gain(0.4),
+  note("c2 c2 g2 c2 eb2 eb2 g2 eb2")
+    .s("sawtooth")
+    .lpf(600)
+    .gain(0.5),
+  note("c4 eb4 g4 c5 g4 eb4".fast(2))
+    .s("sawtooth")
+    .lpf(2500)
+    .attack(0.001)
+    .decay(0.1)
+    .sustain(0.1)
+    .delay(0.3)
+    .delaytime(0.125)
+    .gain(0.35)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+### 80s Pop (110-130 BPM)
+
+80s pop is defined by gated reverb drums, synthesizers, and polished production. The LinnDrum and DX7 are signature sounds.
+
+**Classic Tracks:**
+- "Billie Jean" by Michael Jackson — iconic drum pattern, Minimoog bass
+- "Into the Groove" by Madonna — Oberheim DMX drums, Juno-106 chords
+- "Take On Me" by a-ha — bright synths, huge drums
+
+**Equipment:** LinnDrum, Oberheim DMX, Yamaha DX7, Minimoog
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("LinnDrum").euclid(4, 8),
+  sound("sd").bank("LinnDrum").euclidRot(2, 8, 4),
+  sound("hh").bank("LinnDrum").euclid(8, 8).gain(0.5),
+  sound("cp").bank("LinnDrum").euclidRot(2, 16, 8).gain(0.4)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+**Billie Jean Style:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("LinnDrum").euclid(4, 8),
+  sound("sd").bank("LinnDrum").euclidRot(2, 8, 4),
+  sound("hh").bank("LinnDrum").euclid(8, 8).gain(0.4),
+  note("f#2 f#2 f#2 f#3 f#2 f#2 e2 f#2")
+    .s("sawtooth")
+    .lpf(800)
+    .lpq(3)
+    .attack(0.001)
+    .decay(0.15)
+    .sustain(0.2)
+    .gain(0.6)
+).cpm(29)`} punchcard punchcardLabels={false} />
+
+---
+
+### Grunge (100-130 BPM)
+
+Grunge emerged from Seattle in the late 80s/early 90s as a fusion of punk attitude and heavy metal power. Drop-D tuning, heavy distortion, and dynamic shifts between quiet verses and loud choruses.
+
+**Classic Tracks:**
+- "Smells Like Teen Spirit" by Nirvana (~117 BPM) — quiet-loud dynamics
+- "Alive" by Pearl Jam — blues-influenced solos
+- "Black Hole Sun" by Soundgarden — heavy, psychedelic
+
+**Characteristics:** Drop-D tuning, heavy distortion, dynamic contrast, angst-filled vocals
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ bd ~ bd ~ ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.4),
+  stack(
+    note("d2 d2 d2 d3 d2 d2 c2 d2"),
+    note("a2 a2 a2 a3 a2 a2 g2 a2")
+  ).s("sawtooth")
+    .distort(3.5)
+    .lpf(1500)
+    .attack(0.01)
+    .decay(0.2)
+    .sustain(0.6)
+    .gain(0.5)
+).cpm(29)`} punchcard punchcardLabels={false} />
+
+**Quiet Verse:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ ~ ~"),
+  sound("~ ~ sd ~ ~ ~ ~ ~"),
+  note("d2 ~ a2 ~ d2 ~ g2 ~")
+    .s("sawtooth")
+    .lpf(800)
+    .attack(0.01)
+    .decay(0.3)
+    .sustain(0.3)
+    .room(0.2)
+    .gain(0.4)
+).cpm(29)`} punchcard punchcardLabels={false} />
+
+**Loud Chorus:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd bd ~ bd bd ~ bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd sd"),
+  sound("hh*8").gain(0.5),
+  stack(
+    note("d2*8"),
+    note("a2*8")
+  ).s("sawtooth")
+    .distort(4)
+    .lpf(1800)
+    .gain(0.6)
+).cpm(29)`} punchcard punchcardLabels={false} />
+
+---
+
+### Britpop (110-130 BPM)
+
+Britpop emerged in the mid-90s as a reaction to American grunge, drawing on 60s British pop influences like The Beatles and The Kinks. Catchy melodies, jangly guitars, and witty lyrics.
+
+**Classic Tracks:**
+- "Wonderwall" by Oasis — anthemic, acoustic-driven
+- "Song 2" by Blur — "Woo-hoo!" distorted energy
+- "Common People" by Pulp — synth-rock storytelling
+
+**Characteristics:** British influences (Beatles, Kinks), catchy melodies, guitar-pop, swagger
+
+**Oasis Style (Anthemic):**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ bd ~ bd ~ bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.4),
+  note("<e3,g#3,b3> <a2,c#3,e3> <c#3,e3,g#3> <d3,f#3,a3>")
+    .s("sawtooth")
+    .distort(1.5)
+    .lpf(2500)
+    .attack(0.02)
+    .decay(0.3)
+    .sustain(0.5)
+    .room(0.3)
+    .gain(0.4)
+).cpm(29)`} punchcard punchcardLabels={false} />
+
+**Blur Style (Punchy):**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd bd ~ ~ bd bd ~ ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.5),
+  note("f2 f2 ~ f2 ~ f2 f2 ~")
+    .s("sawtooth")
+    .distort(3)
+    .lpf(1500)
+    .attack(0.001)
+    .decay(0.08)
+    .sustain(0.2)
+    .gain(0.6)
+).cpm(33)`} punchcard punchcardLabels={false} />
+
+---
+
+### Indie Rock (110-140 BPM)
+
+Modern indie rock blends influences from post-punk revival, garage rock, and art rock. Often features angular guitar riffs, driving rhythms, and effects-laden tones.
+
+**Classic Tracks:**
+- "Last Nite" by The Strokes — garage rock simplicity
+- "I Bet You Look Good on the Dancefloor" by Arctic Monkeys — driving energy
+- "Take Me Out" by Franz Ferdinand — angular, danceable
+
+**Characteristics:** Garage rock influence, angular guitars, fuzz/overdrive, post-punk revival energy
+
+**Strokes Style:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ bd ~ bd ~ bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.5),
+  note("d3 d3 f3 d3 a3 f3 d3 c3")
+    .s("sawtooth")
+    .distort(1.5)
+    .lpf(3000)
+    .attack(0.001)
+    .decay(0.15)
+    .sustain(0.3)
+    .gain(0.5)
+).cpm(33)`} punchcard punchcardLabels={false} />
+
+**Arctic Monkeys Style:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ bd bd ~ bd bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.4),
+  note("e3 e3 g3 e3 b3 g3 e3 d3")
+    .s("sawtooth")
+    .distort(2.5)
+    .lpf(2500)
+    .lpq(2)
+    .attack(0.001)
+    .decay(0.1)
+    .sustain(0.3)
+    .gain(0.5)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+### Modern Pop (100-130 BPM)
+
+Modern pop is heavily influenced by EDM, hip-hop, and R&B. Characterized by polished production, electronic drums, auto-tuned vocals, and catchy hooks.
+
+**Classic Tracks:**
+- "Bad Guy" by Billie Eilish — minimal, bass-heavy
+- "Blinding Lights" by The Weeknd — 80s synth revival
+- "Shape of You" by Ed Sheeran — tropical house influence
+
+**Characteristics:** Electronic production, compressed vocals, drop-based structure, EDM influences
+
+**Minimal Pop (Billie Eilish style):**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ ~ ~"),
+  sound("~ ~ ~ ~ sd ~ ~ ~"),
+  note("c2 ~ ~ c2 ~ ~ eb2 ~")
+    .s("sine")
+    .lpf(300)
+    .gain(0.8),
+  sound("hh ~ hh ~").gain(0.3)
+).cpm(33)`} punchcard punchcardLabels={false} />
+
+**80s Revival (Blinding Lights style):**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 4),
+  sound("sd").euclidRot(2, 4, 2),
+  sound("hh*8").gain(0.4),
+  note("f3 f3 a3 f3 c4 a3 f3 eb3")
+    .s("sawtooth")
+    .lpf(2000)
+    .attack(0.001)
+    .decay(0.1)
+    .sustain(0.2)
+    .gain(0.5),
+  note("<f2,a2,c3> <eb2,g2,bb2>")
+    .s("supersaw")
+    .lpf(3000)
+    .attack(0.1)
+    .release(0.3)
+    .room(0.3)
+    .gain(0.3)
+).cpm(29)`} punchcard punchcardLabels={false} />
+
+**Tropical Pop (Ed Sheeran style):**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd"),
+  sound("rim").euclidRot(3, 8, 2).gain(0.5),
+  note("c#2 ~ g#2 ~ c#2 ~ b1 c#2")
+    .s("sawtooth")
+    .lpf(600)
+    .gain(0.5),
+  note("<c#3,e3,g#3> <a2,c#3,e3>")
+    .s("sawtooth")
+    .lpf(1500)
+    .attack(0.01)
+    .decay(0.2)
+    .sustain(0.3)
+    .room(0.2)
+    .gain(0.3)
+).cpm(24)`} punchcard punchcardLabels={false} />
+
+---
+
+### Alternative Rock (100-130 BPM)
+
+Alternative rock is a broad category encompassing indie, grunge, and experimental approaches. R.E.M. and Radiohead pushed the genre in different directions.
+
+**Classic Tracks:**
+- "Losing My Religion" by R.E.M. — mandolin-driven, jangly
+- "Creep" by Radiohead — dynamic, emotional
+- "Paranoid Android" by Radiohead — prog-influenced sections
+
+**Characteristics:** Diverse influences, experimental production, dynamic range, introspective lyrics
+
+**R.E.M. Jangle Style:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ bd ~ bd ~ ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.3),
+  note("e4 b3 g3 e3 b3 e4 g4 b4".fast(2))
+    .s("sawtooth")
+    .lpf(4000)
+    .attack(0.001)
+    .decay(0.15)
+    .sustain(0.2)
+    .room(0.3)
+    .gain(0.4)
+).cpm(32)`} punchcard punchcardLabels={false} />
+
+**Radiohead Style (Building):**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.3),
+  note("<g2,b2,d3> <a2,c3,e3> <e2,g2,b2> <c3,e3,g3>")
+    .s("sawtooth")
+    .lpf(sine.range(800, 2500).slow(4))
+    .distort(1.5)
+    .attack(0.05)
+    .decay(0.3)
+    .sustain(0.5)
+    .room(0.4)
+    .gain(0.4)
+).cpm(28)`} punchcard punchcardLabels={false} />
+
+---
+
+## Complete Tracks
+
+### Classic Rock Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd ~ bd ~ bd ~ bd bd"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.5),
+
+  // Bass
+  note("e1 e1 g1 a1 e1 e1 d1 e1")
+    .s("sawtooth")
+    .lpf(600)
+    .gain(0.5),
+
+  // Rhythm Guitar
+  stack(
+    note("e2*4 a2*2 d3*2"),
+    note("b2*4 e3*2 a3*2")
+  ).s("sawtooth")
+    .distort(2)
+    .lpf(2000)
+    .gain(0.4)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+### Post-Punk Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd ~ ~ bd ~ ~ bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.3),
+
+  // Melodic Bass
+  note("e3 b3 g3 e3 d3 e3 g3 a3")
+    .s("sawtooth")
+    .lpf(1500)
+    .room(0.3)
+    .gain(0.5),
+
+  // Sparse Guitar
+  note("~ e5 ~ ~ ~ b4 ~ ~")
+    .s("sawtooth")
+    .lpf(2500)
+    .room(0.5)
+    .delay(0.4)
+    .delaytime(0.375)
+    .delayfeedback(0.5)
+    .gain(0.3)
+).cpm(33)`} punchcard punchcardLabels={false} />
+
+### Synth-Pop Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd").bank("RolandTR808").euclid(4, 8),
+  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),
+  sound("hh").bank("RolandTR808").euclid(8, 8).gain(0.4),
+  sound("oh").bank("RolandTR808").euclidRot(2, 8, 2).gain(0.3),
+
+  // Bass
+  note("c2 c2 g2 c2 eb2 eb2 g2 eb2")
+    .s("sawtooth")
+    .lpf(700)
+    .attack(0.001)
+    .decay(0.15)
+    .sustain(0.2)
+    .gain(0.5),
+
+  // Synth Arp
+  note("c4 eb4 g4 c5 g4 eb4".fast(2))
+    .s("sawtooth")
+    .lpf(3000)
+    .attack(0.001)
+    .decay(0.1)
+    .sustain(0.1)
+    .delay(0.3)
+    .delaytime(0.166)
+    .gain(0.35),
+
+  // Pad
+  note("<c3,eb3,g3> <eb3,g3,bb3>")
+    .s("sawtooth")
+    .lpf(1500)
+    .attack(0.3)
+    .release(0.5)
+    .room(0.4)
+    .gain(0.2)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+### Indie Rock Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd ~ bd bd ~ bd bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh*8").gain(0.5),
+
+  // Bass
+  note("e2 e2 g2 e2 a2 g2 e2 d2")
+    .s("sawtooth")
+    .lpf(800)
+    .gain(0.5),
+
+  // Guitar
+  note("e3 e3 g3 e3 b3 g3 e3 d3")
+    .s("sawtooth")
+    .distort(2)
+    .lpf(2800)
+    .attack(0.001)
+    .decay(0.15)
+    .sustain(0.3)
+    .gain(0.45)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+## Rock & Pop Quick Reference
+
+| Genre | BPM | Key Elements |
+|-------|-----|--------------|
+| Classic Rock | 120-140 | Blues influence, pentatonic, backbeat |
+| Punk | 150-180 | Fast, power chords, downstrokes |
+| Post-Punk | 120-140 | Melodic bass, sparse guitar, reverb |
+| New Wave | 110-130 | Synths, drum machines, arpeggios |
+| 80s Pop | 110-130 | LinnDrum, DX7, gated reverb |
+| Grunge | 100-130 | Drop-D, heavy distortion, dynamics |
+| Britpop | 110-130 | British 60s influence, catchy hooks |
+| Indie Rock | 110-140 | Angular guitars, post-punk revival |
+| Modern Pop | 100-130 | EDM influence, electronic production |
+| Alternative | 100-130 | Diverse, experimental, dynamic |
+
+## What You Learned
+
+- Rock backbeat: snare on 2 and 4, kick on 1 and 3
+- Power chords: root + fifth, foundation of rock guitar
+- `.distort()` values: 1.5-2 for crunch, 3-4 for heavy
+- Post-punk: bass carries melody, guitar is sparse with delay/reverb
+- Synth-pop: drum machines (TR-808/909), synth bass, arpeggios
+- Grunge: drop-D tuning, quiet-loud dynamics
+- Modern pop borrows from EDM and hip-hop production
+- Different eras have distinct drum sounds (acoustic vs. electronic)

@@ -1,0 +1,32 @@
+---
+title: Mute Demo
+layout: ../../../layouts/MainLayout.astro
+---
+
+import { MutableMiniRepl, GlobalMuteButton } from '../../docs/MutableMiniRepl';
+
+# Mute Demo
+
+Each MiniRepl can be muted independently using orbit-based gain control.
+
+<GlobalMuteButton client:visible />
+
+---
+
+<MutableMiniRepl
+  client:visible
+  tune={`s("bd sd hh oh")`}
+  punchcard
+/>
+
+<MutableMiniRepl
+  client:visible
+  tune={`note("c3 eb3 g3 bb3").sound("sawtooth").lpf(800)`}
+  punchcard
+/>
+
+<MutableMiniRepl
+  client:visible
+  tune={`s("hh*8").gain(0.5)`}
+  punchcard
+/>

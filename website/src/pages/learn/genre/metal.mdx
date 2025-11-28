@@ -1,0 +1,250 @@
+---
+title: Metal Music
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+Metal is about power, precision, and aggression. This guide covers the essential techniques for creating metal sounds and rhythms in Strudel.
+
+## The Metal Kick Drum
+
+Metal kicks are fast, punchy, and often doubled. Start with a tight kick sound:
+
+<MiniRepl client:idle tune={`sound("bd bd ~ bd bd bd ~ bd").fast(2).cpm(35)`} punchcard punchcardLabels={false} />
+
+Double bass drumming is a metal staple. Use euclidean patterns for machine-gun kicks:
+
+<MiniRepl client:idle tune={`sound("bd").euclid(15, 16).cpm(35)`} punchcard punchcardLabels={false} />
+
+## Power Chords
+
+Metal relies on power chords—root and fifth played together. Use low notes with distortion:
+
+<MiniRepl client:idle tune={`note("e2 e2 e2 ~ g2 g2 a2 ~")
+  .s("sawtooth")
+  .distort(4)
+  .lpf(800)
+  .attack(0.001)
+  .decay(0.1)
+  .sustain(0.8)
+  .release(0.1)
+  .cpm(35)`} punchcard punchcardLabels={false} />
+
+Stack the root with its fifth for thicker power chords:
+
+<MiniRepl client:idle tune={`stack(
+  note("e2 e2 e2 ~ g2 g2 a2 ~"),
+  note("b2 b2 b2 ~ d3 d3 e3 ~")
+).s("sawtooth")
+  .distort(4)
+  .lpf(900)
+  .cpm(35)`} punchcard punchcardLabels={false} />
+
+## Palm Muting
+
+Palm-muted chugs are the backbone of metal rhythm guitar. Short, percussive notes:
+
+<MiniRepl client:idle tune={`note("e2*8")
+  .s("sawtooth")
+  .distort(3)
+  .lpf(600)
+  .attack(0.001)
+  .decay(0.05)
+  .sustain(0.1)
+  .release(0.05)
+  .cpm(35)`} punchcard punchcardLabels={false} />
+
+Accent certain notes for groove:
+
+<MiniRepl client:idle tune={`note("e2*8")
+  .s("sawtooth")
+  .distort(3)
+  .lpf(600)
+  .gain("1 0.6 0.6 0.6 1 0.6 0.6 0.6")
+  .attack(0.001)
+  .decay(0.05)
+  .sustain(0.1)
+  .release(0.05)
+  .cpm(35)`} punchcard punchcardLabels={false} />
+
+## Blast Beats
+
+Blast beats are extreme speed drumming. Alternating snare and kick at maximum tempo:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd sd").fast(8),
+  sound("hh").fast(16)
+).cpm(50)`} punchcard punchcardLabels={false} />
+
+## Thrash Metal Beat (180 BPM)
+
+Classic thrash with driving double bass and snare on 2 and 4:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(8, 8),
+  sound("sd").euclidRot(2, 8, 4),
+  sound("hh").euclid(8, 8),
+  sound("oh").euclidRot(2, 8, 2)
+).cpm(45)`} punchcard punchcardLabels={false} />
+
+## Death Metal Groove (140 BPM)
+
+Slower, heavier, with syncopated kicks:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(7, 16, 0),
+  sound("sd").euclidRot(2, 8, 4),
+  sound("hh").euclid(12, 16),
+  sound("rim").euclidRot(3, 16, 2)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+## Doom Metal (60 BPM)
+
+Slow, crushing, and heavy. Less is more:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 8, 0),
+  sound("sd").euclidRot(1, 4, 2),
+  sound("hh").euclid(4, 8)
+).cpm(15)`} punchcard punchcardLabels={false} />
+
+With crushing guitar:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 8, 0),
+  sound("sd").euclidRot(1, 4, 2),
+  note("e1 ~ ~ e1 ~ g1 ~ ~")
+    .s("sawtooth")
+    .distort(5)
+    .lpf(500)
+    .attack(0.01)
+    .release(0.3)
+).cpm(15)`} punchcard punchcardLabels={false} />
+
+## Black Metal Tremolo
+
+Tremolo picking creates a wall of sound. Fast repeated notes:
+
+<MiniRepl client:idle tune={`note("e4*16 g4*16 f4*16 e4*16")
+  .s("sawtooth")
+  .distort(4)
+  .lpf(2000)
+  .gain(0.4)
+  .room(0.3)
+  .cpm(50)`} punchcard punchcardLabels={false} />
+
+## Djent Rhythm
+
+Modern progressive metal uses syncopated, staccato rhythms:
+
+<MiniRepl client:idle tune={`note("e2 ~ e2 ~ ~ e2 ~ e2 ~ ~ ~ e2 ~ e2 e2 ~")
+  .s("sawtooth")
+  .distort(3)
+  .lpf(700)
+  .attack(0.001)
+  .decay(0.08)
+  .sustain(0.2)
+  .release(0.05)
+  .cpm(32.5)`} punchcard punchcardLabels={false} />
+
+With polyrhythmic drums:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(5, 16, 0),
+  sound("sd").euclidRot(3, 16, 4),
+  sound("hh").euclid(9, 16),
+  note("e2 ~ e2 ~ ~ e2 ~ e2 ~ ~ ~ e2 ~ e2 e2 ~")
+    .s("sawtooth")
+    .distort(3)
+    .lpf(700)
+    .attack(0.001)
+    .decay(0.08)
+    .sustain(0.2)
+    .release(0.05)
+).cpm(32.5)`} punchcard punchcardLabels={false} />
+
+## Gallop Rhythm
+
+The classic "galloping" triplet feel, made famous by Iron Maiden:
+
+<MiniRepl client:idle tune={`note("e2 e2 e2 e2 e2 e2 g2 g2 g2 a2 a2 a2")
+  .s("sawtooth")
+  .gain("1 0.5 0.5 1 0.5 0.5 1 0.5 0.5 1 0.5 0.5")
+  .distort(2.5)
+  .lpf(1000)
+  .cpm(33)`} punchcard punchcardLabels={false} />
+
+With drums:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 12),
+  sound("sd").euclidRot(2, 6, 3),
+  sound("hh").euclid(12, 12),
+  note("e2 e2 e2 e2 e2 e2 g2 g2 g2 a2 a2 a2")
+    .s("sawtooth")
+    .gain("1 0.5 0.5 1 0.5 0.5 1 0.5 0.5 1 0.5 0.5")
+    .distort(2.5)
+    .lpf(1000)
+).cpm(33)`} punchcard punchcardLabels={false} />
+
+## Breakdown
+
+The heavy, slow section that makes crowds go wild:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~"),
+  sound("~ ~ ~ ~ sd ~ ~ ~"),
+  note("e1 ~ ~ ~ e1 ~ e1 ~")
+    .s("sawtooth")
+    .distort(5)
+    .lpf(500)
+    .attack(0.001)
+    .decay(0.1)
+    .sustain(0.3)
+    .release(0.1)
+).cpm(20)`} punchcard punchcardLabels={false} />
+
+## Full Metal Track
+
+Combining everything—drums, rhythm guitar, and lead:
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd").euclid(7, 8),
+  sound("sd").euclidRot(2, 8, 4),
+  sound("hh").euclid(8, 8).gain(0.6),
+
+  // Rhythm guitar (palm muted)
+  note("e2*8")
+    .s("sawtooth")
+    .distort(3)
+    .lpf(600)
+    .gain("0.8 0.5 0.5 0.5 0.8 0.5 0.5 0.5"),
+
+  // Bass following root
+  note("e1*2")
+    .s("sawtooth")
+    .lpf(300)
+    .gain(0.7)
+).cpm(40)`} punchcard punchcardLabels={false} />
+
+## Metal Subgenre Quick Reference
+
+| Subgenre | BPM | Key Characteristics |
+|----------|-----|---------------------|
+| Thrash | 180-220 | Fast double bass, snare on 2&4 |
+| Death | 120-160 | Blast beats, syncopated kicks |
+| Doom | 50-80 | Slow, heavy, sparse |
+| Black | 160-200 | Tremolo picking, blast beats |
+| Djent | 120-140 | Syncopated, polyrhythmic |
+| Power | 140-180 | Galloping rhythms, major keys |
+
+## What You Learned
+
+- Palm muting uses short attack/decay for percussive sound
+- Power chords stack root + fifth
+- `.distort()` and `.lpf()` shape the metal tone
+- Different subgenres have distinct BPM ranges and patterns
+- Blast beats alternate kick and snare at extreme speeds
+- Gallop rhythms use triplet accents (strong-weak-weak)

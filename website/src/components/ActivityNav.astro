@@ -1,25 +1,55 @@
 ---
 const base = import.meta.env.BASE_URL;
 
-const activities = [
-  { title: 'Piano', href: `${base}learn/piano/`, icon: '🎹' },
-  { title: 'Guitar', href: `${base}learn/guitar/`, icon: '🎸' },
-  { title: 'Samples', href: `${base}learn/sample-explorer/`, icon: '🔊' },
-  { title: 'Sample Quiz', href: `${base}learn/sample-guessing/`, icon: '🎯' },
-  { title: 'Waveform Quiz', href: `${base}learn/waveform-guessing/`, icon: '〰' },
-  { title: 'Effect Quiz', href: `${base}learn/effect-guessing/`, icon: '🎛' },
-  { title: 'Ear Training', href: `${base}learn/ear-training/`, icon: '👂' },
-  { title: 'Harmony', href: `${base}learn/harmony/`, icon: '🎵' },
-  { title: 'Rhythms', href: `${base}learn/euclidean-101/`, icon: '🥁' },
-  { title: 'Metal', href: `${base}learn/metal/`, icon: '🤘' },
-  { title: 'EDM', href: `${base}learn/edm/`, icon: '🎧' },
-  { title: 'Rock & Pop', href: `${base}learn/rock-pop/`, icon: '🎤' },
+const activitySections = [
+  {
+    title: 'Interactive Tools',
+    icon: '🎮',
+    activities: [
+      { title: 'Piano', href: `${base}learn/interactive-tools/piano/`, icon: '🎹' },
+      { title: 'Guitar', href: `${base}learn/interactive-tools/guitar/`, icon: '🎸' },
+      { title: 'Sample Explorer', href: `${base}learn/interactive-tools/sample-explorer/`, icon: '🔊' },
+    ]
+  },
+  {
+    title: 'Quizzes',
+    icon: '🎯',
+    activities: [
+      { title: 'Sample Quiz', href: `${base}learn/quizzes/sample-guessing/`, icon: '🎯' },
+      { title: 'Waveform Quiz', href: `${base}learn/quizzes/waveform-guessing/`, icon: '〰' },
+      { title: 'Effect Quiz', href: `${base}learn/quizzes/effect-guessing/`, icon: '🎛' },
+      { title: 'Ear Training', href: `${base}learn/quizzes/ear-training/`, icon: '👂' },
+    ]
+  },
+  {
+    title: 'Music Theory',
+    icon: '🎵',
+    activities: [
+      { title: 'Harmony', href: `${base}learn/theory/harmony/`, icon: '🎶' },
+      { title: 'Chord Composition', href: `${base}learn/theory/chord-composition/`, icon: '🎼' },
+      { title: 'Rhythms', href: `${base}learn/theory/euclidean-101/`, icon: '🥁' },
+    ]
+  },
+  {
+    title: 'Genre Studies',
+    icon: '🎸',
+    activities: [
+      { title: 'Metal', href: `${base}learn/genre/metal/`, icon: '🤘' },
+      { title: 'EDM', href: `${base}learn/genre/edm/`, icon: '🎧' },
+      { title: 'Rock & Pop', href: `${base}learn/genre/rock-pop/`, icon: '🎤' },
+    ]
+  },
 ];
 
 const currentPath = Astro.url.pathname;
+
+// Check if any activity in section is active
+const isSectionActive = (activities: any[]) => {
+  return activities.some(activity => currentPath.includes(activity.href.replace(base, '/')));
+};
 ---
 
-<nav class="flex flex-col gap-1 h-full">
+<nav class="flex flex-col gap-1 h-full overflow-y-auto">
   <a
     href={base}
     class="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors mb-2"
@@ -28,21 +58,50 @@ const currentPath = Astro.url.pathname;
     <span>JamDojo</span>
   </a>
 
-  {activities.map((activity) => {
-    const isActive = currentPath.includes(activity.href.replace(base, '/'));
+  {activitySections.map((section, sectionIndex) => {
+    const sectionId = `activity-section-${sectionIndex}`;
+    const isActive = isSectionActive(section.activities);
     return (
-      <a
-        href={activity.href}
-        class:list={[
-          'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm',
-          isActive
-            ? 'bg-cyan-600 text-white'
-            : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-        ]}
-      >
-        <span class="text-lg">{activity.icon}</span>
-        <span>{activity.title}</span>
-      </a>
+      <div class="mb-1">
+        <button
+          class="activity-accordion-header w-full text-left px-3 py-2 hover:bg-gray-800 rounded-lg transition-colors flex items-center justify-between text-sm text-gray-400"
+          aria-expanded={isActive ? "true" : "false"}
+          aria-controls={sectionId}
+        >
+          <div class="flex items-center gap-2">
+            <span>{section.icon}</span>
+            <span class="font-medium">{section.title}</span>
+          </div>
+          <svg
+            class="activity-accordion-icon w-4 h-4 transition-transform"
+            style={isActive ? "transform: rotate(90deg)" : ""}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+        <div id={sectionId} class="activity-accordion-content pl-4" style={isActive ? "" : "display: none;"}>
+          {section.activities.map((activity) => {
+            const isActivityActive = currentPath.includes(activity.href.replace(base, '/'));
+            return (
+              <a
+                href={activity.href}
+                class:list={[
+                  'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm',
+                  isActivityActive
+                    ? 'bg-cyan-600 text-white'
+                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                ]}
+              >
+                <span class="text-lg">{activity.icon}</span>
+                <span>{activity.title}</span>
+              </a>
+            );
+          })}
+        </div>
+      </div>
     );
   })}
 
@@ -51,3 +110,26 @@ const currentPath = Astro.url.pathname;
     <a href="https://github.com/tidalcycles/strudel" target="_blank" rel="noopener" class="block hover:text-cyan-400">Strudel (AGPL-3.0)</a>
   </div>
 </nav>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const accordionHeaders = document.querySelectorAll('.activity-accordion-header');
+    accordionHeaders.forEach((header) => {
+      header.addEventListener('click', () => {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('.activity-accordion-icon');
+        const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+        if (isExpanded) {
+          content.style.display = 'none';
+          header.setAttribute('aria-expanded', 'false');
+          icon.style.transform = 'rotate(0deg)';
+        } else {
+          content.style.display = 'block';
+          header.setAttribute('aria-expanded', 'true');
+          icon.style.transform = 'rotate(90deg)';
+        }
+      });
+    });
+  });
+</script>

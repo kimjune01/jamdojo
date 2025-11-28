@@ -1,0 +1,1044 @@
+---
+title: Harmony
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+Harmony is what happens when multiple notes sound together. It's what makes music feel happy, sad, tense, or resolved. This guide teaches harmony through Strudel's powerful chord and voicing system, with a focus on jazz harmony—the richest harmonic tradition in Western music.
+
+## What is Harmony?
+
+When you play a single note, that's melody. When you play multiple notes at the same time, that's harmony:
+
+**A single note (melody):**
+
+<MiniRepl client:idle tune={`note("c4").room(.5)`} punchcard punchcardLabels={false} />
+
+**Multiple notes together (harmony):**
+
+<MiniRepl client:idle tune={`note("<[c3,e3,g3]>").room(.5)`} punchcard punchcardLabels={false} />
+
+The second example plays three notes at once—this is called a **chord**. Chords are the building blocks of harmony.
+
+---
+
+## Your First Chord
+
+Writing `[c3,e3,g3]` every time is tedious. Strudel has a shortcut—the `chord()` function combined with `voicing()`:
+
+<MiniRepl client:idle tune={`chord("C").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+That's it! `chord("C")` specifies a C major chord, and `voicing()` turns it into actual notes.
+
+**Multiple chords in sequence:**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+This plays four chords, one after another. The `< >` brackets create a sequence that cycles through.
+
+---
+
+## Major vs Minor: The Two Flavors
+
+Every chord has a quality—major or minor. This is the most important distinction in harmony:
+
+- **Major** = bright, happy, resolved
+- **Minor** = dark, sad, mysterious
+
+**Major chord:**
+
+<MiniRepl client:idle tune={`chord("C").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Minor chord:**
+
+<MiniRepl client:idle tune={`chord("Cm").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Side by side:**
+
+<MiniRepl client:idle tune={`chord("<C Cm C Cm>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+Notation: `C` = C major, `Cm` = C minor. You can also write `C-` for minor.
+
+---
+
+## Pop & Rock Progressions
+
+Before diving into jazz, let's explore the chord progressions that power most popular music. These use simple major and minor chords—no fancy extensions needed.
+
+### Understanding Roman Numerals
+
+Musicians use Roman numerals to describe chord progressions. Each number represents a chord built on that note of the scale:
+
+**In the key of C major, the scale is: C - D - E - F - G - A - B**
+
+| Number | Note | Chord | Type |
+|--------|------|-------|------|
+| I | C | C | Major |
+| ii | D | Dm | minor |
+| iii | E | Em | minor |
+| IV | F | F | Major |
+| V | G | G | Major |
+| vi | A | Am | minor |
+| vii° | B | Bdim | diminished |
+
+**Uppercase = Major, lowercase = minor**
+
+This system lets you play the same progression in any key. "I-V-vi-IV" in C is C-G-Am-F, but in G it's G-D-Em-C.
+
+---
+
+### The I-V-vi-IV: The Most Popular Progression
+
+This four-chord progression appears in hundreds of hit songs:
+
+**I-V-vi-IV in C = C - G - Am - F**
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Songs using I-V-vi-IV:**
+- "Let It Be" — The Beatles
+- "No Woman No Cry" — Bob Marley
+- "With or Without You" — U2
+- "Someone Like You" — Adele
+- "Demons" — Imagine Dragons
+
+Try it in different keys:
+
+**In G:**
+
+<MiniRepl client:idle tune={`chord("<G D Em C>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**In D:**
+
+<MiniRepl client:idle tune={`chord("<D A Bm G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+---
+
+### The I-vi-IV-V: The 50s Progression
+
+This "doo-wop" progression defined 1950s rock and roll:
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Songs using I-vi-IV-V:**
+- "Stand By Me" — Ben E. King
+- "Every Breath You Take" — The Police
+- "Earth Angel" — The Penguins
+
+---
+
+### The vi-IV-I-V: The Emotional Minor Start
+
+Starting on the minor chord creates a more emotional, melancholic feel:
+
+<MiniRepl client:idle tune={`chord("<Am F C G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Songs using vi-IV-I-V:**
+- "Despacito" — Luis Fonsi
+- "Africa" — Toto
+- "Grenade" — Bruno Mars
+
+---
+
+### The I-IV: The Two-Chord Wonder
+
+Sometimes two chords are all you need:
+
+<MiniRepl client:idle tune={`chord("<C F C F>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Songs using mostly I-IV:**
+- "Achy Breaky Heart" — Billy Ray Cyrus
+- "Jamming" — Bob Marley
+- Many folk and country songs
+
+---
+
+### Adding Bass to Pop Progressions
+
+Make your progressions fuller by adding a bass line with `rootNotes()`:
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").layer(
+  x => x.voicing(),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600)
+).room(.5)`} punchcard punchcardLabels={false} />
+
+**With a simple drum beat:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<C G Am F>").voicing().gain(0.6),
+  chord("<C G Am F>").rootNotes(2).note().s('sawtooth').lpf(600),
+  sound("bd bd bd bd"),
+  sound("~ sd ~ sd")
+).room(.4).cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+### Power Chords: Rock Guitar Sound
+
+In rock music, "power chords" use just the root and fifth—no third. This creates an ambiguous sound that works with distortion:
+
+<MiniRepl client:idle tune={`chord("<C5 G5 A5 F5>").voicing()
+  .s('sawtooth')
+  .distort(2)
+  .lpf(1500)
+  .room(.3)`} punchcard punchcardLabels={false} />
+
+**Classic rock riff:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<E5 E5 A5 E5 E5 B5 A5 E5>").voicing()
+    .s('sawtooth')
+    .distort(2.5)
+    .lpf(1200)
+    .gain(0.6),
+  sound("bd ~ bd ~ bd ~ bd bd"),
+  sound("~ ~ sd ~ ~ ~ sd ~")
+).room(.3).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+### Strumming Patterns
+
+Add rhythm to your chords with `.struct()`:
+
+**Basic strum (all beats):**
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing()
+  .struct("x x x x")
+  .room(.5)`} punchcard punchcardLabels={false} />
+
+**Down-up strum pattern:**
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing()
+  .struct("x ~ [x x] ~")
+  .room(.5)`} punchcard punchcardLabels={false} />
+
+**Syncopated rhythm:**
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing()
+  .struct("x ~ x ~ ~ x ~ x")
+  .room(.5)`} punchcard punchcardLabels={false} />
+
+---
+
+### Complete Pop Song Structure
+
+Here's a full pop arrangement with drums, bass, and chords:
+
+<MiniRepl client:idle tune={`stack(
+  // Chords
+  chord("<C G Am F>").voicing()
+    .struct("[~ x] [~ x]")
+    .gain(0.5),
+
+  // Bass
+  chord("<C G Am F>").rootNotes(2).note()
+    .s('sawtooth')
+    .lpf(500)
+    .gain(0.6),
+
+  // Drums
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd"),
+  sound("hh*8").gain(0.4)
+).room(.4).cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+### Acoustic Ballad Style
+
+Softer, arpeggiated chords for ballads:
+
+<MiniRepl client:idle tune={`n("0 1 2 1 0 1 2 1").chord("<C G Am F>").voicing()
+  .room(.5)
+  .cpm(25)`} punchcard punchcardLabels={false} />
+
+**With bass:**
+
+<MiniRepl client:idle tune={`stack(
+  n("0 1 2 1 0 1 2 1").chord("<C G Am F>").voicing().gain(0.5),
+  chord("<C G Am F>").rootNotes(2).note().s('sawtooth').lpf(400)
+).room(.5).cpm(25)`} punchcard punchcardLabels={false} />
+
+---
+
+### Minor Key Pop
+
+Many modern pop songs use minor keys for emotional depth:
+
+**Am-Em-F-G (minor progression):**
+
+<MiniRepl client:idle tune={`chord("<Am Em F G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Cm-Ab-Eb-Bb (darker feel):**
+
+<MiniRepl client:idle tune={`chord("<Cm Ab Eb Bb>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**With full arrangement:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<Am Em F G>").voicing().struct("[~ x] [~ x]").gain(0.5),
+  chord("<Am Em F G>").rootNotes(2).note().s('sawtooth').lpf(500),
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd"),
+  sound("hh").euclid(8,8).gain(0.3)
+).room(.4).cpm(28)`} punchcard punchcardLabels={false} />
+
+---
+
+### Country & Folk Progressions
+
+Country music often uses the I-IV-V progression:
+
+<MiniRepl client:idle tune={`chord("<G G C D>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Country train beat:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<G G C D>").voicing().struct("x ~ x ~").gain(0.5),
+  chord("<G G C D>").rootNotes(2).note().s('sawtooth').lpf(500),
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd"),
+  sound("hh").euclid(8,8).gain(0.4)
+).room(.4).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+### Reggae: Offbeat Chords
+
+Reggae emphasizes the offbeats (the "and" of each beat):
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing()
+  .struct("~ x ~ x ~ x ~ x")
+  .room(.5)
+  .cpm(22)`} punchcard punchcardLabels={false} />
+
+**With reggae drums:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<C G Am F>").voicing().struct("~ x ~ x ~ x ~ x").gain(0.5),
+  chord("<C G Am F>").rootNotes(2).note().s('sawtooth').lpf(500),
+  sound("bd ~ ~ bd ~ ~ bd ~"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").gain(0.8),
+  sound("hh").euclid(8,8).gain(0.3)
+).room(.4).cpm(22)`} punchcard punchcardLabels={false} />
+
+---
+
+## Moving to Jazz: Adding the Seventh
+
+Now that you're comfortable with basic progressions, let's add more color. Jazz adds a **seventh note** to chords for richness.
+
+---
+
+## Seventh Chords: The Jazz Sound
+
+Jazz rarely uses plain major/minor chords. It adds a **seventh note** for richness:
+
+**Plain C major (3 notes):**
+
+<MiniRepl client:idle tune={`chord("C").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**C major seventh (4 notes):**
+
+<MiniRepl client:idle tune={`chord("C^7").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+The seventh adds sophistication. There are three main types of seventh chords:
+
+### Major 7th (^7)
+Smooth, dreamy, resolved. Used on the "home" chord in jazz.
+
+<MiniRepl client:idle tune={`chord("C^7").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+### Minor 7th (m7 or -7)
+Mellow, relaxed. Very common in jazz.
+
+<MiniRepl client:idle tune={`chord("Cm7").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+### Dominant 7th (7)
+Bluesy, tense, wants to resolve. The engine of jazz harmony.
+
+<MiniRepl client:idle tune={`chord("C7").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Compare all three:**
+
+<MiniRepl client:idle tune={`chord("<C^7 Cm7 C7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## The ii-V-I Progression: Jazz Foundation
+
+The **ii-V-I** (two-five-one) is the most important progression in jazz. Nearly every jazz standard contains it:
+
+- **ii** = minor 7th chord built on the 2nd note of the scale
+- **V** = dominant 7th chord built on the 5th note
+- **I** = major 7th chord built on the 1st note (home)
+
+**In the key of C:**
+- ii = Dm7 (D minor 7)
+- V = G7 (G dominant 7)
+- I = C^7 (C major 7)
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 C^7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+The ii-V creates tension that resolves to the I. This is the heart of jazz harmony.
+
+**Classic recordings featuring ii-V-I:**
+- "Autumn Leaves" — the entire song is built on ii-V-I progressions
+- "All The Things You Are" — Jerome Kern's standard
+- "Satin Doll" — Duke Ellington
+
+### ii-V-I in Different Keys
+
+The same pattern works in any key:
+
+**In F:**
+
+<MiniRepl client:idle tune={`chord("<Gm7 C7 F^7 F^7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**In Bb:**
+
+<MiniRepl client:idle tune={`chord("<Cm7 F7 Bb^7 Bb^7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**In G:**
+
+<MiniRepl client:idle tune={`chord("<Am7 D7 G^7 G^7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Voicing Dictionaries: Different Styles
+
+Strudel includes multiple **voicing dictionaries**—different ways to play the same chords. Use `.dict()` to select one:
+
+### Default (ireal)
+Full, rich jazz voicings:
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 A7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+### Lefthand
+Rootless voicings—what jazz pianists play with their left hand while soloing:
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 A7>").dict('lefthand').voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+### Guide Tones
+Just the 3rd and 7th—the essential notes that define each chord:
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 A7>").dict('guidetones').voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+### Triads
+Simple three-note chords—good for pop/rock:
+
+<MiniRepl client:idle tune={`chord("<Dm G C Am>").dict('triads').voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Compare them all on the same progression:**
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 A7>*4")
+  .dict("<ireal lefthand guidetones triads>")
+  .voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Voice Leading with anchor() and mode()
+
+**Voice leading** is the art of moving smoothly between chords. Good voice leading keeps notes close together rather than jumping around.
+
+### The anchor() Function
+
+`anchor()` tells the voicing where to center. Voicings will cluster around this note:
+
+**Without anchor (might jump around):**
+
+<MiniRepl client:idle tune={`chord("<C^7 F^7 Dm7 G7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**With anchor at C5 (smooth):**
+
+<MiniRepl client:idle tune={`chord("<C^7 F^7 Dm7 G7>").anchor("c5").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Higher anchor for brighter sound:**
+
+<MiniRepl client:idle tune={`chord("<C^7 F^7 Dm7 G7>").anchor("g5").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Lower anchor for darker sound:**
+
+<MiniRepl client:idle tune={`chord("<C^7 F^7 Dm7 G7>").anchor("g3").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+### The mode() Function
+
+`mode()` controls whether voicings go above or below the anchor:
+
+- `below` (default) — top note at or below anchor
+- `above` — bottom note at or above anchor
+- `root` — root note in bass position
+
+<MiniRepl client:idle tune={`chord("C^7").mode("below").anchor("c5").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+<MiniRepl client:idle tune={`chord("C^7").mode("above").anchor("c4").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+<MiniRepl client:idle tune={`chord("C^7").mode("root").anchor("c3").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Adding Bass with rootNotes()
+
+Jazz typically has a bass player playing the root notes. Use `rootNotes()` to extract bass notes from chords:
+
+**Just the bass notes:**
+
+<MiniRepl client:idle tune={`chord("<C^7 A7 Dm7 G7>").rootNotes(2).note().room(.5)`} punchcard punchcardLabels={false} />
+
+### Combining Chords and Bass with layer()
+
+The `layer()` function lets you create multiple parts from the same chord progression:
+
+<MiniRepl client:idle tune={`chord("<C^7 A7 Dm7 G7>").layer(
+  x => x.voicing().room(.5),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(800)
+)`} punchcard punchcardLabels={false} />
+
+**Piano comping with bass (jazz rhythm section):**
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 A7>*2").layer(
+  x => x.struct("[~ x]*2").dict('lefthand').voicing(),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600)
+).room(.5).cpm(32)`} punchcard punchcardLabels={false} />
+
+The `.struct("[~ x]*2")` creates the classic jazz comping rhythm—playing on beats 2 and 4.
+
+---
+
+## Walking Bass Lines
+
+In jazz, the bass often "walks"—playing a note on every beat, moving stepwise between chord tones. You can create walking bass patterns:
+
+**Simple root motion:**
+
+<MiniRepl client:idle tune={`chord("<C^7 A7 Dm7 G7>*2").layer(
+  x => x.struct("[~ x]*2").dict('lefthand').voicing(),
+  x => x.rootNotes(2).struct("x x x x").note().s('sawtooth').lpf(600)
+).room(.5).cpm(32)`} punchcard punchcardLabels={false} />
+
+**With chromatic approach notes:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<Dm7 G7 C^7 A7>").struct("[~ x]*2").dict('lefthand').voicing(),
+  note("d2 e2 f2 f#2 g2 a2 b2 bb2 c2 d2 e2 eb2 a2 b2 c3 c#3")
+    .s('sawtooth').lpf(600)
+).room(.5).cpm(32)`} punchcard punchcardLabels={false} />
+
+---
+
+## Jazz Blues: 12-Bar with 7ths
+
+The **jazz blues** takes the standard 12-bar blues and enriches it with jazz harmony:
+
+**Basic Jazz Blues in F:**
+
+<MiniRepl client:idle tune={`chord(`+"`"+`<
+  F7 Bb7 F7 Cm7 F7
+  Bb7 Bo F7 Am7 D7
+  Gm7 C7 F7 D7 Gm7 C7
+>`+"`"+`).voicing().room(.5).cpm(28)`} punchcard punchcardLabels={false} />
+
+**Jazz Blues with Rhythm Section:**
+
+<MiniRepl client:idle tune={`let chords = chord(`+"`"+`<
+  F7 Bb7 F7 [Cm7 F7]
+  Bb7 Bo F7 [Am7 D7]
+  Gm7 C7 [F7 D7] [Gm7 C7]
+>`+"`"+`)
+stack(
+  chords.struct("[~ x]*2").dict('lefthand').voicing(),
+  chords.rootNotes(2).note().s('sawtooth').lpf(600)
+).room(.5).cpm(32)`} punchcard punchcardLabels={false} />
+
+---
+
+## The Turnaround: I-vi-ii-V
+
+The **turnaround** is a progression that leads back to the beginning. It's used at the end of sections:
+
+<MiniRepl client:idle tune={`chord("<C^7 Am7 Dm7 G7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**With tritone substitution (advanced):**
+
+<MiniRepl client:idle tune={`chord("<C^7 Eb7 Dm7 Db7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Turnaround with rhythm section:**
+
+<MiniRepl client:idle tune={`chord("<C^7 Am7 Dm7 G7>*2").layer(
+  x => x.struct("[~ x] [x ~]").voicing(),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600)
+).room(.5).cpm(36)`} punchcard punchcardLabels={false} />
+
+---
+
+## Extended Chords: 9ths, 11ths, 13ths
+
+Jazz often uses **extended chords** that add more notes above the 7th:
+
+### 9th Chords
+Add color without changing the function:
+
+<MiniRepl client:idle tune={`chord("<Dm9 G9 C^9>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+### Altered Dominants
+For maximum tension, use altered chords (b9, #9, b13):
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7b9 C^7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7#9 C^7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7alt C^7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Arpeggios: Chords as Melody
+
+An **arpeggio** plays chord notes one at a time instead of together. Use `n()` with `chord()` to select individual notes:
+
+**Basic arpeggio:**
+
+<MiniRepl client:idle tune={`n("0 1 2 3").chord("C^7").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Arpeggio pattern over chord changes:**
+
+<MiniRepl client:idle tune={`n("0 1 2 3 2 1").chord("<C^7 Am7 Dm7 G7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Jazz arpeggio with rhythm:**
+
+<MiniRepl client:idle tune={`n("0 [0,2] 1 [1,3]").chord("<Dm7 G7 C^7 A7>")
+  .voicing().fast(2).room(.5).cpm(30)`} punchcard punchcardLabels={false} />
+
+### The arp() Function
+
+You can also use `.arp()` to create arpeggio patterns:
+
+<MiniRepl client:idle tune={`chord("<C^7 Am7 Dm7 G7>").voicing().arp("0 1 2 3").room(.5)`} punchcard punchcardLabels={false} />
+
+<MiniRepl client:idle tune={`chord("<C^7 Am7 Dm7 G7>").voicing().arp("0 2 1 3 2 0").room(.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Beyond Jazz: Pop Progressions
+
+Jazz harmony enriches other genres too. Here's the famous **I-V-vi-IV** pop progression with jazz voicings:
+
+**Simple triads (pop style):**
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").dict('triads').voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**With 7ths (neo-soul style):**
+
+<MiniRepl client:idle tune={`chord("<C^7 G7 Am7 F^7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+**Pop with bass:**
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").layer(
+  x => x.dict('triads').voicing(),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600)
+).room(.5).cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+## Blues Harmony
+
+Blues uses **dominant 7th chords** throughout, even where major or minor would normally go:
+
+**12-Bar Blues in E:**
+
+<MiniRepl client:idle tune={`chord(`+"`"+`<
+  E7 E7 E7 E7
+  A7 A7 E7 E7
+  B7 A7 E7 B7
+>`+"`"+`).voicing().room(.5).cpm(25)`} punchcard punchcardLabels={false} />
+
+**Shuffle Blues with Bass:**
+
+<MiniRepl client:idle tune={`chord("<E7!4 A7!2 E7!2 B7 A7 E7 B7>").layer(
+  x => x.voicing().struct("x [~ x] x [~ x]"),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(400)
+).room(.5).cpm(28)`} punchcard punchcardLabels={false} />
+
+---
+
+## Neo-Soul & R&B
+
+Modern R&B uses rich extended chords and smooth voice leading:
+
+<MiniRepl client:idle tune={`chord("<C^9 Am9 Dm9 G7b13>")
+  .anchor("c5")
+  .voicing()
+  .s('sawtooth')
+  .lpf(1500)
+  .room(.4)
+  .cpm(24)`} punchcard punchcardLabels={false} />
+
+**Neo-soul with rhythm section:**
+
+<MiniRepl client:idle tune={`chord("<C^9 Am9 Dm9 G7b13>*2").layer(
+  x => x.struct("[~ x]*2").voicing().s('sawtooth').lpf(1500),
+  x => x.rootNotes(2).note().s('sine').lpf(400)
+).room(.4).cpm(24)`} punchcard punchcardLabels={false} />
+
+---
+
+## Bossa Nova
+
+Brazilian jazz features flowing rhythm and minor 7th cycles:
+
+<MiniRepl client:idle tune={`chord("<Am7 Am7 Dm7 E7>").layer(
+  x => x.struct("x ~ [x ~] ~ x ~ ~ ~").voicing(),
+  x => x.rootNotes(2).struct("x ~ ~ x ~ x ~ ~").note()
+).room(.4).cpm(35)`} punchcard punchcardLabels={false} />
+
+**"Girl From Ipanema" style:**
+
+<MiniRepl client:idle tune={`chord("<F^7 F^7 G7 G7 Gm7 Gb7 F^7 Gb7>").layer(
+  x => x.struct("x ~ [x ~] ~").voicing(),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600)
+).room(.4).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+## Modal Jazz
+
+Modal jazz, pioneered by Miles Davis on "Kind of Blue," uses fewer chord changes and focuses on scales/modes:
+
+**So What / Impressions style (Dm7 for 8 bars, Ebm7 for 8 bars):**
+
+<MiniRepl client:idle tune={`chord("<Dm7!4 Ebm7!4>")
+  .dict('lefthand')
+  .voicing()
+  .struct("[~ x] [~ x]")
+  .room(.5)
+  .cpm(36)`} punchcard punchcardLabels={false} />
+
+**Quartal voicings (stacked 4ths, characteristic of modal jazz):**
+
+<MiniRepl client:idle tune={`note("<[d3,g3,c4,f4] [d3,g3,c4,f4] [eb3,ab3,db4,gb4] [eb3,ab3,db4,gb4]>")
+  .struct("[~ x] [~ x]")
+  .room(.5)
+  .cpm(36)`} punchcard punchcardLabels={false} />
+
+---
+
+## Complete Jazz Combo Examples
+
+### Swing Standard
+
+<MiniRepl client:idle tune={`stack(
+  // Piano comping
+  chord("<Dm7 G7 C^7 A7>*2")
+    .dict('lefthand')
+    .struct("[~ x] [x ~] [~ x] x")
+    .voicing()
+    .gain(0.6),
+
+  // Bass
+  chord("<Dm7 G7 C^7 A7>*2")
+    .rootNotes(2)
+    .note()
+    .s('sawtooth')
+    .lpf(600)
+    .gain(0.7),
+
+  // Drums
+  sound("hh").euclid(6, 8).gain(0.4),
+  sound("rim").euclidRot(2, 8, 4).gain(0.3)
+).room(.3).cpm(40)`} punchcard punchcardLabels={false} />
+
+### Medium Swing Blues
+
+<MiniRepl client:idle tune={`let chords = chord(`+"`"+`<F7 Bb7 F7 [Cm7 F7] Bb7 Bo F7 [Am7 D7] Gm7 C7 [F7 D7] [Gm7 C7]>`+"`"+`)
+stack(
+  chords.dict('lefthand').struct("[~ x]*2").voicing().gain(0.5),
+  chords.rootNotes(2).note().s('sawtooth').lpf(600).gain(0.6),
+  sound("hh").euclid(6, 8).gain(0.3),
+  sound("rim").euclidRot(3, 8, 4).gain(0.25)
+).room(.3).cpm(36)`} punchcard punchcardLabels={false} />
+
+### Bossa Nova
+
+<MiniRepl client:idle tune={`stack(
+  chord("<Am7 Am7 Dm7 E7>*2")
+    .struct("x ~ [x ~] ~ x ~ ~ ~")
+    .voicing()
+    .gain(0.5),
+
+  chord("<Am7 Am7 Dm7 E7>*2")
+    .rootNotes(2)
+    .struct("x ~ ~ x ~ x ~ ~")
+    .note()
+    .s('sawtooth')
+    .lpf(600)
+    .gain(0.6),
+
+  sound("rim").euclid(5, 8).gain(0.3),
+  sound("hh").euclid(8, 8).gain(0.2)
+).room(.4).cpm(35)`} punchcard punchcardLabels={false} />
+
+### Ballad
+
+<MiniRepl client:idle tune={`chord("<C^9 Am9 Dm9 G7b13>")
+  .layer(
+    x => x.voicing().s('supersaw').lpf(2000).attack(0.1).release(0.5).gain(0.3),
+    x => x.rootNotes(2).note().s('sine').lpf(300).gain(0.6)
+  )
+  .room(.5)
+  .slow(1.5)`} punchcard punchcardLabels={false} />
+
+### Uptempo Bebop
+
+<MiniRepl client:idle tune={`stack(
+  chord("<Dm7 G7 C^7 A7 Dm7 G7 Em7 A7>")
+    .dict('guidetones')
+    .struct("~ x ~ x")
+    .voicing()
+    .gain(0.5),
+
+  chord("<Dm7 G7 C^7 A7 Dm7 G7 Em7 A7>")
+    .rootNotes(2)
+    .note()
+    .s('sawtooth')
+    .lpf(500)
+    .gain(0.6),
+
+  sound("hh").euclid(8, 8).gain(0.3),
+  sound("rim").euclidRot(3, 8, 2).gain(0.25)
+).room(.3).cpm(55)`} punchcard punchcardLabels={false} />
+
+---
+
+## Chord Symbol Quick Reference
+
+| Symbol | Name | Character |
+|--------|------|-----------|
+| C | Major | Bright, happy |
+| Cm or C- | Minor | Dark, sad |
+| C7 | Dominant 7 | Bluesy, wants to resolve |
+| C^7 or CM7 | Major 7 | Smooth, dreamy |
+| Cm7 or C-7 | Minor 7 | Mellow, relaxed |
+| Cdim or Co | Diminished | Tense, unstable |
+| Caug or C+ | Augmented | Mysterious, floating |
+| C9 | Dominant 9 | Rich dominant |
+| C^9 | Major 9 | Lush, beautiful |
+| Cm9 | Minor 9 | Warm, sophisticated |
+| C7b9 | Dominant b9 | Tense altered |
+| C7#9 | Dominant #9 | "Hendrix chord" |
+| C7alt | Altered dominant | Maximum tension |
+| Csus | Suspended | Ambiguous, floating |
+| C6 | Major 6 | Vintage jazz |
+| Cm7b5 or Ch | Half-diminished | Minor ii chord |
+
+---
+
+## Voicing Dictionary Reference
+
+| Dictionary | Character | Best For |
+|------------|-----------|----------|
+| ireal | Full, rich | General jazz comping |
+| ireal-ext | Extended | Complex jazz voicings |
+| lefthand | Rootless | Piano left-hand, trio settings |
+| guidetones | Minimal (3rd+7th) | Sparse arrangements, sketching |
+| triads | Simple 3-note | Pop, rock, folk |
+
+---
+
+## Common Jazz Progressions
+
+| Progression | Chords (in C) | Usage |
+|-------------|---------------|-------|
+| ii-V-I | Dm7 G7 C^7 | Foundation of jazz |
+| I-vi-ii-V | C^7 Am7 Dm7 G7 | Turnaround |
+| iii-vi-ii-V | Em7 Am7 Dm7 G7 | Extended turnaround |
+| Jazz Blues | F7 Bb7 F7... | 12-bar with substitutions |
+| Rhythm Changes | Bb^7 Gm7 Cm7 F7... | "I Got Rhythm" |
+| Coltrane Changes | C^7 Eb7 Ab^7 B7... | Giant Steps |
+
+---
+
+## More Jazz Styles
+
+### Cool Jazz
+
+Cool jazz features a relaxed, laid-back feel with softer dynamics and slower harmonic rhythm:
+
+<MiniRepl client:idle tune={`chord("<C^9 C^9 Dm9 Dm9 Em9 Em9 Dm9 G7b9>")
+  .anchor("c5")
+  .voicing()
+  .s('sawtooth')
+  .lpf(1200)
+  .room(.4)
+  .cpm(28)`} punchcard punchcardLabels={false} />
+
+**Cool Jazz with bass:**
+
+<MiniRepl client:idle tune={`chord("<C^9 Dm9 Em9 Dm9>*2").layer(
+  x => x.struct("[~ x] ~ [~ x] ~").voicing().s('sawtooth').lpf(1200),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(500)
+).room(.4).cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+### Latin Jazz
+
+Latin jazz combines jazz harmony with Afro-Cuban rhythms like the clave:
+
+<MiniRepl client:idle tune={`stack(
+  chord("<Dm7 G7 C^7 A7>").struct("x ~ x ~ ~ x ~ x").voicing().gain(0.6),
+  chord("<Dm7 G7 C^7 A7>").rootNotes(2).note().s('sawtooth').lpf(600).gain(0.7),
+  sound("rim").euclid(5, 16).gain(0.4)
+).room(.3).cpm(45)`} punchcard punchcardLabels={false} />
+
+**Montuno pattern:**
+
+<MiniRepl client:idle tune={`stack(
+  n("0 2 4 2 0 2 4 2").chord("<Dm7 G7 C^7 A7>").voicing().gain(0.5),
+  chord("<Dm7 G7 C^7 A7>").rootNotes(2).note().s('sawtooth').lpf(500).gain(0.6),
+  sound("rim").euclid(5, 16).gain(0.35)
+).room(.3).cpm(50)`} punchcard punchcardLabels={false} />
+
+---
+
+### Funk & Soul
+
+Funk uses rhythmic chord stabs with 9th and 13th chords:
+
+<MiniRepl client:idle tune={`chord("<E9!4 A9!2 E9!2>")
+  .struct("x ~ [~ x] ~ x ~ [x ~] ~")
+  .voicing()
+  .s('sawtooth')
+  .lpf(2000)
+  .room(.3)
+  .cpm(28)`} punchcard punchcardLabels={false} />
+
+**Funk with bass and drums:**
+
+<MiniRepl client:idle tune={`stack(
+  chord("<E9!4 A9!2 E9!2>")
+    .struct("x ~ [~ x] ~ x ~ [x ~] ~")
+    .voicing()
+    .s('sawtooth')
+    .lpf(2000)
+    .gain(0.5),
+  note("e2 ~ e2 ~ e2 g2 a2 ~")
+    .s('sawtooth')
+    .lpf(600)
+    .gain(0.7),
+  sound("bd").euclid(5, 8),
+  sound("sd").euclidRot(2, 8, 4),
+  sound("hh").euclid(8, 8).gain(0.4)
+).room(.3).cpm(28)`} punchcard punchcardLabels={false} />
+
+---
+
+### Gospel
+
+Gospel uses rich extended chords and dramatic resolutions:
+
+<MiniRepl client:idle tune={`chord("<C^7 C^7/E F^7 Fm7 C^7/G G7 C^7 C^7>")
+  .voicing()
+  .room(.5)
+  .cpm(25)`} punchcard punchcardLabels={false} />
+
+**Gospel with passing chords:**
+
+<MiniRepl client:idle tune={`chord("<C^7 Dm7 Em7 Ebm7 Dm7 Db7 C^7 C^7>")
+  .voicing()
+  .room(.5)
+  .cpm(28)`} punchcard punchcardLabels={false} />
+
+---
+
+### Lofi Hip-Hop
+
+Lofi beats combine jazz harmony with lo-fi drums:
+
+<MiniRepl client:idle tune={`stack(
+  chord("<Dm9 G7 C^9 Am9>")
+    .struct("[~ x] [~ x]")
+    .voicing()
+    .s('sawtooth')
+    .lpf(900)
+    .gain(0.4),
+  chord("<Dm9 G7 C^9 Am9>")
+    .rootNotes(2)
+    .note()
+    .s('sawtooth')
+    .lpf(400)
+    .gain(0.5),
+  sound("bd ~ ~ bd ~ ~ bd ~"),
+  sound("~ ~ sd ~ ~ ~ sd ~"),
+  sound("hh").euclid(5, 8).gain(0.3)
+).room(.4).cpm(22)`} punchcard punchcardLabels={false} />
+
+**Lofi with vinyl crackle feel:**
+
+<MiniRepl client:idle tune={`stack(
+  n("0 2 1 3").chord("<Dm9 G7 C^9 A7b9>").voicing()
+    .s('sawtooth').lpf(1000).gain(0.35),
+  chord("<Dm9 G7 C^9 A7b9>").rootNotes(2).note()
+    .s('sawtooth').lpf(400).gain(0.5),
+  sound("bd").euclidRot(3, 8, 0),
+  sound("sd").euclidRot(1, 4, 2).gain(0.8)
+).room(.5).cpm(20)`} punchcard punchcardLabels={false} />
+
+---
+
+## Chord Progressions by Feel
+
+### Happy & Uplifting
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").dict('triads').voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+### Melancholic & Reflective
+
+<MiniRepl client:idle tune={`chord("<Am F C G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+### Mysterious & Tense
+
+<MiniRepl client:idle tune={`chord("<Cm7 Fm7 Abm7 Db7>").voicing().room(.5)`} punchcard punchcardLabels={false} />
+
+### Dreamy & Floating
+
+<MiniRepl client:idle tune={`chord("<C^9 E^9 Ab^9 B^9>")
+  .anchor("c5")
+  .voicing()
+  .s('supersaw')
+  .lpf(2000)
+  .attack(0.1)
+  .release(0.5)
+  .room(.6)`} punchcard punchcardLabels={false} />
+
+### Dark & Cinematic
+
+<MiniRepl client:idle tune={`chord("<Cm Gm Ab Eb>")
+  .voicing()
+  .s('sawtooth')
+  .lpf(800)
+  .room(.5)
+  .slow(1.5)`} punchcard punchcardLabels={false} />
+
+### Energetic & Driving
+
+<MiniRepl client:idle tune={`chord("<Am F C G>*2").layer(
+  x => x.struct("x x x x").voicing().gain(0.6),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(500)
+).room(.3).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+## What You Learned
+
+- `chord()` creates chord symbols, `voicing()` turns them into notes
+- Major (C) = bright, Minor (Cm) = dark
+- 7th chords: `C^7` (major 7), `Cm7` (minor 7), `C7` (dominant 7)
+- The ii-V-I progression is the foundation of jazz
+- `dict()` selects voicing styles: ireal, lefthand, guidetones, triads
+- `anchor()` controls voicing placement for smooth voice leading
+- `rootNotes()` extracts bass notes from chords
+- `layer()` combines multiple parts from one chord progression
+- Extended chords (9, 11, 13) and altered dominants add color
+- `n()` and `arp()` create arpeggios from chords
+- Jazz harmony enriches pop, blues, bossa nova, and other genres
