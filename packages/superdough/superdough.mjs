@@ -285,6 +285,23 @@ export function connectToDestination(input, channels) {
   controller.output.connectToDestination(input, channels);
 }
 
+// Orbit gain control - allows muting individual orbits
+export function setOrbitGain(orbitNum, gain) {
+  const controller = getSuperdoughAudioController();
+  const orbit = controller.nodes[orbitNum];
+  if (orbit) {
+    orbit.output.gain.value = gain;
+    return true;
+  }
+  return false;
+}
+
+export function getOrbitGain(orbitNum) {
+  const controller = getSuperdoughAudioController();
+  const orbit = controller.nodes[orbitNum];
+  return orbit ? orbit.output.gain.value : null;
+}
+
 function getPhaser(time, end, frequency = 1, depth = 0.5, centerFrequency = 1000, sweep = 2000) {
   const ac = getAudioContext();
   const lfoGain = getLfo(ac, time, end, { frequency, depth: sweep * 2 });
