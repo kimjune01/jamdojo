@@ -120,15 +120,13 @@ export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
       // Clamp velocity between 0.05 and 1.0
       const gain = Math.max(0.05, Math.min(1.0, velocity));
 
-      console.log('gain:', gain.toFixed(2), 'strumSpeed:', strumSpeed.toFixed(0));
-
       // Use first note as root for just intonation tuning
       const rootNote = notesArray[0];
 
       orderedNotes.forEach((note, i) => {
         const t = baseTime + (i * strumSpeed / 1000);
         const detune = getJustIntonationDetune(note, rootNote);
-        superdough({ s: sound, note, gain, detune }, t, 1.5);
+        superdough({ s: sound, note, gain, detune, room: 0.15, reverb: 0.2 }, t, 1.5);
       });
 
       // Set the last note for display (root note of chord)
