@@ -1,0 +1,1673 @@
+---
+title: Chord Composition
+layout: ../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+
+> **Theory Foundation**: This guide focuses on composition workflow and creative techniques. For chord theory, voicings, and progressions, see **[Harmony](/learn/harmony/)**.
+
+Chord composition is the art of creating music with chords and arpeggios—not just playing them, but building them from scratch, shaping progressions, and using Strudel as a creative partner. This guide teaches you practical workflows and techniques to compose original harmonic material, from simple progressions to generative algorithms.
+
+---
+
+## Part 1: Foundation - Building Blocks
+
+### Starting from Scratch - Your First Progression
+
+The hardest part of composing is staring at a blank screen. Let's break through that by building a progression one chord at a time.
+
+**Start with a single chord:**
+
+<MiniRepl client:idle tune={`chord("C").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+That's your foundation. One chord, repeating. Now let's make it interesting.
+
+**Add a second chord for contrast:**
+
+<MiniRepl client:idle tune={`chord("<C F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Listen to the movement. C → F creates forward motion. The F wants to go somewhere—it has energy.
+
+**Try different second chords:**
+
+<MiniRepl client:idle tune={`chord("<C G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C → G feels stronger, more decisive. Each chord choice creates a different feeling.
+
+<MiniRepl client:idle tune={`chord("<C Am>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C → Am is gentle, contemplative. Same starting chord, completely different mood.
+
+**Now three chords:**
+
+<MiniRepl client:idle tune={`chord("<C F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C → F → G creates a journey: start, move away, tension. But it feels unfinished.
+
+**Complete the circle—add a fourth chord:**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Coming back to C creates resolution. You've built a complete 4-chord progression from nothing.
+
+**Try it:** Change one chord in the sequence. Make the third chord `Am` instead of `G`. How does it change the feel?
+
+<MiniRepl client:idle tune={`chord("<C F Am G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+---
+
+#### The Three-Chord Foundation
+
+Three chords are enough to write thousands of songs. Let's explore the classic I-IV-V progression:
+
+**I-IV-V in C = C - F - G**
+
+<MiniRepl client:idle tune={`chord("<C F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+These three chords work together because they represent three functions:
+- **I (C)** = home, stable
+- **IV (F)** = moving away
+- **V (G)** = tension, wants to return home
+
+**Different orderings create different feels:**
+
+<MiniRepl client:idle tune={`chord("<C G F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C → G → F has a different arc. The tension (G) comes earlier.
+
+<MiniRepl client:idle tune={`chord("<F C G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Starting on F (away from home) creates anticipation from the first chord.
+
+**Try it:** Rearrange C, F, and G in different orders. Which feels most resolved? Which feels most tense?
+
+---
+
+#### Adding Rhythm to Your Chords
+
+So far, every chord lasts one beat. Let's add rhythmic variety with `.struct()`:
+
+**Sparse rhythm:**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").struct("x ~ x ~").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+The `~` means rest. Now chords only play on beats 1 and 3.
+
+**Syncopated rhythm:**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").struct("x ~ [x x] ~").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+The `[x x]` plays two chords quickly on beat 3—creating a push.
+
+**Sustained chords:**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").struct("x@3 x").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+The `@3` makes each chord last 3 beats, with one quick change.
+
+**Try it:** Create a reggae feel by putting chords on the offbeats: `"~ x ~ x"`. How does it change the energy?
+
+<MiniRepl client:idle tune={`chord("<C F G C>").struct("~ x ~ x").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+---
+
+### Adding Contrast - Creating Movement
+
+Good chord progressions have contrast. Without it, music feels static. Let's explore ways to create movement.
+
+#### Contrast Principle #1: Major vs Minor
+
+The simplest contrast is changing a chord from major to minor (or vice versa):
+
+**All major:**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Mix major and minor:**
+
+<MiniRepl client:idle tune={`chord("<C Fm G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+That Fm (F minor) adds darkness, contrast. The progression has more emotional range.
+
+**Minor tonic:**
+
+<MiniRepl client:idle tune={`chord("<Cm Fm G Cm>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Starting with Cm (C minor) gives the whole progression a darker foundation.
+
+**Parallel movement:**
+
+<MiniRepl client:idle tune={`chord("<C Cm F Fm>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C → Cm (same root, different quality) creates a subtle shift. It's the same note with a different color.
+
+---
+
+#### Contrast Principle #2: Root Movement
+
+How far the bass note moves between chords affects the energy:
+
+**Step-wise movement (smooth):**
+
+<MiniRepl client:idle tune={`chord("<C Dm Em F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C → D → E → F moves by steps. It feels flowing, connected.
+
+**Jump movement (strong):**
+
+<MiniRepl client:idle tune={`chord("<C F C F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C → F is a 4th leap. Strong, decisive movement.
+
+**Large leaps (dramatic):**
+
+<MiniRepl client:idle tune={`chord("<C F# C F#>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C → F# is a tritone (half the octave). Maximum tension, very dramatic.
+
+**Try it:** Create a progression that moves in small steps, then add one big leap for emphasis. Notice how the leap stands out.
+
+---
+
+#### Contrast Principle #3: Static vs Moving Bass
+
+You can keep chords changing while the bass stays still—or vice versa:
+
+**Changing chords, static bass:**
+
+<MiniRepl client:idle tune={`chord("<C C/E C/G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+The chords change color, but all share the C bass note. Creates cohesion.
+
+**Static chords, moving bass:**
+
+<MiniRepl client:idle tune={`chord("<C>").struct("x").voicing().stack(
+  x => x.voicing(),
+  x => x.rootNotes("<2 3 4 3>").note().s('sawtooth').lpf(600)
+)`} punchcard punchcardLabels={false} />
+
+One chord (C), but the bass line creates movement.
+
+---
+
+#### Building Emotional Arcs
+
+A 4-bar phrase can tell a story: stable → moving → tension → resolution.
+
+**Example arc:**
+
+<MiniRepl client:idle tune={`chord("<C Am Dm G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+- Bar 1 (C): Stable, home
+- Bar 2 (Am): Gentle movement
+- Bar 3 (Dm): More movement, building
+- Bar 4 (G): Tension, wants to resolve back to C
+
+**Try it:** Build your own 4-chord arc. Start stable, end tense. What happens when you loop it? The tension resolves back to the first chord.
+
+**Question-answer pattern:**
+
+<MiniRepl client:idle tune={`chord("<C G C F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C → G feels like a question. C → F feels like an answer. Pairing them creates conversation.
+
+---
+
+### Rhythm as Composition Tool
+
+Rhythm isn't just decoration—it's a compositional choice that shapes the entire feel.
+
+#### Chord Rhythm Patterns
+
+The rhythm you give chords matters as much as the notes:
+
+**On the beat (strong):**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").struct("x ~ x ~").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Off the beat (syncopated):**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").struct("~ x ~ x").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Same chords, totally different groove. Offbeat chords create forward drive.
+
+**Mixed on/off:**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").struct("x ~ [~ x] ~").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+The third chord anticipates beat 3—pushing forward.
+
+**Dense, busy rhythm:**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").struct("[x x x x]").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Four hits per beat. Intense, energetic. Works for punk or rapid-fire passages.
+
+---
+
+#### Harmonic Rhythm: The Pace of Change
+
+Harmonic rhythm = how fast chords change. It's separate from chord rhythm.
+
+**Fast harmonic rhythm (chord changes every beat):**
+
+<MiniRepl client:idle tune={`chord("C F C F G Am F G").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Constant movement. Exciting but potentially exhausting.
+
+**Slow harmonic rhythm (chord changes every 2-4 beats):**
+
+<MiniRepl client:idle tune={`chord("C@4 F@4 G@4 C@4").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Each chord lasts 4 beats. Spacious, gives time to breathe.
+
+**Accelerating harmonic rhythm:**
+
+<MiniRepl client:idle tune={`chord("C@4 F@2 G@1 G@1 C@4").struct("x").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Starts slow (4 beats), speeds up (2 beats, then 1), creates momentum toward the resolution.
+
+**Try it:** Build tension by accelerating the harmonic rhythm, then resolve with a long held chord.
+
+---
+
+#### Genre-Specific Rhythm Conventions
+
+Different styles have characteristic chord rhythms:
+
+**Reggae (offbeats):**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").struct("~ x ~ x").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**House (sustained):**
+
+<MiniRepl client:idle tune={`chord("<C@4 Am@4 F@4 G@4>").struct("x").voicing().s("piano").lpf(800)`} punchcard punchcardLabels={false} />
+
+**Punk (fast, all downbeats):**
+
+<MiniRepl client:idle tune={`chord("<C F G F>").struct("[x x x x]").voicing().s("piano").cpm(60)`} punchcard punchcardLabels={false} />
+
+**Ballad (sparse, letting chords ring):**
+
+<MiniRepl client:idle tune={`chord("<C@3 ~ F@3 ~ G@3 ~ C@4>").struct("x").voicing().s("piano").cpm(20)`} punchcard punchcardLabels={false} />
+
+---
+
+#### Compositional Workflow: Rhythm First vs Chords First
+
+There's no one right way. Here are two approaches:
+
+**Approach A: Chords First**
+
+1. Write chords: `chord("<C Am F G>")`
+2. Add rhythm: `.struct("x ~ x [~ x]")`
+3. Refine: adjust timing and rests
+
+**Approach B: Rhythm First**
+
+1. Write rhythm: `.struct("x ~ [x x] ~")`
+2. Add chords: `chord("<C Am F G>").struct(...)`
+3. Match chord changes to rhythmic events
+
+<MiniRepl client:idle tune={`// Rhythm-first approach
+chord("<C Am F G>").struct("x ~ [x x] ~").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Try it:** Start with a drum groove, then add chords that match its rhythm. Or start with flowing chords, then add drums that complement them.
+
+<MiniRepl client:idle tune={`stack(
+  chord("<C Am F G>").struct("~ x ~ x").voicing(),
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd")
+)`} punchcard punchcardLabels={false} />
+
+---
+
+## Part 2: Core Techniques
+
+### Voice Leading Fundamentals
+
+Voice leading is the art of smooth transitions between chords. Instead of chords jumping around randomly, each individual note follows a logical path. This is what separates amateur chord progressions from professional ones.
+
+#### What is Voice Leading?
+
+When you play a chord progression, each note in the chord is a "voice." Voice leading tracks where each voice goes:
+
+**Without voice leading (jumpy):**
+
+<MiniRepl client:idle tune={`chord("<C^7 F^7 Dm7 G7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**With smooth voice leading:**
+
+<MiniRepl client:idle tune={`chord("<C^7 F^7 Dm7 G7>").anchor("c5").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Hear the difference? The second one flows. Notes move by small steps instead of large jumps.
+
+**Try it:** Listen to each example several times. Focus on the highest note—hear how it moves smoothly in the second example?
+
+---
+
+#### The `anchor()` Function
+
+The `anchor()` function controls where voicings sit in register. It keeps chords near a target note, minimizing jumps:
+
+**No anchor—voicings jump around:**
+
+<MiniRepl client:idle tune={`chord("<C^7 Dm7 G7 C^7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Anchor around middle C:**
+
+<MiniRepl client:idle tune={`chord("<C^7 Dm7 G7 C^7>").anchor("c4").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Anchor higher:**
+
+<MiniRepl client:idle tune={`chord("<C^7 Dm7 G7 C^7>").anchor("g5").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Higher anchor = higher voicings. The anchor acts like a "center of gravity" for your chords.
+
+**Try it:** Change the anchor from `"c4"` to `"c6"`. Hear how all the voicings shift up?
+
+---
+
+#### The `mode()` Function
+
+Mode controls HOW voicings align to the anchor:
+
+**Mode: "below" (default)—top note at or below anchor:**
+
+<MiniRepl client:idle tune={`chord("<C^7 Dm7 G7>").anchor("c5").mode("below").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Mode: "above"—bottom note at or above anchor:**
+
+<MiniRepl client:idle tune={`chord("<C^7 Dm7 G7>").anchor("c5").mode("above").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Mode: "root"—root note in bass position:**
+
+<MiniRepl client:idle tune={`chord("<C^7 Dm7 G7>").anchor("c5").mode("root").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+For most smooth voice leading, stick with "below" (the default).
+
+---
+
+#### Smooth Transition Techniques
+
+Great voice leading uses these principles:
+
+**1. Common Tones—keep shared notes:**
+
+C major (C-E-G) and Am (A-C-E) share C and E. Keep those notes in the same voice:
+
+<MiniRepl client:idle tune={`chord("<C Am>").anchor("c5").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**2. Step-wise motion—move by small intervals:**
+
+<MiniRepl client:idle tune={`chord("<C Dm Em F>").anchor("c5").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Each chord flows into the next. No large jumps.
+
+**3. Contrary motion—voices move in opposite directions:**
+
+<MiniRepl client:idle tune={`chord("<C G C>").layer(
+  x => x.anchor("c5").voicing(),
+  x => x.rootNotes("<2 3 2>").note().s('sawtooth').lpf(600)
+)`} punchcard punchcardLabels={false} />
+
+Top voices move down (C → G), bass moves up. Creates balance.
+
+---
+
+#### Practical Workflow: Voice Leading Step-by-Step
+
+**Step 1: Write chords without anchor (hear the problem):**
+
+<MiniRepl client:idle tune={`chord("<C^7 Eb^7 Ab^7 Db^7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Jumpy! Distant roots make voicings leap.
+
+**Step 2: Add anchor (smooth it out):**
+
+<MiniRepl client:idle tune={`chord("<C^7 Eb^7 Ab^7 Db^7>").anchor("c5").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Much better. Voicings stay close together.
+
+**Step 3: Fine-tune anchor height (find sweet spot):**
+
+<MiniRepl client:idle tune={`chord("<C^7 Eb^7 Ab^7 Db^7>").anchor("g5").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Too high? Try lower. Experiment until it sounds right for your context.
+
+**Step 4: Add bass and rhythm (complete the picture):**
+
+<MiniRepl client:idle tune={`chord("<C^7 Eb^7 Ab^7 Db^7>").layer(
+  x => x.anchor("c5").struct("[~ x]*2").voicing(),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600)
+)`} punchcard punchcardLabels={false} />
+
+Now you have smooth voice leading, clear bass, and rhythm. Professional sound.
+
+**Try it:** Take any progression from Part 1 and add `.anchor("c5")`. Hear the improvement?
+
+---
+
+### Building Progressions from Functional Harmony
+
+Functional harmony is a powerful composition framework: every chord has a role (function) in the key.
+
+#### The Three Functions
+
+In any key, chords fall into three categories:
+
+**Tonic (I, vi)—home, stable, resolved:**
+
+<MiniRepl client:idle tune={`chord("<C Am>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+These chords feel like resting points. No tension.
+
+**Subdominant (IV, ii)—moving away from home:**
+
+<MiniRepl client:idle tune={`chord("<F Dm>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+These create gentle motion, anticipation.
+
+**Dominant (V, V7)—tension, wants to resolve to tonic:**
+
+<MiniRepl client:idle tune={`chord("<G7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Strong pull back to C. The 7th adds urgency.
+
+**All three together:**
+
+<MiniRepl client:idle tune={`chord("<C F G7 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Tonic → Subdominant → Dominant → Tonic. Complete journey.
+
+---
+
+#### Function-First Composition
+
+Instead of choosing chords randomly, think about function FIRST, then pick specific chords.
+
+**Step 1: Plan the functional progression:**
+
+"I want: stable → move away → tension → home"
+
+That's: Tonic → Subdominant → Dominant → Tonic
+
+**Step 2: Choose chords for each function:**
+
+- Tonic: **C** (I)
+- Subdominant: **Dm** (ii)
+- Dominant: **G7** (V7)
+- Tonic: **C** (I)
+
+**Step 3: Play it:**
+
+<MiniRepl client:idle tune={`chord("<C Dm G7 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Works! Now try different chords for the same functions:
+
+<MiniRepl client:idle tune={`chord("<Am Dm G7 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Started with vi (Am) instead of I (C). Still tonic function, different color.
+
+**Try it:** Keep the function sequence (T-S-D-T), but choose different chords: Am-F-G7-C. Does it still work?
+
+<MiniRepl client:idle tune={`chord("<Am F G7 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+---
+
+#### Common Functional Patterns
+
+**I → IV → V → I (the classic):**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**I → vi → IV → V (substitute vi for I):**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**I → V/V → V → I (secondary dominant):**
+
+<MiniRepl client:idle tune={`chord("<C D7 G7 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+D7 is the dominant of G (V/V). Adds extra tension before G7.
+
+**ii → V → I (the fundamental jazz progression):**
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Subdominant → Dominant → Tonic. Strong resolution.
+
+---
+
+#### Beyond Basics: Modal Mixture and Substitutions
+
+**Deceptive cadence (V → vi instead of V → I):**
+
+<MiniRepl client:idle tune={`chord("<C F G Am>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+You expect C after G, but get Am. Surprise! Yet it still works (vi is a tonic substitute).
+
+**Borrowed chord from parallel minor:**
+
+<MiniRepl client:idle tune={`chord("<C Ab G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Ab doesn't belong in C major—it's from C minor. Adds darkness, drama.
+
+**Tritone substitution (Db7 for G7):**
+
+<MiniRepl client:idle tune={`chord("<C Dm7 Db7 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Db7 substitutes for G7 (both want to resolve to C). Jazzy sound.
+
+**Try it:** Take a I-IV-V-I progression and replace the V with its tritone sub (Db7 in C). Hear the color change?
+
+---
+
+### Chromatic Movement & Passing Chords
+
+Passing chords connect main chords smoothly. They fill gaps, making progressions flow like a melody.
+
+#### What Are Passing Chords?
+
+A passing chord sits BETWEEN two main chords:
+
+**Without passing chord (gap):**
+
+<MiniRepl client:idle tune={`chord("<C Dm7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C to Dm7 is fine, but there's space.
+
+**With passing chord (#Cdim):**
+
+<MiniRepl client:idle tune={`chord("<C [#Cdim Dm7]>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+#Cdim sits between C and Dm7 chromatically. Smoother.
+
+**Another gap:**
+
+<MiniRepl client:idle tune={`chord("<C Em>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Fill with Dm:**
+
+<MiniRepl client:idle tune={`chord("<C [Dm Em]>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Stepwise progression: C → Dm → Em. Flowing.
+
+---
+
+#### Types of Passing Chords
+
+**Diminished passing chords:**
+
+<MiniRepl client:idle tune={`chord("<C [#Cdim Dm] [#Ddim Em] [Edim F]>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Diminished chords sit chromatically between targets. Classic technique.
+
+**Chromatic secondary dominants:**
+
+<MiniRepl client:idle tune={`chord("<C [E7 Am] [A7 Dm] [D7 G]>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Each seventh chord leads to the next chord (E7 → Am, A7 → Dm, D7 → G).
+
+**Approach chords (half-step below):**
+
+<MiniRepl client:idle tune={`chord("<C [Db7 C]>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Db7 is a half-step below C. Creates anticipation.
+
+---
+
+#### Bass Line Thinking
+
+Think of your progression as a BASS LINE with chords on top:
+
+**Stepwise bass:**
+
+<MiniRepl client:idle tune={`chord("<C Dm Em F>").layer(
+  x => x.voicing(),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600)
+)`} punchcard punchcardLabels={false} />
+
+Bass: C → D → E → F. A scale!
+
+**Walking bass (quarter notes):**
+
+<MiniRepl client:idle tune={`chord("<C>").struct("x").voicing().stack(
+  "c2 d2 e2 f2".note().s('sawtooth').lpf(600)
+)`} punchcard punchcardLabels={false} />
+
+Sustained C chord, walking bass underneath.
+
+**Chromatic bass line:**
+
+<MiniRepl client:idle tune={`chord("<C>").struct("x").voicing().stack(
+  "c2 c#2 d2 d#2 e2".note().s('sawtooth').lpf(600)
+)`} punchcard punchcardLabels={false} />
+
+Half-step motion. Works even over one chord.
+
+---
+
+#### Workflow: Fill the Gaps
+
+**Step 1: Write skeletal progression (main chords only):**
+
+<MiniRepl client:idle tune={`chord("<C@2 F@2 Dm@2 G@2>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Step 2: Identify gaps (root jumps):**
+
+C → F (jump), F → Dm (jump), Dm → G (jump)
+
+**Step 3: Fill gaps with passing chords:**
+
+<MiniRepl client:idle tune={`chord("<C [E7 F] [Bdim Dm] [G]>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+E7 leads to F, Bdim passes to Dm. Smoother!
+
+**Try it:** Take the progression C-Am-F-G. Add a passing chord between Am and F. What works?
+
+<MiniRepl client:idle tune={`chord("<C Am [D7 F] G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+---
+
+### Extended Chords in Composition
+
+Extended chords (9ths, 11ths, 13ths) add color and sophistication. But when should you use them?
+
+#### The Extension Decision Framework
+
+**Context 1: Genre**
+
+- **Ballad/Jazz:** Extensions welcome → `C^9` instead of `C^7`
+- **Punk/Rock:** Keep it simple → `C` or `C5`
+- **R&B/Neo-soul:** Extensions essential → `Cm9`, `Dm11`
+
+<MiniRepl client:idle tune={`chord("<C^9 Am9 Dm9 G9>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Context 2: Texture**
+
+- **Sparse arrangement:** Add extensions (fill space)
+- **Dense arrangement:** Simple chords (avoid mud)
+
+**Context 3: Emotional goal**
+
+- **More tension:** Add alterations (`G7b9`, `G7#9`)
+- **More color:** Add 9ths, 13ths
+- **More simplicity:** Stick to triads
+
+---
+
+#### Practical Extension Guide
+
+**Safe extensions (work almost everywhere):**
+
+**9ths on minor chords:**
+
+<MiniRepl client:idle tune={`chord("<Dm9 Cm9 Am9>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Beautiful, lush. Hard to go wrong.
+
+**9ths on major 7th chords:**
+
+<MiniRepl client:idle tune={`chord("<C^9 F^9 G^9>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Dreamy, sophisticated.
+
+**Careful extensions (use with awareness):**
+
+**11ths on major chords (avoid!):**
+
+<MiniRepl client:idle tune={`chord("<C^11>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+The 11th (F) clashes with the 3rd (E) in major chords. Sounds muddy.
+
+**11ths on minor chords (good!):**
+
+<MiniRepl client:idle tune={`chord("<Dm11>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Works beautifully in minor.
+
+**Advanced extensions:**
+
+**13ths:**
+
+<MiniRepl client:idle tune={`chord("<C13 F13 G13>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Rich, complex. For sophisticated contexts.
+
+**Alterations (b9, #9, #11):**
+
+<MiniRepl client:idle tune={`chord("<G7alt>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Maximum tension. Use before resolution.
+
+---
+
+#### Building Tension Progressively
+
+Start simple, add extensions gradually:
+
+**Level 1: Triads**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Level 2: Add 7ths**
+
+<MiniRepl client:idle tune={`chord("<C^7 F^7 G7 C^7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+More sophisticated.
+
+**Level 3: Add 9ths**
+
+<MiniRepl client:idle tune={`chord("<C^9 F^9 G9 C^9>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Lush, colorful.
+
+**Level 4: Add alterations for max tension**
+
+<MiniRepl client:idle tune={`chord("<C^9 F^9 G7alt C^9>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+G7alt adds edge before final resolution.
+
+---
+
+#### When to Stop?
+
+More extensions ≠ better. Ask: "Does this extension ADD to the music, or just make it busier?"
+
+**Test: Simpler vs more complex**
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+<MiniRepl client:idle tune={`chord("<Dm11 G13b9 C^9#11>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Both valid. Context determines which is better.
+
+**Try it:** Take a simple I-IV-V-I progression. Gradually add extensions until it sounds WORSE. Where's the sweet spot?
+
+---
+
+## Part 3: Advanced Techniques
+
+### Reharmonization Basics
+
+Reharmonization means changing the chords under an existing melody or bass line. It's how you make familiar progressions fresh.
+
+#### What is Reharmonization?
+
+Take a simple progression and transform it:
+
+**Original:**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Reharmonized:**
+
+<MiniRepl client:idle tune={`chord("<C^7 A7 Dm7 G7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Same root movement, jazzier chords. More sophisticated.
+
+**More elaborate reharmonization:**
+
+<MiniRepl client:idle tune={`chord("<C^7 [E7 A7] Dm7 [Db7 G7]>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Added secondary dominants. Now it's bebop!
+
+---
+
+#### Basic Substitutions
+
+**Relative substitution (I ↔ vi, IV ↔ ii):**
+
+<MiniRepl client:idle tune={`chord("<C F Am G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+F becomes Am—both subdominant function, different color.
+
+**Tritone substitution (swap dominants):**
+
+<MiniRepl client:idle tune={`chord("<C Dm7 Db7 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Db7 replaces G7. Both resolve to C, but Db7 descends chromatically (Db → C).
+
+**Diminished substitution:**
+
+<MiniRepl client:idle tune={`chord("<C Ddim C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Ddim creates passing motion between two C chords.
+
+---
+
+#### Workflow: Reharm Step-by-Step
+
+**Step 1: Start with the original:**
+
+<MiniRepl client:idle tune={`chord("<C G Am F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Step 2: Identify which chords to change (one at a time!):**
+
+Let's change G to G7 (add tension):
+
+<MiniRepl client:idle tune={`chord("<C G7 Am F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Step 3: Add a secondary dominant before Am:**
+
+<MiniRepl client:idle tune={`chord("<C [D7 G7] Am F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Step 4: Substitute F with Fm (borrowed from parallel minor):**
+
+<MiniRepl client:idle tune={`chord("<C [D7 G7] Am Fm>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Four steps, completely transformed. Still recognizable, much richer.
+
+---
+
+#### Common Reharmonization Patterns
+
+**Adding ii-V's:**
+
+<MiniRepl client:idle tune={`chord("<C [Dm7 G7] C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Instead of C → C, insert Dm7-G7 for movement.
+
+**Backdoor progression (bVII7 → I):**
+
+<MiniRepl client:idle tune={`chord("<C Bb7 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Bb7 (bVII) resolves to C. Smooth, unexpected.
+
+**Coltrane changes (thirds cycle):**
+
+<MiniRepl client:idle tune={`chord("<C^7 Eb^7 Gb^7 A^7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Each chord is a major third apart. Creates continuous motion.
+
+**Try it:** Take I-IV-V-I and add a ii-V before each chord. How many chords do you end up with?
+
+---
+
+### Modal Interchange
+
+Modal interchange = borrowing chords from parallel modes. It adds unexpected colors to major/minor tonality.
+
+#### The Concept
+
+In C major, you typically use: C, Dm, Em, F, G, Am, Bdim
+
+In C minor, the chords are: Cm, Ddim, Eb, Fm, Gm, Ab, Bb
+
+Modal interchange means using **Bb in C major** or **F in C minor**—borrowing from the parallel mode.
+
+**C major, all diatonic:**
+
+<MiniRepl client:idle tune={`chord("<C Dm Em F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**C major, with bVII borrowed from C minor:**
+
+<MiniRepl client:idle tune={`chord("<C Dm Em Bb>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+That Bb doesn't belong in C major—but it works! Sounds bluesy, earthy.
+
+---
+
+#### Common Borrowed Chords
+
+**bVII (Bb in C major):**
+
+<MiniRepl client:idle tune={`chord("<C Bb C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+The most popular borrowed chord. Mixolydian flavor.
+
+**iv (Fm in C major):**
+
+<MiniRepl client:idle tune={`chord("<C Fm C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Adds melancholy. The minor IV is emotionally powerful.
+
+**bVI (Ab in C major):**
+
+<MiniRepl client:idle tune={`chord("<C Ab Bb C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Ab-Bb-C ascends to tonic. Dramatic, epic.
+
+**bIII (Eb in C major):**
+
+<MiniRepl client:idle tune={`chord("<C Eb F C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Dark, ominous. Common in metal and cinematic music.
+
+---
+
+#### Composition Usage
+
+**The "surprise" chord:**
+
+<MiniRepl client:idle tune={`chord("<C F G Fm>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+After G (major), Fm (borrowed minor iv) surprises. Emotional twist.
+
+**Dark moment in major key:**
+
+<MiniRepl client:idle tune={`chord("<C Am Fm G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Fm darkens the progression midway through.
+
+**Bright moment in minor key:**
+
+<MiniRepl client:idle tune={`chord("<Cm Fm Bb Eb>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+All minor key chords, but Bb and Eb add brightness.
+
+**Try it:** Start with a major key progression (all major/minor diatonic chords). Add ONE borrowed chord. Where does it have the most impact?
+
+---
+
+### Creating Tension and Release
+
+Tension and release is the heartbeat of music. Without it, progressions feel flat.
+
+#### The Tension Toolkit
+
+**1. Harmonic tension (dissonant chords):**
+
+<MiniRepl client:idle tune={`chord("<C G7alt C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+G7alt (altered dominant) is maximally tense before C.
+
+**2. Voice leading tension (large intervals):**
+
+<MiniRepl client:idle tune={`chord("<C Gb C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Tritone leap (C → Gb) creates tension even with simple triads.
+
+**3. Rhythmic tension (syncopation, anticipation):**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").struct("x ~ [~ x] x").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+The third chord anticipates beat 3—rhythmic push.
+
+**4. Durational tension (delaying resolution):**
+
+<MiniRepl client:idle tune={`chord("<C F G@3 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+G lasts 3 beats—extended tension before final C.
+
+---
+
+#### Tension Curves
+
+Build tension over time, then release:
+
+**8-bar tension curve:**
+
+<MiniRepl client:idle tune={`chord("<C@2 Dm@2 Em@2 F@2 G@2 G7@2 C@2 C@2>").voicing().s("piano").cpm(20)`} punchcard punchcardLabels={false} />
+
+Bars 1-2: Low (C, Dm)
+Bars 3-4: Medium (Em, F)
+Bars 5-6: High (G, G7)
+Bars 7-8: Release (C)
+
+**Accelerating tension:**
+
+<MiniRepl client:idle tune={`chord("<C@4 F@2 G@1 G7@1 C@4>").voicing().s("piano").cpm(20)`} punchcard punchcardLabels={false} />
+
+Harmonic rhythm accelerates toward resolution, then releases.
+
+---
+
+#### Advanced Tension Techniques
+
+**Suspensions (delay chord tones):**
+
+<MiniRepl client:idle tune={`chord("<Csus4 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Csus4 suspends the 3rd (E → F). Resolves when F moves to E.
+
+**Pedal points (static bass, changing chords):**
+
+<MiniRepl client:idle tune={`chord("<C Dm Em F>").voicing().stack(
+  "c2".note().s('sawtooth').lpf(600)
+)`} punchcard punchcardLabels={false} />
+
+Chords change, bass stays on C. Creates floating tension.
+
+**Upper structures (add complexity on top):**
+
+<MiniRepl client:idle tune={`chord("<G7#9#5>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Altered 9th and 5th stack tension before resolution.
+
+**Cluster voicings (tight intervals):**
+
+<MiniRepl client:idle tune={`note("[c4 d4 e4 f4]").s('piano')`} punchcard punchcardLabels={false} />
+
+Four notes a step apart. Maximum dissonance.
+
+---
+
+### Non-Functional Harmony & Modal Composition
+
+Not all music follows functional harmony (Tonic-Subdominant-Dominant). Sometimes chords exist for COLOR, not function.
+
+#### Breaking Free from Function
+
+**Functional progression:**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Clear: I-IV-V-I. Functional roles.
+
+**Non-functional progression:**
+
+<MiniRepl client:idle tune={`chord("<C Bb Ab G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Descending whole steps. No functional logic—just chromatic motion.
+
+**Modal vamp (stay in one mode):**
+
+<MiniRepl client:idle tune={`chord("<Dm7 Em7 Dm7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Dorian mode vamp. No resolution needed.
+
+---
+
+#### Modal Techniques
+
+**1. Single mode vamps:**
+
+<MiniRepl client:idle tune={`chord("<Dm Em Dm>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Stay in D Dorian. No tonic pull, just modal color.
+
+**2. Parallel chords (all same quality):**
+
+<MiniRepl client:idle tune={`chord("<C Bb Ab F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+All major chords. No functional tension.
+
+**3. Pedal progressions:**
+
+<MiniRepl client:idle tune={`chord("<C@4 F@4>").voicing().stack(
+  "c2".note().s('sawtooth').lpf(600)
+)`} punchcard punchcardLabels={false} />
+
+Bass drone, chords drift above.
+
+**4. Quartal harmony (stacked 4ths):**
+
+<MiniRepl client:idle tune={`note("<[c3 f3 bb3] [d3 g3 c4] [e3 a3 d4]>").s('piano')`} punchcard punchcardLabels={false} />
+
+Chords built in 4ths, not 3rds. Ambiguous, spacious.
+
+---
+
+#### Color-Based Composition
+
+Think: "dark → mysterious → bright" instead of "Tonic → Dominant."
+
+**Progression by color:**
+
+<MiniRepl client:idle tune={`chord("<Cm Eb Bb F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Cm = dark, Eb = earthy, Bb = warm, F = bright. A color journey.
+
+**Workflow:**
+
+1. Choose emotional/color goals (not functions)
+2. Pick chords that embody those colors
+3. Experiment with order
+4. Let ambiguity exist—not everything needs resolution
+
+**Try it:** Build a 4-chord progression where each chord represents a different mood. Don't worry about functional roles.
+
+---
+
+### Generative & Algorithmic Composition
+
+This is where Strudel becomes your creative partner—generating musical material that you shape, select, and refine. It's not just playback; it's co-creation.
+
+#### Strudel as Creative Partner
+
+Instead of writing every note, let Strudel generate options:
+
+**Random note selection:**
+
+<MiniRepl client:idle tune={`"[c d e f g a b]".segment(4).note().s('piano')`} punchcard punchcardLabels={false} />
+
+Each cycle, Strudel picks 4 random notes from the pool.
+
+**Random chords:**
+
+<MiniRepl client:idle tune={`"<C Dm Em F G Am>".choose().chord().voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+`.choose()` randomly selects one chord per cycle.
+
+**Try it:** Run the above example multiple times. Each playthrough is different!
+
+---
+
+#### Random Note Generation
+
+**`.rand` - random float (0-1):**
+
+<MiniRepl client:idle tune={`rand.range(60, 72).midi().s('piano')`} punchcard punchcardLabels={false} />
+
+Random MIDI notes between 60 (C4) and 72 (C5).
+
+**`.irand` - random integer:**
+
+<MiniRepl client:idle tune={`irand(12).scale('C minor').note().s('piano')`} punchcard punchcardLabels={false} />
+
+Random scale degrees in C minor.
+
+**`.choose` - pick from list:**
+
+<MiniRepl client:idle tune={`"c e g bb d".choose().note().s('piano')`} punchcard punchcardLabels={false} />
+
+Randomly picks notes from the list.
+
+---
+
+#### Selecting from Generated Sets
+
+**`.segment()` - grab a chunk:**
+
+<MiniRepl client:idle tune={`"[c d e f g a b c d e f g]".segment(4).note().s('piano')`} punchcard punchcardLabels={false} />
+
+Grabs 4 consecutive notes from the pool.
+
+**`.pick()` after `.segment()`:**
+
+<MiniRepl client:idle tune={`"[c d e f g a b]".segment(4).pick().note().s('piano')`} punchcard punchcardLabels={false} />
+
+Picks notes from the segmented chunk.
+
+**`.slice()` - divide and select:**
+
+<MiniRepl client:idle tune={`"c d e f g a b c".slice(8).segment(4).note().s('piano')`} punchcard punchcardLabels={false} />
+
+Slice into parts, grab a segment.
+
+---
+
+#### Transposing and Transforming Random Material
+
+Once generated, SHAPE it:
+
+**`.transpose()` - shift up/down:**
+
+<MiniRepl client:idle tune={`"[c e g]".segment(2).transpose("<0 3 7 5>").note().s('piano')`} punchcard punchcardLabels={false} />
+
+Generates notes, then transposes them by different amounts.
+
+**`.scale()` - constrain to scale:**
+
+<MiniRepl client:idle tune={`irand(8).scale('D dorian').note().s('piano')`} punchcard punchcardLabels={false} />
+
+Random numbers → scale degrees in D Dorian.
+
+**`.add()` - add interval:**
+
+<MiniRepl client:idle tune={`"c e g".choose().add("<0 7 12>").note().s('piano')`} punchcard punchcardLabels={false} />
+
+Pick a note, add octave/fifth/unison.
+
+---
+
+#### Controlled Randomness
+
+**`.sometimesBy()` - probabilistic application:**
+
+<MiniRepl client:idle tune={`"c d e f g".note().s('piano').sometimesBy(0.5, x => x.transpose(12))`} punchcard punchcardLabels={false} />
+
+50% chance each note jumps up an octave.
+
+**`.degradeBy()` - randomly remove events:**
+
+<MiniRepl client:idle tune={`"c d e f g a b c".note().s('piano').degradeBy(0.5)`} punchcard punchcardLabels={false} />
+
+50% of notes randomly drop out.
+
+**`.jux()` - stereo variation:**
+
+<MiniRepl client:idle tune={`"c e g".note().s('piano').jux(x => x.transpose(7))`} punchcard punchcardLabels={false} />
+
+Original in one channel, transposed version in the other.
+
+---
+
+#### Algorithmic Constraints
+
+**Perlin noise (smooth randomness):**
+
+<MiniRepl client:idle tune={`perlin.range(60, 72).midi().s('piano')`} punchcard punchcardLabels={false} />
+
+Smoother than pure randomness—creates flowing melodies.
+
+**Weighted choices:**
+
+<MiniRepl client:idle tune={`"<c!3 e!2 g!1>".choose().note().s('piano')`} punchcard punchcardLabels={false} />
+
+C appears 3x more likely than G. Control probabilities.
+
+---
+
+#### Workflow: Generate → Select → Shape → Refine
+
+**Step 1: Generate raw material:**
+
+<MiniRepl client:idle tune={`"[c d e f g a b c d e f g]".segment(8).note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Step 2: Select interesting bits:**
+
+<MiniRepl client:idle tune={`"[c d e f g a b c d e f g]".segment(4).note().s('piano')`} punchcard punchcardLabels={false} />
+
+Narrowed to 4 notes.
+
+**Step 3: Shape with transposition:**
+
+<MiniRepl client:idle tune={`"[c d e f g a b c d e f g]".segment(4).transpose("<0 5 7>").note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Step 4: Refine rhythm and articulation:**
+
+<MiniRepl client:idle tune={`"[c d e f g a b c d e f g]".segment(4).transpose("<0 5 7>").struct("[x ~ x x]").note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Step 5: Iterate—run it many times, keep what works!**
+
+---
+
+#### Using Generative Techniques for Chord Progressions
+
+**Random walk through chords:**
+
+<MiniRepl client:idle tune={`"<C Dm Em F G Am>".choose().chord().voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Every cycle = new progression.
+
+**Weighted chord choices (stay near tonic):**
+
+<MiniRepl client:idle tune={`"<C!3 F!2 G!2 Dm!1 Am!1>".choose().chord().voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+C appears most often—maintains tonal center.
+
+**Probabilistic reharmonization:**
+
+<MiniRepl client:idle tune={`chord("<C F G C>").sometimesBy(0.3, x => x.add(7)).voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+30% chance each chord becomes a 7th chord.
+
+---
+
+#### Combining Human Composition with Algorithmic Variation
+
+You compose the structure, Strudel adds variation:
+
+**Human: progression structure**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Strudel: add random arpeggiation**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").voicing().arp(irand(4)).note().s('piano')`} punchcard punchcardLabels={false} />
+
+Random arpeggio patterns each cycle.
+
+**Human: harmonic rhythm**
+**Strudel: randomize which chords play**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").struct("x ~ x ~").degradeBy(0.3).voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Some chords randomly drop out.
+
+**The best compositions blend intention (human) with surprise (algorithm).**
+
+---
+
+## Part 4: Arpeggio Composition
+
+### Arpeggio Patterns as Composition
+
+Arpeggios aren't just broken chords—they're a compositional tool for creating melodies, texture, and movement.
+
+#### From Chords to Melody
+
+Every chord contains a melody waiting to emerge:
+
+**Chord (all notes at once):**
+
+<MiniRepl client:idle tune={`chord("C^7").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Arpeggio (notes in sequence):**
+
+<MiniRepl client:idle tune={`n("0 1 2 3").chord("C^7").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+Same notes, completely different feel. The arpeggio creates forward motion.
+
+---
+
+#### Pattern Library
+
+Different patterns create different feels:
+
+**Ascending (upward energy):**
+
+<MiniRepl client:idle tune={`n("0 1 2 3").chord("<C^7 Dm7 G7 C^7>").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Descending (resolving, falling):**
+
+<MiniRepl client:idle tune={`n("3 2 1 0").chord("<C^7 Dm7 G7 C^7>").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Up-down (wave motion):**
+
+<MiniRepl client:idle tune={`n("0 2 1 3 2 0").chord("<C^7 Am7>").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Skip pattern (leaping, energetic):**
+
+<MiniRepl client:idle tune={`n("0 2 0 3").chord("<C^7 F^7>").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Alberti bass (classical accompaniment):**
+
+<MiniRepl client:idle tune={`n("0 2 1 2").chord("<C F G C>").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+---
+
+#### Contour and Shape
+
+The SHAPE of your arpeggio pattern creates musical meaning:
+
+**Arch contour (up then down):**
+
+<MiniRepl client:idle tune={`n("0 1 2 3 2 1 0").chord("C^7").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+Creates a complete gesture—rise and fall.
+
+**Wave contour (undulating):**
+
+<MiniRepl client:idle tune={`n("0 2 1 3 2 4 3").chord("<C^7 F^7>").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+Continuous motion, no resolution.
+
+**Stepwise (smooth, flowing):**
+
+<MiniRepl client:idle tune={`n("0 1 2 1 2 3 2").chord("C^7").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Leaping (dramatic, angular):**
+
+<MiniRepl client:idle tune={`n("0 3 0 2").chord("C^7").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Try it:** Create a pattern that goes up gradually, then jumps down dramatically. What feeling does it create?
+
+---
+
+#### Workflow: Pattern Development
+
+**Step 1: Start with a simple progression:**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Step 2: Add a basic arpeggio pattern:**
+
+<MiniRepl client:idle tune={`n("0 1 2 1").chord("<C Am F G>").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Step 3: Vary the pattern for each chord:**
+
+<MiniRepl client:idle tune={`n("<[0 1 2 1] [3 2 1 0] [0 2 1 3] [2 1 0 1]>").chord("<C Am F G>").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+Each chord gets its own pattern—more interesting!
+
+**Step 4: Add rhythmic displacement:**
+
+<MiniRepl client:idle tune={`n("<[0 1 2 1] [3 2 1 0] [0 2 1 3] [2 1 0 1]>").chord("<C Am F G>").voicing().struct("[x x ~ x]").note().s('piano')`} punchcard punchcardLabels={false} />
+
+---
+
+### Combining Arpeggios and Melodies
+
+Arpeggios work beautifully in layers—bass, chords, and melodic lines.
+
+#### The Layering Principle
+
+**Layer 1: Bass foundation:**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").rootNotes(2).note().s('sawtooth').lpf(600)`} punchcard punchcardLabels={false} />
+
+**Layer 2: Add sparse chords:**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").layer(
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600),
+  x => x.struct("~ x ~ x").voicing()
+)`} punchcard punchcardLabels={false} />
+
+**Layer 3: Add arpeggio on top:**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").layer(
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600),
+  x => x.struct("~ x ~ x").voicing(),
+  x => x.voicing().arp("0 2 1 3").note().s('piano')
+)`} punchcard punchcardLabels={false} />
+
+Three layers, clear hierarchy.
+
+---
+
+#### Melodic Lines Over Chords
+
+**Chord tones (notes in the chord):**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").layer(
+  x => x.voicing(),
+  x => "c5 e5 f5 g5".note().s('piano')
+)`} punchcard punchcardLabels={false} />
+
+Melody uses only chord tones—very consonant.
+
+**Passing tones (non-chord tones):**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").layer(
+  x => x.voicing(),
+  x => "c5 d5 e5 f5 e5 f5 g5 a5".note().s('piano')
+)`} punchcard punchcardLabels={false} />
+
+D and A aren't in the chords—they pass through, adding motion.
+
+**Target tones (land on strong beats):**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").layer(
+  x => x.struct("x").voicing(),
+  x => "c5 d5 e5 e5 f5 e5 d5 g5".note().s('piano')
+)`} punchcard punchcardLabels={false} />
+
+First note of each bar lands on a chord tone.
+
+---
+
+#### Texture Management
+
+Know when to add, when to subtract:
+
+**Sparse (bass + arpeggio):**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").layer(
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600),
+  x => n("0 1 2 1").chord(x).voicing().note().s('piano')
+)`} punchcard punchcardLabels={false} />
+
+Space to breathe.
+
+**Medium (bass + light chords + arpeggio):**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").layer(
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600),
+  x => x.struct("~ x").voicing(),
+  x => n("0 1 2 1").chord(x).voicing().note().s('piano')
+)`} punchcard punchcardLabels={false} />
+
+**Dense (all layers):**
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").layer(
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600),
+  x => x.struct("x ~ x ~").voicing(),
+  x => n("0 1 2 1").chord(x).voicing().note().s('piano'),
+  x => "c5 d5 e5 f5".note().s('piano')
+)`} punchcard punchcardLabels={false} />
+
+Full arrangement. Use for climaxes.
+
+**Try it:** Start sparse, build to dense, then strip back. Create dynamic arc.
+
+---
+
+### Complete Composition Workflow
+
+Let's build a complete piece from scratch using everything we've learned.
+
+#### The 5-Stage Process
+
+**Stage 1: Inspiration (2-4 chord sketch):**
+
+<MiniRepl client:idle tune={`chord("<Dm G C F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Simple idea. Feels jazzy, contemplative.
+
+**Stage 2: Expansion (add sections, create contrast):**
+
+<MiniRepl client:idle tune={`chord("<Dm G C F Dm G C@2>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Extended to 8 bars, final C held for resolution.
+
+**Stage 3: Refinement (voice leading):**
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 F^7 Dm7 G7 C^7@2>").anchor("c5").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+Added 7ths, smooth voice leading.
+
+**Stage 4: Arrangement (bass, rhythm, arpeggios):**
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 F^7 Dm7 G7 C^7@2>").layer(
+  x => x.anchor("c5").struct("[~ x]*2").voicing(),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600),
+  x => n("0 1 2 1").chord(x).voicing().note().s('piano')
+)`} punchcard punchcardLabels={false} />
+
+Full texture.
+
+**Stage 5: Polish (tempo, effects, final tweaks):**
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 F^7 Dm7 G7 C^7@2>").layer(
+  x => x.anchor("c5").struct("[~ x]*2").voicing().lpf(800),
+  x => x.rootNotes(2).note().s('sawtooth').lpf(600),
+  x => n("0 1 2 1").chord(x).voicing().note().s('piano')
+).cpm(25)`} punchcard punchcardLabels={false} />
+
+Added filter, reverb, set tempo. Done!
+
+---
+
+#### Common Challenges & Solutions
+
+**"Sounds boring":**
+- Add rhythmic variation (`.struct()`)
+- Try reharmonization (change one chord)
+- Add passing chords
+- Change arpeggio pattern
+
+**"Too busy":**
+- Simplify: remove a layer
+- Reduce harmonic rhythm (longer chords)
+- Use simpler triads instead of extensions
+- Add space (rests in `.struct()`)
+
+**"Doesn't flow":**
+- Fix voice leading (add `.anchor()`)
+- Check bass line (is it smooth or jumpy?)
+- Add passing chords between gaps
+- Ensure emotional arc (tension → release)
+
+**"No impact":**
+- Build tension curve (Part 3, Section 10)
+- Add dynamic contrast (sparse → dense)
+- Use borrowed chords for surprise
+- Add dramatic pause before resolution
+
+---
+
+#### Practice Challenges
+
+**Challenge 1: 4-Bar Progression (Foundation)**
+
+Build a 4-chord progression using I, IV, V, and vi. Add rhythm with `.struct()`.
+
+**Challenge 2: Add Voice Leading + Bass (Core Technique)**
+
+Take your progression from Challenge 1. Add `.anchor("c5")` and a bass line with `.rootNotes()`.
+
+**Challenge 3: Reharmonize One Chord (Advanced)**
+
+Choose one chord from your progression. Replace it with a substitute (tritone sub, borrowed chord, or secondary dominant).
+
+**Challenge 4: Add Arpeggio Layer (Arpeggio Composition)**
+
+Add an arpeggio pattern using `n()`. Try at least 3 different patterns.
+
+**Challenge 5: Complete 8-Bar Piece (Integration)**
+
+Combine everything:
+- 8-bar progression (A section: 4 bars, B section: 4 bars)
+- Voice leading with `.anchor()`
+- Bass line
+- Arpeggio or melody
+- At least one advanced technique (reharmonization, modal interchange, or generative element)
+
+---
+
+## What You've Learned
+
+You now have a complete compositional toolkit:
+
+**Foundation:**
+- Building progressions from scratch
+- Creating contrast and movement
+- Using rhythm as a compositional tool
+
+**Core Techniques:**
+- Voice leading for smooth transitions
+- Functional harmony thinking
+- Chromatic movement and passing chords
+- Extended chords and when to use them
+
+**Advanced Techniques:**
+- Reharmonization
+- Modal interchange for unexpected colors
+- Tension and release
+- Non-functional and modal composition
+- **Generative composition: using Strudel as creative partner**
+
+**Arpeggio Composition:**
+- Patterns and contours
+- Layering melodies, chords, and bass
+- Complete workflow from sketch to polish
+
+---
+
+## Where to Go Next
+
+Ready to deepen your skills?
+
+**Theory Foundation:**
+- **[Harmony](/learn/harmony/)** — Deep dive into chord theory, voicings, and notation
+
+**Apply Your Skills:**
+- **[Rock & Pop](/learn/rock-pop/)** — Genre-specific composition techniques
+- **[EDM](/learn/edm/)** — Electronic music production and sound design
+- **[Jazz (in Harmony)](/learn/harmony/#complete-jazz-combo-examples)** — Study complete jazz arrangements
+
+**Expand Your Toolkit:**
+- **[Euclidean Rhythms](/learn/euclidean-101/)** — Advanced rhythmic composition
+- **[Ear Training](/learn/ear-training/)** — Develop your musical ear
+
+**Keep Composing:**
+
+The best way to improve is to compose every day. Start small—a 4-bar loop. Experiment. Break rules. Let Strudel surprise you with generative ideas. Save what works, learn from what doesn't.
+
+Happy composing!
+
