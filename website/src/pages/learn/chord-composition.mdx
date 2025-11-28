@@ -204,10 +204,9 @@ Chords change, but bass stays on C. Creates a pedal point effect.
 
 **Static chords, moving bass:**
 
-<MiniRepl client:idle tune={`chord("<C>").struct("x").stack(
-  x => x.voicing().s("piano"),
-  x => x.rootNotes("<2 3 4 3>").note().s('sawtooth').lpf(600)
-)`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`chord("<C>").struct("x").voicing().stack(
+  "c2 d2 e2 f2 e2 d2".note().s('sawtooth').lpf(600)
+).s("piano")`} punchcard punchcardLabels={false} />
 
 One chord (C), but the bass line creates movement.
 
