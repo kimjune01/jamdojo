@@ -1178,9 +1178,9 @@ Grabs 4 consecutive notes from the pool.
 
 **`.pick()` after `.segment()`:**
 
-<MiniRepl client:idle tune={`"[c d e f g a b]".segment(4).pick().note().s('piano')`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`"[c d e f g a b]".segment(4).pick("0 1 2").note().s('piano')`} punchcard punchcardLabels={false} />
 
-Picks notes from the segmented chunk.
+Picks specific indices from the segmented chunk.
 
 **`.slice()` - divide and select:**
 
