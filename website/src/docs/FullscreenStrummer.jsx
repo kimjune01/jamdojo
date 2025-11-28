@@ -132,7 +132,9 @@ export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }
 
   const handleStrum = useCallback((notes, direction, velocity = 0.8) => {
     const playableNotes = notes.filter(n => n !== null);
-    playStrum(playableNotes, direction, 20, velocity);
+    // Faster velocity = tighter strum (25-60ms range, quadratic)
+    const strumSpeed = 60 - (velocity * velocity * 35);
+    playStrum(playableNotes, direction, strumSpeed, velocity);
 
     const chordName = Object.entries(CHORD_VOICINGS).find(
       ([, voicing]) => JSON.stringify(voicing) === JSON.stringify(notes)

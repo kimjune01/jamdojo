@@ -10,6 +10,52 @@ if (typeof window !== 'undefined') {
   audioReady = initAudioOnFirstClick();
 }
 
+// Just intonation: cent offsets from equal temperament for each semitone interval
+// Based on 5-limit just intonation ratios
+const JUST_INTONATION_CENTS = {
+  0: 0,      // unison (1/1)
+  1: 12,     // minor 2nd (16/15)
+  2: 4,      // major 2nd (9/8)
+  3: 16,     // minor 3rd (6/5)
+  4: -14,    // major 3rd (5/4)
+  5: -2,     // perfect 4th (4/3)
+  6: -10,    // tritone (45/32)
+  7: 2,      // perfect 5th (3/2)
+  8: 14,     // minor 6th (8/5)
+  9: -16,    // major 6th (5/3)
+  10: 18,    // minor 7th (9/5)
+  11: -12,   // major 7th (15/8)
+};
+
+// Convert note name to semitone number (C=0, C#=1, etc.)
+const NOTE_TO_SEMITONE = {
+  'C': 0, 'Db': 1, 'D': 2, 'Eb': 3, 'E': 4, 'F': 5,
+  'Gb': 6, 'G': 7, 'Ab': 8, 'A': 9, 'Bb': 10, 'B': 11,
+  'C#': 1, 'D#': 3, 'F#': 6, 'G#': 8, 'A#': 10,
+};
+
+// Parse note name to get semitone and octave
+function parseNote(note) {
+  const match = note.match(/^([A-G][b#]?)(\d+)$/);
+  if (!match) return null;
+  const [, name, octave] = match;
+  const semitone = NOTE_TO_SEMITONE[name];
+  return { semitone, octave: parseInt(octave) };
+}
+
+// Get just intonation detune in cents relative to root note
+function getJustIntonationDetune(note, rootNote) {
+  const noteInfo = parseNote(note);
+  const rootInfo = parseNote(rootNote);
+  if (!noteInfo || !rootInfo) return 0;
+
+  const noteMidi = noteInfo.octave * 12 + noteInfo.semitone;
+  const rootMidi = rootInfo.octave * 12 + rootInfo.semitone;
+  const interval = ((noteMidi - rootMidi) % 12 + 12) % 12; // 0-11
+
+  return JUST_INTONATION_CENTS[interval] || 0;
+}
+
 export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
   const [sound, setSound] = useState(defaultSound);
   const [activeNotes, setActiveNotes] = useState([]);
@@ -71,12 +117,18 @@ export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
       const ac = getAudioContext();
       const baseTime = ac.currentTime + 0.01;
       const orderedNotes = direction === 'up' ? [...notesArray].reverse() : notesArray;
-      // Clamp velocity between 0.3 and 1.0 for audible range
-      const gain = Math.max(0.3, Math.min(1.0, velocity));
+      // Clamp velocity between 0.05 and 1.0
+      const gain = Math.max(0.05, Math.min(1.0, velocity));
+
+      console.log('gain:', gain.toFixed(2), 'strumSpeed:', strumSpeed.toFixed(0));
+
+      // Use first note as root for just intonation tuning
+      const rootNote = notesArray[0];
 
       orderedNotes.forEach((note, i) => {
         const t = baseTime + (i * strumSpeed / 1000);
-        superdough({ s: sound, note, gain }, t, 1.5);
+        const detune = getJustIntonationDetune(note, rootNote);
+        superdough({ s: sound, note, gain, detune }, t, 1.5);
       });
 
       // Set the last note for display (root note of chord)

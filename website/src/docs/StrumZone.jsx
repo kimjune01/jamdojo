@@ -1,13 +1,13 @@
 import React, { useRef } from 'react';
 
 // Reusable strum zone component with velocity-based gain
+// Strums trigger when crossing the horizontal center line
 // Props:
 //   - notes: array of note strings (e.g., ['C3', 'E3', 'G3'])
 //   - onStrum: callback (notes, direction, velocity) => void
 //   - isActive: boolean for visual feedback
 //   - children: content to render inside the zone
 //   - className: additional CSS classes
-//   - threshold: pixels from center needed to trigger strum (default 15)
 
 export function StrumZone({
   notes,
@@ -15,101 +15,79 @@ export function StrumZone({
   isActive,
   children,
   className = '',
-  threshold = 15,
 }) {
   const zoneRef = useRef(null);
   const strumState = useRef({
     isActive: false,
-    centerX: 0,
     centerY: 0,
-    lastQuadrant: null, // Track which quadrant we're in (up/down/left/right)
-    lastAudioDirection: null, // Track last audio direction to alternate
-    lastTime: 0,
+    lastHalf: null, // 'upper' or 'lower'
     lastX: 0,
     lastY: 0,
+    lastTime: 0,
   });
 
-  const getQuadrantFromAngle = (angle) => {
-    const deg = angle * (180 / Math.PI);
-    if (deg >= -45 && deg < 45) return 'right';
-    if (deg >= 45 && deg < 135) return 'down';
-    if (deg >= -135 && deg < -45) return 'up';
-    return 'left';
-  };
-
-  // Get initial audio direction based on movement
-  const getInitialAudioDirection = (quadrant) => {
-    return (quadrant === 'up' || quadrant === 'left') ? 'up' : 'down';
-  };
-
-  // Calculate velocity from pointer speed (pixels per ms)
-  // Returns 0-1 value, where faster = higher velocity
-  const calculateVelocity = (e) => {
+  // Calculate linear velocity (pixels per ms) based on pointer movement
+  const calculateVelocity = (clientX, clientY) => {
     const now = performance.now();
     const dt = now - strumState.current.lastTime;
-    if (dt === 0) return 0.8;
+    if (dt === 0 || strumState.current.lastX === 0) return 0;
 
-    const dx = e.clientX - strumState.current.lastX;
-    const dy = e.clientY - strumState.current.lastY;
+    const dx = clientX - strumState.current.lastX;
+    const dy = clientY - strumState.current.lastY;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    const speed = dist / dt; // pixels per ms
+    return dist / dt; // pixels per ms
+  };
 
-    // Map speed to velocity: slow (~0.5 px/ms) = 0.4, fast (~5 px/ms) = 1.0
-    const velocity = Math.min(1.0, 0.4 + (speed / 5) * 0.6);
-    return velocity;
+  // Map linear velocity to gain (0.05 to 1.0)
+  // ~0.5 px/ms = slow, ~5 px/ms = fast
+  const velocityToGain = (velocity) => {
+    const gain = Math.min(1.0, 0.05 + (velocity / 5) * 0.95);
+    return gain;
   };
 
   const handlePointerDown = (e) => {
+    e.preventDefault();
     if (!zoneRef.current) return;
     zoneRef.current.setPointerCapture(e.pointerId);
 
     const rect = zoneRef.current.getBoundingClientRect();
+    const centerY = rect.top + rect.height / 2;
+    const currentHalf = e.clientY < centerY ? 'upper' : 'lower';
+
     strumState.current = {
       isActive: true,
-      centerX: rect.left + rect.width / 2,
-      centerY: rect.top + rect.height / 2,
-      lastQuadrant: null,
-      lastAudioDirection: null,
-      lastTime: performance.now(),
+      centerY,
+      lastHalf: currentHalf,
       lastX: e.clientX,
       lastY: e.clientY,
+      lastTime: performance.now(),
     };
   };
 
   const handlePointerMove = (e) => {
     if (!strumState.current.isActive) return;
+    e.preventDefault();
 
-    const { centerX, centerY } = strumState.current;
-    const deltaX = e.clientX - centerX;
-    const deltaY = e.clientY - centerY;
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    const { centerY, lastHalf } = strumState.current;
+    const currentHalf = e.clientY < centerY ? 'upper' : 'lower';
 
-    if (distance > threshold) {
-      const quadrant = getQuadrantFromAngle(Math.atan2(deltaY, deltaX));
+    // Calculate linear velocity for gain
+    const velocity = calculateVelocity(e.clientX, e.clientY);
 
-      // Trigger strum when quadrant changes
-      if (strumState.current.lastQuadrant !== quadrant) {
-        const velocity = calculateVelocity(e);
+    // Trigger strum when crossing the center line
+    if (currentHalf !== lastHalf) {
+      const gain = velocityToGain(velocity);
+      // Moving down (upper -> lower) = downstrum, moving up (lower -> upper) = upstrum
+      const audioDirection = currentHalf === 'lower' ? 'down' : 'up';
 
-        let audioDirection;
-        if (strumState.current.lastAudioDirection === null) {
-          // First strum - determine direction from movement
-          audioDirection = getInitialAudioDirection(quadrant);
-        } else {
-          // Subsequent strums - alternate direction
-          audioDirection = strumState.current.lastAudioDirection === 'down' ? 'up' : 'down';
-        }
-
-        onStrum(notes, audioDirection, velocity);
-        strumState.current.lastQuadrant = quadrant;
-        strumState.current.lastAudioDirection = audioDirection;
-      }
+      onStrum(notes, audioDirection, gain);
+      strumState.current.lastHalf = currentHalf;
     }
 
-    // Update tracking for velocity calculation
-    strumState.current.lastTime = performance.now();
+    // Update tracking
     strumState.current.lastX = e.clientX;
     strumState.current.lastY = e.clientY;
+    strumState.current.lastTime = performance.now();
   };
 
   const handlePointerUp = (e) => {
@@ -117,8 +95,9 @@ export function StrumZone({
       zoneRef.current.releasePointerCapture(e.pointerId);
     }
     strumState.current.isActive = false;
-    strumState.current.lastQuadrant = null;
-    strumState.current.lastAudioDirection = null;
+    strumState.current.lastHalf = null;
+    strumState.current.lastX = 0;
+    strumState.current.lastY = 0;
   };
 
   return (
@@ -128,8 +107,10 @@ export function StrumZone({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className={`select-none touch-none cursor-grab active:cursor-grabbing ${className}`}
+      className={`select-none touch-none cursor-grab active:cursor-grabbing relative ${className}`}
     >
+      {/* Subtle center line indicator */}
+      <div className="absolute left-2 right-2 top-1/2 -translate-y-1/2 h-px bg-white/10 pointer-events-none" />
       {children}
     </div>
   );
