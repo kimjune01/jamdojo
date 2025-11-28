@@ -94,6 +94,7 @@ export const ACTIVITIES: SidebarSection[] = [
       { text: 'Rock & Pop', link: 'learn/genre/rock-pop', icon: '🎤', description: 'Classic rock patterns and pop production' },
       { text: 'Electronic Dance Music', link: 'learn/genre/edm', icon: '🎧', description: 'House, techno, trance, and more' },
       { text: 'Metal', link: 'learn/genre/metal', icon: '🤘', description: 'Heavy riffs, blast beats, and power' },
+      { text: 'Demoscene', link: 'learn/genre/demoscene', icon: '🖥️', description: 'Chiptune, tracker music, and keygen styles' },
     ],
   },
   {
@@ -101,11 +102,6 @@ export const ACTIVITIES: SidebarSection[] = [
     icon: '📚',
     items: [
       { text: 'Getting Started', link: 'learn/workshop-content/getting-started', icon: '🚀', description: 'Start your journey with Strudel' },
-      { text: 'First Sounds', link: 'workshop/first-sounds', icon: '🔊', description: 'Start making sounds with Strudel' },
-      { text: 'First Notes', link: 'workshop/first-notes', icon: '🎵', description: 'Learn to play musical notes and melodies' },
-      { text: 'First Effects', link: 'workshop/first-effects', icon: '✨', description: 'Add effects to transform your sounds' },
-      { text: 'Pattern Effects', link: 'workshop/pattern-effects', icon: '🔄', description: 'Create dynamic patterns with effects' },
-      { text: 'Recap', link: 'workshop/recap', icon: '📝', description: 'Review what you have learned' },
     ],
   },
   {
@@ -125,10 +121,8 @@ export const ACTIVITIES: SidebarSection[] = [
     title: 'Pattern Functions',
     icon: '⚡',
     items: [
-      { text: 'Introduction', link: 'functions/intro', icon: '📖', description: 'Overview of pattern manipulation' },
       { text: 'Creating Patterns', link: 'learn/reference/factories', icon: '🏭', description: 'Build patterns from scratch' },
       { text: 'Time Modifiers', link: 'learn/workshop-content/time-modifiers', icon: '⏱️', description: 'Control timing and rhythm' },
-      { text: 'Control Parameters', link: 'functions/value-modifiers', icon: '🎛️', description: 'Modify pattern values dynamically' },
       { text: 'Random Modifiers', link: 'learn/workshop-content/random-modifiers', icon: '🎲', description: 'Add randomness and variation' },
       { text: 'Conditional Modifiers', link: 'learn/workshop-content/conditional-modifiers', icon: '❓', description: 'Apply conditional logic to patterns' },
     ],
