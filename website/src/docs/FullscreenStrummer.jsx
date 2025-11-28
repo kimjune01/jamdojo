@@ -73,11 +73,17 @@ const ALL_CHORD_NOTES = [...new Set(
 )];
 
 // Fullscreen chord button
-function FullscreenChordButton({ chord, notes, onStrum, isActive }) {
+function FullscreenChordButton({ chord, notes, onStrum, onClick, isActive, chordIndex }) {
+  // Wrap onStrum to include chordIndex
+  const handleStrum = (notes, direction, velocity) => {
+    onStrum(notes, direction, velocity, chordIndex);
+  };
+
   return (
     <StrumZone
       notes={notes}
-      onStrum={onStrum}
+      onStrum={handleStrum}
+      onClick={onClick}
       isActive={isActive}
       className={`
         flex flex-col items-center justify-center
@@ -96,12 +102,17 @@ function FullscreenChordButton({ chord, notes, onStrum, isActive }) {
   );
 }
 
+// Base orbit number for strummer chords (avoid default orbit 1)
+const STRUMMER_ORBIT_BASE = 10;
+
 export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }) {
   const {
     sound,
     loading,
     playStrum,
     initAudio,
+    muteOrbits,
+    unmuteOrbit,
   } = useStrudelSound({ defaultSound, notes: ALL_CHORD_NOTES });
 
   const [activeChord, setActiveChord] = useState(null);
@@ -130,11 +141,30 @@ export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }
     setAudioStarted(true);
   };
 
-  const handleStrum = useCallback((notes, direction, velocity = 0.8) => {
+  // Mute all chord orbits
+  const handleMuteAll = useCallback(() => {
+    const allOrbits = chords.map((_, i) => STRUMMER_ORBIT_BASE + i);
+    muteOrbits(allOrbits);
+  }, [chords, muteOrbits]);
+
+  // Handle strum with orbit-based muting
+  const handleStrum = useCallback((notes, direction, velocity = 0.8, chordIndex) => {
     const playableNotes = notes.filter(n => n !== null);
     // Faster velocity = tighter strum (25-60ms range, quadratic)
     const strumSpeed = 60 - (velocity * velocity * 35);
-    playStrum(playableNotes, direction, strumSpeed, velocity);
+
+    // Get orbit for this chord
+    const orbit = STRUMMER_ORBIT_BASE + chordIndex;
+
+    // Mute all other orbits, unmute this one
+    const otherOrbits = chords
+      .map((_, i) => STRUMMER_ORBIT_BASE + i)
+      .filter((_, i) => i !== chordIndex);
+    muteOrbits(otherOrbits);
+    unmuteOrbit(orbit);
+
+    // Play with the chord's orbit
+    playStrum(playableNotes, direction, strumSpeed, velocity, orbit);
 
     const chordName = Object.entries(CHORD_VOICINGS).find(
       ([, voicing]) => JSON.stringify(voicing) === JSON.stringify(notes)
@@ -142,7 +172,7 @@ export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }
 
     setActiveChord(chordName);
     setTimeout(() => setActiveChord(null), 300);
-  }, [playStrum]);
+  }, [playStrum, chords, muteOrbits, unmuteOrbit]);
 
   const handleBack = () => {
     window.history.back();
@@ -216,7 +246,9 @@ export function FullscreenStrummer({ defaultSound = 'gm_acoustic_guitar_nylon' }
             chord={chord}
             notes={CHORD_VOICINGS[chord]}
             onStrum={handleStrum}
+            onClick={handleMuteAll}
             isActive={activeChord === chord}
+            chordIndex={index}
           />
         ))}
       </div>

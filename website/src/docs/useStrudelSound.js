@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { getAudioContext, initAudioOnFirstClick, superdough } from '@strudel/webaudio';
+import { getAudioContext, initAudioOnFirstClick, superdough, setOrbitGain } from '@strudel/webaudio';
 import { prebake } from '../repl/prebake.mjs';
 import { loadModules } from '../repl/util.mjs';
 
@@ -111,7 +111,8 @@ export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
   // direction: 'down' plays low to high, 'up' plays high to low
   // strumSpeed: milliseconds between each note (default 20ms)
   // velocity: 0-1 value controlling gain (default 0.8)
-  const playStrum = useCallback(async (notesArray, direction = 'down', strumSpeed = 20, velocity = 0.8) => {
+  // orbit: optional orbit number for muting control
+  const playStrum = useCallback(async (notesArray, direction = 'down', strumSpeed = 20, velocity = 0.8, orbit = 1) => {
     await initAudio();
     try {
       const ac = getAudioContext();
@@ -126,7 +127,7 @@ export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
       orderedNotes.forEach((note, i) => {
         const t = baseTime + (i * strumSpeed / 1000);
         const detune = getJustIntonationDetune(note, rootNote);
-        superdough({ s: sound, note, gain, detune, room: 0.15, reverb: 0.2 }, t, 1.5);
+        superdough({ s: sound, note, gain, detune, room: 0.15, reverb: 0.2, orbit }, t, 1.5);
       });
 
       // Set the last note for display (root note of chord)
@@ -137,6 +138,18 @@ export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
       console.error('Strum error:', e);
     }
   }, [sound, initAudio]);
+
+  // Mute specific orbits (set gain to 0)
+  const muteOrbits = useCallback((orbitNumbers) => {
+    orbitNumbers.forEach(orbitNum => {
+      setOrbitGain(orbitNum, 0);
+    });
+  }, []);
+
+  // Unmute specific orbit (restore gain to 1)
+  const unmuteOrbit = useCallback((orbitNum) => {
+    setOrbitGain(orbitNum, 1);
+  }, []);
 
   const noteOn = useCallback((note) => {
     if (loading) return;
@@ -161,5 +174,7 @@ export function useStrudelSound({ defaultSound = 'piano', notes = [] }) {
     noteOff,
     playStrum,
     initAudio,
+    muteOrbits,
+    unmuteOrbit,
   };
 }

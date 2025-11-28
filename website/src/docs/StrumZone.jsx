@@ -5,6 +5,7 @@ import React, { useRef } from 'react';
 // Props:
 //   - notes: array of note strings (e.g., ['C3', 'E3', 'G3'])
 //   - onStrum: callback (notes, direction, velocity) => void
+//   - onClick: callback () => void - called when user taps without strumming
 //   - isActive: boolean for visual feedback
 //   - children: content to render inside the zone
 //   - className: additional CSS classes
@@ -12,6 +13,7 @@ import React, { useRef } from 'react';
 export function StrumZone({
   notes,
   onStrum,
+  onClick,
   isActive,
   children,
   className = '',
@@ -24,6 +26,7 @@ export function StrumZone({
     lastX: 0,
     lastY: 0,
     lastTime: 0,
+    didStrum: false, // Track if a strum happened during this gesture
   });
 
   // Calculate linear velocity (pixels per ms) based on pointer movement
@@ -61,6 +64,7 @@ export function StrumZone({
       lastX: e.clientX,
       lastY: e.clientY,
       lastTime: performance.now(),
+      didStrum: false,
     };
   };
 
@@ -82,6 +86,7 @@ export function StrumZone({
 
       onStrum(notes, audioDirection, gain);
       strumState.current.lastHalf = currentHalf;
+      strumState.current.didStrum = true;
     }
 
     // Update tracking
@@ -94,10 +99,15 @@ export function StrumZone({
     if (zoneRef.current) {
       zoneRef.current.releasePointerCapture(e.pointerId);
     }
+    // If no strum happened, this was a click/tap - call onClick
+    if (!strumState.current.didStrum && onClick) {
+      onClick();
+    }
     strumState.current.isActive = false;
     strumState.current.lastHalf = null;
     strumState.current.lastX = 0;
     strumState.current.lastY = 0;
+    strumState.current.didStrum = false;
   };
 
   return (
