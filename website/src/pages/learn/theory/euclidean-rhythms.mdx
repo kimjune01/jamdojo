@@ -4,10 +4,82 @@ layout: ../../../layouts/JamDojoLayout.astro
 ---
 
 import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
 
 Euclidean rhythms distribute a number of beats as evenly as possible across a number of steps. They appear in music traditions worldwide—from West African bell patterns to Cuban clave to electronic music.
 
 In Strudel, you create them with the `euclid` function.
+
+---
+
+# The Rhythm Distribution Experience
+
+Before diving into how euclidean rhythms work, let's **feel** what makes them special.
+
+## Pattern A vs Pattern B
+
+Listen to these two patterns. Both have 3 kicks in 8 steps:
+
+**Pattern A:**
+
+<MiniRepl client:idle tune={`sound("bd [~ bd] ~ ~ ~ bd ~")`} punchcard punchcardLabels={false} />
+
+**Pattern B:**
+
+<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
+
+Which one feels more balanced? More natural? More like it could loop forever without getting boring?
+
+<QA client:load question="Why does Pattern B feel more balanced?">
+
+Pattern B distributes the beats **as evenly as possible** across the 8 steps. The spacing is: 3 steps, 3 steps, 2 steps.
+
+Pattern A bunches two beats close together, creating uneven spacing: 2 steps, 4 steps, 2 steps.
+
+Your brain perceives Pattern B as more stable and "right" because the beats are maximally spaced—no clustering, no big gaps. This is the essence of euclidean rhythm.
+
+</QA>
+
+## The Density Spectrum
+
+The same number of steps can hold different densities of beats. Listen to how the feel changes as we add more kicks to 8 steps:
+
+**Sparse (2 in 8):**
+
+<MiniRepl client:idle tune={`sound("bd").euclid(2, 8)`} punchcard punchcardLabels={false} />
+
+**Balanced (3 in 8):**
+
+<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
+
+**Dense (5 in 8):**
+
+<MiniRepl client:idle tune={`sound("bd").euclid(5, 8)`} punchcard punchcardLabels={false} />
+
+**Very Dense (7 in 8):**
+
+<MiniRepl client:idle tune={`sound("bd").euclid(7, 8)`} punchcard punchcardLabels={false} />
+
+Notice how each density creates a different rhythmic character. Sparse patterns breathe. Dense patterns drive. All remain balanced because the algorithm ensures even distribution.
+
+<Box>
+
+**What does "evenly distributed" actually mean?**
+
+Imagine you have to place 5 chairs around a circular table for 8 people. Where do you put them so everyone has equal access?
+
+The euclidean algorithm solves this exact problem: it distributes N objects across M slots with **maximal evenness**—minimizing the difference between the smallest and largest gaps.
+
+For 5 beats in 8 steps, the algorithm produces: **X X . X . X . X .**
+
+The gaps are either 1 or 2 steps—never 0, never 3. That's as even as mathematically possible.
+
+This property appears in nature (sunflower seed spirals), architecture (dome construction), and music traditions that evolved over centuries without computers—because the human ear naturally gravitates toward balanced rhythms.
+
+</Box>
+
+---
 
 ## Your First Euclidean Rhythm
 
@@ -31,37 +103,299 @@ Now you have 5 beats in 8 steps. More beats = denser rhythm.
 
 <MiniRepl client:idle tune={`sound("bd").euclid(2, 8)`} punchcard punchcardLabels={false} />
 
-## Classic Patterns
+---
 
-Many traditional rhythms are euclidean. Here's the Cuban tresillo (3 over 8):
+# How It Works: The Bjorklund Algorithm
+
+Now that you've heard euclidean rhythms, let's understand **why** they sound so good.
+
+## The 2,300-Year-Old Beat Machine
+
+The algorithm behind euclidean rhythms has an ancient pedigree:
+
+1. **~300 BCE**: Euclid describes an algorithm for finding the greatest common divisor (GCD) of two numbers
+2. **2004**: Computer scientist Godfried Toussaint discovers that traditional rhythms from around the world follow euclidean patterns
+3. **2005**: Physicist Eric Bjorklund publishes an algorithm for distributing neutron pulses evenly in time—identical to the musical rhythm problem
+4. **Today**: Musicians use this algorithm to generate rhythms that sound simultaneously mathematical and deeply human
+
+<Box>
+
+**The 2,300-Year-Old Beat Machine**
+
+Euclid's algorithm wasn't designed for music—it solves the mathematical problem of finding common divisors. But when applied to rhythm, it produces patterns that musicians across cultures independently discovered over millennia.
+
+The tresillo (3,8) from Cuba? Euclidean.
+The clave (5,8) from Latin America? Euclidean.
+The gankogui bell pattern (7,12) from West Africa? Euclidean.
+The aksak rhythm (4,9) from Turkey? Euclidean.
+
+These cultures didn't have computers or know about Euclid's algorithm. They found these patterns through centuries of musical evolution because **the human ear naturally prefers maximal evenness**.
+
+The algorithm doesn't create musical rhythms—it describes the mathematics underlying rhythms that already feel right to us.
+
+</Box>
+
+## The Pairing Process
+
+Here's how the Bjorklund algorithm distributes 5 beats across 8 steps:
+
+**Step 1: Start with beats and rests**
+`[1] [1] [1] [1] [1]` (5 beats)
+`[0] [0] [0]` (3 rests)
+
+**Step 2: Pair beats with rests**
+`[1,0] [1,0] [1,0]` (3 pairs)
+`[1] [1]` (2 leftover beats)
+
+**Step 3: Pair the pairs with leftovers**
+`[1,0,1] [1,0,1]` (2 groups)
+`[1,0]` (1 leftover)
+
+**Step 4: Continue until you can't pair anymore**
+`[1,0,1,1,0]` (Final pattern)
+`[1,0,1]`
+
+**Result:** `1 0 1 1 0 1 0 1` → The Cuban cinquillo rhythm!
+
+The algorithm recursively pairs groups to distribute them as evenly as possible. It's elegant, deterministic, and produces musically useful results.
+
+<Box>
+
+**The Two Parameters That Control Everything**
+
+`euclid(pulses, steps)` takes just two numbers:
+
+- **Pulses** (k): How many beats to place
+- **Steps** (n): The total number of time slots
+
+The **density ratio** k/n determines the feel:
+- **k/n ≈ 0.25** (sparse): Minimal, spacious (e.g., 2 in 8)
+- **k/n ≈ 0.375** (balanced): Classic patterns (e.g., 3 in 8, 5 in 16)
+- **k/n ≈ 0.5** (half): Syncopated, driving (e.g., 4 in 8, 5 in 12)
+- **k/n ≈ 0.75** (dense): Intense, full (e.g., 7 in 8)
+- **k/n > 0.875** (very dense): Almost continuous (e.g., 7 in 8)
+
+Pro tip: Ratios around 3/8 and 5/8 tend to create the most musical patterns because they have interesting GCD relationships that create repeating sub-patterns.
+
+</Box>
+
+---
+
+## Classic Patterns Around the World
+
+The euclidean algorithm rediscovers rhythms that have existed in global music traditions for centuries. Let's explore these cultural touchstones.
+
+### Tresillo: The Cuban Foundation (3,8)
 
 <MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
 
-The West African bell pattern (7 over 12):
+The tresillo pattern forms the rhythmic backbone of Cuban son, salsa, and countless Latin American styles. Its 3-3-2 subdivision creates the distinctive "Latin feel" that swept through jazz, R&B, and rock.
+
+<Box>
+
+**Tresillo: Cuba Meets West Africa**
+
+The name means "triplet" in Spanish, but the pattern originates from West African bell rhythms brought to Cuba via the slave trade. It appears in:
+
+- Cuban son and rumba
+- New Orleans second line
+- Bo Diddley beat (rock and roll)
+- Brazilian samba (variant)
+
+**Musical function:** Creates forward momentum while avoiding the "square" feel of straight quarter notes. The uneven spacing (3+3+2 vs. 4+4) generates subtle syncopation that makes listeners want to move.
+
+**In practice:** Often played on claves, cowbell, or bass drum. In salsa, the tresillo defines the montuno (repeated piano pattern). In rock, it's the foundation of the "Bo Diddley beat."
+
+</Box>
+
+### Clave: The Timekeeper (5,8 and 5,16)
+
+<MiniRepl client:idle tune={`sound("rim").euclid(5, 8)`} punchcard punchcardLabels={false} />
+
+The clave is sacred in Latin music—all other instruments align themselves to it. There are two primary forms:
+
+**Son clave (5,8):**
+
+<MiniRepl client:idle tune={`sound("rim").euclid(5, 8)`} punchcard punchcardLabels={false} />
+
+**Rumba clave (5,8 rotated):**
+
+<MiniRepl client:idle tune={`sound("rim").euclidRot(5, 8, 1)`} punchcard punchcardLabels={false} />
+
+<Box>
+
+**Son Clave vs. Rumba Clave: The Sacred Rotation**
+
+Both patterns use (5,8), but the rotation creates different feels:
+
+**Son clave:** More symmetrical, smoother. Used in son, mambo, salsa.
+**Rumba clave:** More asymmetrical, funkier. Used in rumba, Afro-Cuban folklore.
+
+The direction matters:
+- **3-2 clave:** 3 hits in bar 1, 2 hits in bar 2 (forward momentum)
+- **2-3 clave:** Reversed (laid-back feel)
+
+**Why it's called the "key":** The Spanish word "clave" means "key" or "code." In Latin music, you don't "keep time"—you "keep clave." Every arrangement is built to either align with or deliberately tension against the clave pattern. Playing the wrong direction is considered a serious musical error.
+
+**Extended clave (5,16):** Slower tempos use 16 steps instead of 8, creating space for more complex polyrhythms.
+
+</Box>
+
+### The West African Bell Pattern: The Timeline (7,12)
 
 <MiniRepl client:idle tune={`sound("metal").euclid(7, 12)`} punchcard punchcardLabels={false} />
 
-The clave (5 over 16):
+This pattern, often called the "gankogui" or "standard pattern," is fundamental to West African music and its diaspora descendants.
 
-<MiniRepl client:idle tune={`sound("rim").euclid(5, 16)`} punchcard punchcardLabels={false} />
+<Box>
 
-## Adding Rotation
+**The African Timeline Principle**
+
+In traditional African music, the bell pattern serves as a "timeline"—a rhythmic reference point that all other instruments use for orientation. The timeline is:
+
+1. **Always audible:** Usually the highest, most penetrating instrument
+2. **Never stops:** Plays continuously throughout the piece
+3. **Defines the cycle:** Other patterns may be longer or shorter, but all relate to the bell
+
+The (7,12) pattern is maximally asymmetric—it sounds different at every position in the cycle, making it easy to know "where you are" in the rhythm.
+
+**Global influence:**
+- Afrobeat (Fela Kuti): Bell pattern holds the groove
+- Funk (James Brown): Cowbell parts derive from this
+- Electronic music: The "Amen break" and other sampled loops preserve this asymmetry
+
+**Why (7,12) specifically?**
+The ratio 7/12 ≈ 0.583 creates five different interval sizes (1, 2, 2, 2, 2, 3), making the pattern highly recognizable and impossible to confuse with simpler divisions. The GCD(7,12) = 1 means it's a "prime" rhythm with maximum cyclic interest.
+
+</Box>
+
+### Beyond the Classics: Hidden Euclidean Patterns
+
+Many other cultural rhythms follow euclidean math:
+
+**Aksak (Turkey): (4,9)**
+
+<MiniRepl client:idle tune={`sound("bd").euclid(4, 9)`} punchcard punchcardLabels={false} />
+
+Traditional Turkish and Balkan dance rhythm with 2-2-2-3 feel.
+
+**Venda Children's Song (South Africa): (5,12)**
+
+<MiniRepl client:idle tune={`sound("cp").euclid(5, 12)`} punchcard punchcardLabels={false} />
+
+Clapping pattern from South African children's singing games.
+
+These weren't composed with algorithms—they emerged from cultural musical evolution. The math describes what the ear already knew.
+
+## The Power of Rotation
+
+Rotation might seem like a simple shift, but it's one of the most powerful musical tools in euclidean rhythm.
+
+### Basic Rotation
 
 Use `.euclidRot()` to rotate the pattern. This shifts where it starts:
 
+**No rotation (0):**
+
 <MiniRepl client:idle tune={`sound("bd").euclidRot(3, 8, 0)`} punchcard punchcardLabels={false} />
 
-Now with rotation of 2:
+**Rotation of 2:**
 
 <MiniRepl client:idle tune={`sound("bd").euclidRot(3, 8, 2)`} punchcard punchcardLabels={false} />
 
-Same beats, different starting point. Rotation changes the feel without changing the density.
+**Rotation of 4:**
 
-**Try it:** Change the rotation from `0` to `4`. Notice how the downbeat shifts.
+<MiniRepl client:idle tune={`sound("bd").euclidRot(3, 8, 4)`} punchcard punchcardLabels={false} />
 
-## Layering Euclidean Rhythms
+Same beats, same spacing, completely different feel.
 
-The magic happens when you combine multiple euclidean patterns:
+<Box>
+
+**Why Rotation Matters Musically**
+
+Rotation controls the **phase relationship** between the pattern and the downbeat. This determines whether your rhythm feels:
+
+**On the beat** (rotation = 0): Solid, grounded, direct
+**Syncopated** (rotation ≠ 0): Funky, unexpected, danceable
+
+**Real-world examples:**
+
+**Reggae one-drop:** The snare hits on beat 3, not beats 2 and 4 like rock. This is rotation.
+
+```
+// Standard backbeat (rotation 0)
+sound("sd").euclidRot(2, 8, 4)  // hits beats 2 & 4
+
+// One-drop (rotation 2)
+sound("sd").euclidRot(1, 4, 2)  // hits beat 3 only
+```
+
+**Son clave vs. rumba clave:** Same pattern, different rotation, completely different musical function.
+
+**Polyrhythmic layering:** When multiple patterns have the same (pulses, steps) but different rotations, they create phase-shifting textures. This is how Steve Reich's "Clapping Music" works.
+
+**Pro technique:** Use rotation to avoid clashes when layering. If your kick and snare both use (4,16), rotate one by 4 steps so they never hit simultaneously.
+
+</Box>
+
+### Finding the Right Rotation
+
+Different rotations work for different musical situations:
+
+<QA client:load question="How do I find the best rotation for my pattern?">
+
+There's no "correct" rotation—it depends on musical context:
+
+1. **Start at 0:** Listen to the pattern straight
+2. **Increment by 1:** Try each rotation and listen for the one that "locks" with your other parts
+3. **Check the downbeat:** Does the first hit fall on beat 1, or does it syncopate?
+4. **Listen for clashes:** If two layered patterns hit at the same time too often, rotate one until they interlock
+
+**Quick tip:** Rotations that are multiples of the step size often create strong downbeat feels. Odd rotations create syncopation.
+
+**Example:** For a (3,8) pattern, try rotations 0, 2, 4, 6 to hear how the same spacing creates vastly different grooves.
+
+</QA>
+
+---
+
+# The Art of Layering
+
+Single euclidean patterns are interesting. Layered euclidean patterns are magical. This section teaches the principles that turn mathematical patterns into living, breathing grooves.
+
+## Start Simple: Two-Layer Foundation
+
+The foundation of any rhythm is the relationship between kick and snare:
+
+**Kick only (foundation):**
+
+<MiniRepl client:idle tune={`sound("bd").euclid(4, 16)`} punchcard punchcardLabels={false} />
+
+**Add snare (backbeat):**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 16),
+  sound("sd").euclidRot(2, 16, 8)
+)`} punchcard punchcardLabels={false} />
+
+Notice the snare is rotated 8 steps—exactly halfway through the cycle. This creates the classic backbeat (snare on beats 2 and 4).
+
+## The Interlocking Principle
+
+The secret to great layering is **interlocking**—patterns that fit together like puzzle pieces, filling rhythmic space without colliding.
+
+This principle comes from African drumming, where 3-6 drummers play simultaneously, each with their own pattern. No single pattern is "the rhythm"—the rhythm emerges from how they combine.
+
+**Non-interlocking (clash):**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 8),
+  sound("sd").euclid(4, 8)
+)`} punchcard punchcardLabels={false} />
+
+Both patterns hit at the same time. This creates rhythmic "mud"—no space, no groove.
+
+**Interlocking (complementary):**
 
 <MiniRepl client:idle tune={`stack(
   sound("bd").euclid(3, 8),
@@ -69,7 +403,156 @@ The magic happens when you combine multiple euclidean patterns:
   sound("hh").euclidRot(5, 8, 2)
 )`} punchcard punchcardLabels={false} />
 
-Each sound has its own euclidean pattern. They interlock to create complex polyrhythms.
+Each pattern occupies different rhythmic space. Notice how the hi-hat fills the gaps left by kick and snare.
+
+<Box>
+
+**Polyrhythm vs. Polymeter: What's the Difference?**
+
+These terms get confused constantly. Here's the distinction:
+
+**Polyrhythm:** Multiple patterns with different **pulse rates** over the same time period.
+- Example: 3 against 2 (triplets vs. eighth notes in the same bar)
+- Both patterns finish at the same time
+- Creates rhythmic tension within a steady meter
+
+**Polymeter:** Multiple patterns with the same pulse but different **cycle lengths**.
+- Example: (3,8) layered with (5,12)
+- Patterns have different loop points
+- Creates long-form phasing and evolution
+
+**Cross-rhythm:** A pattern that contradicts the prevailing meter.
+- Example: Playing in 3/4 feel over a 4/4 bass
+- One pattern implies a different downbeat than the other
+
+**Most euclidean layering is polymeter:** Same pulse (sixteenth notes), different cycle lengths. A (3,8) pattern loops every 8 steps. A (7,12) pattern loops every 12 steps. Their combined cycle is lcm(8,12) = 24 steps before the full pattern repeats.
+
+This creates **long-form interest**—the rhythms keep revealing new combinations as they phase through multiple cycles.
+
+</Box>
+
+## Three-Layer Build: Bass, Snare, Hats
+
+Let's build a complete rhythm step by step:
+
+**Layer 1: Kick foundation (3,8)**
+
+<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
+
+Sparse, grounded. The tresillo pattern.
+
+**Layer 2: Add snare (2,8 rotated)**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(3, 8),
+  sound("sd").euclidRot(2, 8, 4)
+)`} punchcard punchcardLabels={false} />
+
+The snare hits on beats 2 and 4—classic backbeat. But rotation of 4 ensures it never hits with the kick.
+
+**Layer 3: Add hats (7,8 rotated)**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(3, 8),
+  sound("sd").euclidRot(2, 8, 4),
+  sound("hh").euclidRot(7, 8, 1)
+)`} punchcard punchcardLabels={false} />
+
+Dense hi-hats (7 out of 8 steps) create constant motion. The rotation ensures the one silent step doesn't land on the downbeat, maintaining forward momentum.
+
+<QA client:load question="Why use rotation instead of choosing different (pulses, steps)?">
+
+Both approaches work, but rotation offers specific advantages:
+
+**Same (pulses, steps) + rotation:**
+- Maintains rhythmic relationship (same density ratio)
+- Creates predictable phasing patterns
+- Easier to modify (just adjust one parameter)
+- Good for minimal, hypnotic grooves
+
+**Different (pulses, steps):**
+- More variety in density and feel
+- Can create more complex polymeters
+- Good for rich, layered textures
+
+**Best practice:** Mix both. Start with complementary (pulses, steps), then use rotation to fine-tune the phase relationships.
+
+**Example:**
+```
+// Same density, different phases
+sound("bd").euclidRot(3, 8, 0)
+sound("sd").euclidRot(3, 8, 3)
+
+// Different densities, interlocking
+sound("bd").euclid(3, 8)
+sound("sd").euclid(2, 8)
+sound("hh").euclid(7, 8)
+```
+
+</QA>
+
+## Complementary Densities: The Secret Formula
+
+Certain density combinations naturally interlock. Here are proven formulas:
+
+**Sparse + Dense:**
+- Kick: (3,8) or (4,16) — foundation
+- Hats: (7,8) or (13,16) — constant motion
+
+**Half + Half:**
+- Kick: (4,8) — four-on-the-floor
+- Snare: (2,8) + rotation — backbeat
+
+**Prime Number Magic:**
+- Bell: (7,12) — timeline reference
+- Kick: (4,16) — won't align for 48 steps (lcm)
+- Creates long-form evolution
+
+**The GCD Rule:**
+- If GCD(pulses1, pulses2) = 1, patterns won't sync until lcm(steps1, steps2)
+- Example: (5,8) + (7,12) → GCD(5,7) = 1 → syncs at 24 steps
+- Creates maximum rhythmic variety
+
+<Box>
+
+**What to Listen For: Identifying Good Interlocking**
+
+When patterns interlock well, you'll hear:
+
+1. **Negative space:** Silence is as important as sound. Patterns leave "breathing room"
+2. **Call and response:** One pattern answers another rhythmically
+3. **Different timbres never clash:** When kick and snare hit together, it's intentional (accent), not accidental
+4. **Long-form evolution:** The combined pattern reveals new combinations over 2-4 cycles
+5. **Danceable:** Your body knows where the downbeat is, but the syncopation makes you move
+
+When patterns clash badly, you'll hear:
+- Rhythmic "mud" (too many simultaneous hits)
+- Loss of groove (can't find the pocket)
+- Static feel (pattern doesn't evolve)
+- Confusion about where beat 1 is
+
+**Pro tip:** Temporarily mute layers while building. Add them back one at a time to hear exactly how each contributes to the whole.
+
+</Box>
+
+## Using Rotation to Prevent Clashes
+
+Here's a practical technique for layering:
+
+1. Start with the same (pulses, steps) for multiple parts
+2. Layer them—listen for clashes
+3. Rotate one pattern by small increments (1-2 steps) until the clash resolves
+4. Result: Maximally interlocking patterns with related densities
+
+**Example:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 16),      // rotation 0
+  sound("sd").euclidRot(4, 16, 4), // rotation 4 - offset 1 beat
+  sound("rim").euclidRot(4, 16, 8) // rotation 8 - offset 2 beats
+)`} punchcard punchcardLabels={false} />
+
+Three identical patterns (4,16), but rotations of 0, 4, and 8 create a three-part interlocking groove.
 
 ## Euclidean with Melodies
 
