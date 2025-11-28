@@ -286,11 +286,18 @@ export function connectToDestination(input, channels) {
 }
 
 // Orbit gain control - allows muting individual orbits
-export function setOrbitGain(orbitNum, gain) {
+// fadeTime: seconds to fade (default 0.015 = 15ms to avoid clicks)
+export function setOrbitGain(orbitNum, gain, fadeTime = 0.015) {
   const controller = getSuperdoughAudioController();
   const orbit = controller.nodes[orbitNum];
   if (orbit) {
-    orbit.output.gain.value = gain;
+    const ac = getAudioContext();
+    const now = ac.currentTime;
+    // Cancel any scheduled changes and set current value
+    orbit.output.gain.cancelScheduledValues(now);
+    orbit.output.gain.setValueAtTime(orbit.output.gain.value, now);
+    // Ramp to target gain
+    orbit.output.gain.linearRampToValueAtTime(gain, now + fadeTime);
     return true;
   }
   return false;
