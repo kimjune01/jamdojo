@@ -70,6 +70,13 @@ These three chords work together because they represent three functions:
 - **IV (F)** = moving away
 - **V (G)** = tension, wants to return home
 
+**Why this works (mathematical basis):**
+
+These subjective feelings have objective foundations:
+- **Circle of Fifths**: G is 7 semitones above C (perfect 5th), F is 5 semitones below. This symmetry creates balance.
+- **Frequency Ratios**: The perfect 5th (C→G) has a 3:2 ratio—one of the most consonant intervals. This consonance creates "pull" back to the tonic.
+- **Harmonic Distance**: I-IV-V are equally spaced on the circle of fifths (each 1 step apart), creating harmonic coherence.
+
 **Different orderings create different feels:**
 
 <MiniRepl client:idle tune={`chord("<C G F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
@@ -153,20 +160,26 @@ How far the bass note moves between chords affects the energy:
 
 <MiniRepl client:idle tune={`chord("<C Dm Em F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
-C → D → E → F moves by steps. It feels flowing, connected.
+C → D → E → F moves by steps (2 semitones each). It feels flowing, connected.
 
 **Jump movement (strong):**
 
 <MiniRepl client:idle tune={`chord("<C F C F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
-C → F is a 4th leap. Strong, decisive movement.
+C → F is a 4th leap (5 semitones). Strong, decisive movement.
 
 
 **Large leaps (dramatic):**
 
 <MiniRepl client:idle tune={`chord("<C F# C F#>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
-C → F# is a tritone (half the octave). Maximum tension, very dramatic.
+C → F# is a tritone (6 semitones, half the octave). Maximum harmonic distance, very dramatic.
+
+**Root movement by semitone distance:**
+- **0-2 semitones** (stepwise): Smooth, melodic
+- **3-5 semitones** (leaps): Strong, purposeful
+- **6 semitones** (tritone): Maximum tension/distance
+- **7+ semitones** (5ths, octaves): Consonant, stable
 
 **Try it:** Create a progression that moves in small steps, then add one big leap for emphasis. Notice how the leap stands out.
 
@@ -208,6 +221,13 @@ A 4-bar phrase can tell a story: stable → moving → tension → resolution.
 - Bar 2 (Am): Gentle movement
 - Bar 3 (Dm): More movement, building
 - Bar 4 (G): Tension, wants to resolve back to C
+
+**Why G creates tension (mathematical basis):**
+
+The G major chord (G-B-D) contains B, which is 11 semitones from C (a major 7th). This creates a strong pull:
+- **B → C** = leading tone (1 semitone up) = strongest melodic pull in tonal music
+- **G → C** = perfect 5th down (7 semitones) = strongest harmonic pull (dominant to tonic)
+- Together, these create the classic V→I resolution that defines Western harmony
 
 **Try it:** Build your own 4-chord arc. Start stable, end tense. What happens when you loop it? The tension resolves back to the first chord.
 
@@ -350,6 +370,15 @@ When you play a chord progression, each note in the chord is a "voice." Voice le
 <MiniRepl client:idle tune={`chord("<C^7 F^7 Dm7 G7>").anchor("c5").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 Hear the difference? The second one flows. Notes move by small steps instead of large jumps.
+
+**Measuring voice leading efficiency:**
+
+You can quantify smoothness by counting semitone movement:
+- **Efficient voice leading**: Total movement < 5 semitones per chord change
+- **Example (C to G)**: C-E-G → G-B-D = C→B (1 semitone), E→D (2 semitones), G→G (0 semitones) = 3 total
+- **Inefficient**: Total movement > 12 semitones (large jumps)
+
+Classical composers (Bach, Chopin) often kept voice leading under 3 semitones per voice. This creates smooth, connected harmony.
 
 **Try it:** Listen to each example several times. Focus on the highest note—hear how it moves smoothly in the second example?
 
