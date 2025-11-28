@@ -1,0 +1,560 @@
+---
+title: Auditory Space
+layout: ../../layouts/MainLayout.astro
+---
+
+import { MiniRepl } from '../../docs/MiniRepl';
+import { JsDoc } from '../../docs/JsDoc';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# Auditory Space
+
+Put on headphones. Press play. Close your eyes.
+
+<MiniRepl client:visible tune={`sound("cp").pan(sine.slow(2)).room(0.3)`} />
+
+The sound is moving. Where is it going?
+
+<Box>
+
+Try changing `.slow(2)` to `.slow(8)`. What happens to the movement?
+
+Now try `.pan(rand)` instead of `.pan(sine.slow(2))`. How does it feel different?
+
+</Box>
+
+What you just experienced is **auditory space** - the three-dimensional perceptual stage where sounds exist in your mind. Every sound you hear occupies a position in this invisible architecture: left or right, near or far, bright or dark.
+
+Professional audio engineers and electronic music producers think in these spatial terms constantly. When they talk about a mix sounding "wide" or "deep" or "muddy," they're describing how sounds occupy complementary spaces - or fail to.
+
+This page will train your ears to perceive these dimensions and give you the tools to sculpt your own sonic landscapes.
+
+---
+
+# Dimension One: Width (The Stereo Field)
+
+The stereo field is the horizontal plane between your left and right ears. It's the first dimension of auditory space, and the most immediately perceptible.
+
+## The Pan Experience
+
+Listen to this pattern:
+
+<MiniRepl client:visible tune={`$: sound("bd sd bd sd")
+$: sound("hh*8")
+$: note("c4 eb4 g4").s("sawtooth").lpf(1200)`} />
+
+Everything is stacked in the center. Now listen to this:
+
+<MiniRepl client:visible tune={`$: sound("bd sd bd sd").pan(0.5)
+$: sound("hh*8").pan(0.7)
+$: note("c4 eb4 g4").s("sawtooth").lpf(1200).pan(0.3)`} />
+
+The sounds now occupy different positions in the stereo field. This is **panning** - placing sounds on the left-right axis.
+
+<Box>
+
+**Pan values:**
+- `0` = hard left
+- `0.5` = center
+- `1` = hard right
+
+The kick stays centered (`.pan(0.5)`) because low frequencies carry the most energy and typically anchor the mix in the middle.
+
+</Box>
+
+## Dynamic Panning
+
+Static panning places sounds. Dynamic panning moves them through space.
+
+<MiniRepl client:visible tune={`sound("hh*16").pan(sine.range(0.2, 0.8).slow(2))`} />
+
+The hi-hats glide smoothly from left to right and back. This creates movement and interest - the ear follows the sound across the stereo field.
+
+<Box>
+
+**Experiment with different signals:**
+- `saw` - linear sweep, abrupt reset
+- `tri` - smooth back-and-forth (like `sine` but linear)
+- `rand` - random jumps each hit
+- `perlin` - organic, unpredictable drift
+
+Try: `sound("hh*16").pan(perlin.range(0.2, 0.8))`
+
+</Box>
+
+## Instant Width with jux
+
+Here's a mono pattern:
+
+<MiniRepl client:visible tune={`n("0 2 4 7").scale("C:minor").s("sawtooth").lpf(800)`} />
+
+Now add `.jux(rev)`:
+
+<MiniRepl client:visible tune={`n("0 2 4 7").scale("C:minor").s("sawtooth").lpf(800).jux(rev)`} />
+
+The sound explodes into stereo. What happened?
+
+`jux` (short for "juxtapose") splits your pattern into two copies: one panned left, one panned right. It applies a function to the right channel only. Here, the right channel plays the pattern reversed while the left plays it forward.
+
+When your left and right ears hear slightly different versions of the same material, your brain perceives **width** - a sound that fills the space between your ears.
+
+<Box>
+
+**Control the width with juxBy:**
+
+<MiniRepl client:visible tune={`n("0 2 4 7").scale("C:minor").s("sawtooth").lpf(800)
+  .juxBy("<0 0.25 0.5 0.75 1>", rev)`} />
+
+`0` = mono (no stereo split), `1` = full width. Find your sweet spot.
+
+</Box>
+
+## Width in Practice
+
+<MiniRepl client:visible tune={`stack(
+  // Kick: centered (low frequencies anchor the mix)
+  sound("bd*4").pan(0.5),
+
+  // Snare: slightly left
+  sound("~ sd ~ sd").pan(0.4),
+
+  // Hi-hats: moving right side
+  sound("hh*8").pan(sine.range(0.55, 0.75).fast(2)).gain(0.5),
+
+  // Synth: wide stereo spread
+  n("0 3 7 10").scale("C:minor").s("sawtooth").lpf(1500)
+    .juxBy(0.7, x => x.add(note(0.1))).gain(0.4)
+).cpm(32)`} />
+
+Notice how each element has its own horizontal territory. The kick and snare stay relatively centered while the hi-hats float to the right and the synth spreads wide. This is **stereo separation** - giving each sound its own space in the width dimension.
+
+---
+
+# Dimension Two: Depth (Front-to-Back)
+
+Depth is the perception of distance - how close or far a sound feels. In the physical world, distant sounds are quieter, have more reverb (room reflections), and lose high frequencies. We can simulate all of these.
+
+## The Proximity Experience
+
+Play only the first line:
+
+<MiniRepl client:visible tune={`$: sound("bd sd bd sd").room(0.01)
+// $: sound("bd sd bd sd").room(0.8).roomsize(4).gain(0.5)`} />
+
+Now comment out the first line and uncomment the second:
+
+<MiniRepl client:visible tune={`// $: sound("bd sd bd sd").room(0.01)
+$: sound("bd sd bd sd").room(0.8).roomsize(4).gain(0.5)`} />
+
+The same drums, but one feels like it's right in front of you while the other sounds like it's across a large hall. This is **reverb** - the collection of echoes that occur when sound bounces off surfaces in a space.
+
+<Box>
+
+**Depth cues:**
+- More reverb = further away
+- Quieter = further away
+- Less high frequencies = further away (sound loses "air" over distance)
+
+Combine these for convincing depth staging.
+
+</Box>
+
+## Room Parameters
+
+<MiniRepl client:visible tune={`// Small room (tight, intimate - a bathroom or closet)
+note("c4 eb4 g4").s("gm_vibraphone")
+  .room(0.4).roomsize(0.5).roomlp(6000)`} />
+
+<MiniRepl client:visible tune={`// Large hall (expansive, dramatic - a cathedral)
+note("c4 eb4 g4").s("gm_vibraphone")
+  .room(0.6).roomsize(8).roomlp(3000)`} />
+
+<Box>
+
+**Room parameters:**
+- `room` - how much signal goes to the reverb (0-1+)
+- `roomsize` - the size/decay of the virtual space (0.1 to 20+)
+- `roomlp` - low-pass filter on the reverb (Hz) - darker rooms have lower values
+- `roomfade` - fade time of the reverb tail
+
+Try `roomsize` values from 0.5 to 20 and notice how the space expands.
+
+</Box>
+
+## Delay as Spatial Depth
+
+Delay creates echoes - distinct repetitions of the sound. Where reverb is diffuse (many blurred reflections), delay is discrete (clear, rhythmic repeats).
+
+<MiniRepl client:visible tune={`sound("rim").delay(0.5).delaytime(0.25).delayfeedback(0.4)`} />
+
+<Box>
+
+**Delay parameters:**
+- `delay` - how much signal goes to the delay (0-1)
+- `delaytime` - time between echoes in seconds
+- `delayfeedback` - how many times the echo repeats (0-1) - careful above 0.9!
+
+</Box>
+
+## Dub Delay Throws
+
+Jamaican dub producers like King Tubby and Lee "Scratch" Perry discovered that delay could transform a simple recording into something vast and psychedelic. They would manually "throw" sounds into delay during mixing, creating dramatic spatial moments.
+
+<MiniRepl client:visible tune={`$: sound("bd rim").bank("RolandTR707")
+$: note("[~ [d3,a3,f4]]*2").s("gm_electric_guitar_muted")
+  .delay(0.7).delaytime(sine.range(0.1, 0.3).slow(8)).delayfeedback(0.5)
+  .room(0.4)`} />
+
+The guitar stabs echo through space with a slowly modulating delay time - a classic dub technique. The delay time drift creates a sense of instability and movement in the depth dimension.
+
+<Box>
+
+**Try this:** Change `.delay(0.7)` to `.delay("<0 0 0 0.8>")` to throw only every fourth hit into the delay.
+
+</Box>
+
+## Combining Depth Techniques
+
+<MiniRepl client:visible tune={`stack(
+  // Front: drums (dry, present)
+  sound("bd [~ bd] sd [bd sd]").room(0.05),
+
+  // Middle: bass (slightly back)
+  note("c2 ~ eb2 ~").s("sawtooth").lpf(500)
+    .room(0.15).roomsize(2),
+
+  // Back: pad (distant, diffuse)
+  note("<c3,eb3,g3>").s("triangle").slow(2)
+    .room(0.6).roomsize(6).lpf(2000)
+    .delay(0.2).delaytime(0.333).gain(0.4)
+).cpm(30)`} />
+
+Notice the **depth staging**: drums upfront and dry, bass slightly back, pad far in the distance. Each element occupies a different front-to-back position.
+
+---
+
+# Dimension Three: Height (The Frequency Spectrum)
+
+The frequency spectrum runs from low (bass, ~20Hz) to high (treble, ~20kHz). Think of it as vertical space - bass frequencies at the bottom, high frequencies at the top. When two sounds occupy the same frequency range, they compete - this is called **masking**.
+
+## Frequency Masking
+
+Listen to this:
+
+<MiniRepl client:visible tune={`$: note("c2").s("sawtooth").lpf(800)
+$: note("c3 eb3 g3").s("sawtooth").lpf(800)`} />
+
+The bass and chords are fighting. They both occupy similar frequency ranges and blur together. Now listen:
+
+<MiniRepl client:visible tune={`$: note("c2").s("sawtooth").lpf(400)
+$: note("c3 eb3 g3").s("sawtooth").hpf(300).lpf(2000)`} />
+
+By carving out separate frequency spaces - bass gets the lows (under 400Hz), chords get the mids (300Hz-2000Hz) - each element becomes distinct. This is **subtractive EQ** - removing frequencies to create space.
+
+<Box>
+
+**Filters in Strudel:**
+- `lpf(freq)` - low-pass filter: frequencies below `freq` pass, highs are cut
+- `hpf(freq)` - high-pass filter: frequencies above `freq` pass, lows are cut
+- `bpf(freq)` - band-pass filter: only frequencies around `freq` pass
+
+</Box>
+
+## Filter Resonance
+
+Filters can emphasize the cutoff frequency with **resonance** (Q-factor). Higher resonance creates a more aggressive, "ringing" sound.
+
+<MiniRepl client:visible tune={`note("c2*8").s("sawtooth")
+  .lpf(sine.range(200, 2000).slow(2))
+  .lpq(12)`} />
+
+This is the classic acid house sound - a resonant low-pass filter sweep. The high `.lpq(12)` value makes the filter "sing" at its cutoff point.
+
+<Box>
+
+**Try different Q values:**
+- `lpq(1)` - gentle, smooth filtering
+- `lpq(8)` - noticeable resonance
+- `lpq(15)` - aggressive, self-oscillating at extreme values
+
+</Box>
+
+## Frequency Separation in Practice
+
+<MiniRepl client:visible tune={`stack(
+  // Sub bass: only the lowest frequencies
+  note("c1*4").s("sine").gain(0.6),
+
+  // Mid bass: punchy, filtered
+  note("c2 c2 eb2 c2").s("sawtooth").lpf(400).hpf(60),
+
+  // Chords: mid frequencies only
+  note("<c3,eb3,g3>").s("sawtooth").hpf(300).lpf(2000).gain(0.4),
+
+  // Lead: high mids and presence
+  note("c5 eb5 g5 bb5").s("triangle").hpf(800).gain(0.5),
+
+  // Hi-hats: highest frequencies
+  sound("hh*8").hpf(6000).gain(0.4)
+).cpm(30)`} />
+
+Each element has its own frequency band:
+- Sub bass: 20-60Hz
+- Mid bass: 60-400Hz
+- Chords: 300Hz-2kHz
+- Lead: 800Hz+
+- Hi-hats: 6kHz+
+
+This is **complementary frequency allocation** - the foundation of a clean mix.
+
+---
+
+# Complementary Audio Spaces: The Three-Dimensional Mix
+
+Now let's combine all three dimensions into a complete spatial arrangement.
+
+<MiniRepl client:visible tune={`stack(
+  // DRUMS: centered, dry, punchy
+  stack(
+    sound("bd [~ bd:2] ~ bd").pan(0.5),
+    sound("~ cp ~ cp").pan(0.5).room(0.1),
+    sound("hh*8").pan(sine.range(0.4, 0.65).fast(2)).hpf(6000).gain(0.5)
+  ),
+
+  // BASS: centered, dry, low frequencies
+  note("c2 c2 [eb2 c2] c2").s("sawtooth")
+    .lpf(400).pan(0.5).room(0),
+
+  // CHORDS: wide, mid-depth, mid frequencies
+  note("<c3,eb3,g3> <bb2,d3,f3>").s("sawtooth").slow(2)
+    .hpf(300).lpf(2000)
+    .juxBy(0.6, rev).room(0.25).gain(0.35),
+
+  // LEAD: off-center, deep, high-mid frequencies
+  note("g4 ~ bb4 c5 ~ bb4 g4 ~").s("triangle")
+    .hpf(600).pan(0.35)
+    .room(0.4).delay(0.2).delayfeedback(0.3)
+    .gain(0.5)
+).cpm(30)`} />
+
+<Box>
+
+**The spatial allocation:**
+| Element | Width (pan) | Depth (room/delay) | Height (filter) |
+|---------|-------------|-------------------|-----------------|
+| Kick | Center | Dry | Full range |
+| Clap | Center | Slight room | Full range |
+| Hi-hats | Moving right | Dry | High-pass 6kHz |
+| Bass | Center | Dry | Low-pass 400Hz |
+| Chords | Wide (jux) | Medium room | 300Hz-2kHz |
+| Lead | Left of center | Room + delay | High-pass 600Hz |
+
+</Box>
+
+---
+
+# Genre Spatial Signatures
+
+Different genres have distinct spatial aesthetics. Learning these conventions helps you understand how professionals sculpt space.
+
+## House / Techno (Tight and Punchy)
+
+<MiniRepl client:visible tune={`stack(
+  sound("bd*4").room(0.05),
+  sound("~ cp ~ cp").room(0.12),
+  sound("hh*8").pan(0.6).gain(0.45),
+  sound("oh").euclid(3, 8).pan(0.35).room(0.15).gain(0.35),
+  note("c2*8").s("sawtooth").lpf(sine.range(200, 600).slow(4))
+).cpm(31)`} />
+
+**Characteristics:** Centered kick and bass, moderate width on percussion, short tight reverbs. Everything is upfront and punchy.
+
+## Dub (Cavernous and Spatial)
+
+<MiniRepl client:visible tune={`stack(
+  sound("bd ~ ~ bd ~ ~ bd ~").room(0.25),
+  sound("~ ~ rim ~").room(0.7).roomsize(6)
+    .delay(0.6).delaytime(0.375).delayfeedback(0.55)
+    .pan(sine.range(0.3, 0.7).slow(4)),
+  note("[~ c4] ~ [~ eb4] ~").s("gm_electric_guitar_muted")
+    .delay(0.5).delaytime(0.25).delayfeedback(0.4)
+    .room(0.3).pan(0.6),
+  note("c2 ~ ~ c2 ~ eb2 ~ ~").s("sawtooth").lpf(400)
+).cpm(22)`} />
+
+**Characteristics:** Heavy reverb, dramatic delay throws with modulated times, sparse arrangement letting the space breathe. Sounds travel across the stereo field.
+
+## Ambient (Deep and Diffuse)
+
+<MiniRepl client:visible tune={`note("<c3,g3,c4,e4> <a2,e3,a3,c4> <f3,a3,c4,f4> <g2,d3,g3,b3>")
+  .s("triangle").slow(8)
+  .attack(2).release(4)
+  .lpf(sine.range(800, 2500).slow(16))
+  .room(0.85).roomsize(12).roomlp(2500)
+  .delay(0.35).delaytime(0.5).delayfeedback(0.45)
+  .juxBy(0.4, x => x.add(note(0.05)))
+  .pan(perlin.range(0.3, 0.7).slow(4))`} />
+
+**Characteristics:** Maximum depth (long reverbs), slow evolution, blurred transients, wide stereo field with gentle movement. The boundaries between sounds dissolve.
+
+---
+
+# Using Orbits
+
+Each **orbit** in Strudel has its own reverb and delay. When patterns share an orbit, they share effects - which can cause conflicts. Use separate orbits to give elements independent spatial treatment.
+
+<MiniRepl client:visible tune={`// Drums: dry, orbit 1
+$: sound("bd sd bd [sd cp]").orbit(1).room(0)
+
+// Synth: wet, orbit 2
+$: note("c4 [eb4 g4] bb4 ~").s("triangle")
+  .orbit(2).room(0.6).roomsize(6)`} />
+
+<Box>
+
+**When to use separate orbits:**
+- Drums should typically be drier than synths/pads
+- Different songs in a live set might need different reverb settings
+- When reverb parameters are fighting between patterns
+
+See the [Audio Effects](/learn/effects#orbits) page for more on orbits.
+
+</Box>
+
+---
+
+# Live Performance Techniques
+
+Spatial parameters are powerful performance tools - they can transform a static pattern into something dynamic and evolving.
+
+## Spatial Automation
+
+<MiniRepl client:visible tune={`// Breathing reverb - space ebbs and flows
+note("c3 eb3 g3 bb3").s("sawtooth").lpf(1500)
+  .room(sine.range(0.1, 0.5).slow(4))
+  .roomsize(sine.range(2, 8).slow(8))`} />
+
+<MiniRepl client:visible tune={`// Organic pan drift
+sound("hh*16").pan(perlin.range(0.2, 0.8)).gain(0.5)`} />
+
+<MiniRepl client:visible tune={`// Classic filter build
+note("c2*8").s("sawtooth")
+  .lpf(sine.range(200, 6000).slow(8))
+  .lpq(sine.range(1, 15).slow(8))`} />
+
+## Spatial Counterpoint with off
+
+`off` creates delayed copies of a pattern. Combine it with spatial changes to create rich, layered textures:
+
+<MiniRepl client:visible tune={`n("0 3 5 7").scale("C:minor").s("triangle").lpf(2000)
+  .off(1/8, x => x.pan(0.75).lpf(1200).gain(0.6))
+  .off(1/4, x => x.pan(0.25).lpf(800).gain(0.4).room(0.4))`} />
+
+The original plays center, a copy follows an 1/8th note later panned right and darker, another copy follows a 1/4 note later panned left, even darker, with reverb. This creates a cascading spatial texture.
+
+---
+
+# Experiments
+
+## 1. The Spatial Remix
+
+Take this flat pattern and apply spatial separation. Give each element its own territory in width, depth, and frequency.
+
+<MiniRepl client:visible tune={`// Flat - everything fighting for the same space
+stack(
+  sound("bd sd bd sd"),
+  sound("hh*8"),
+  note("c2 c2 eb2 c2").s("sawtooth"),
+  note("c4 eb4 g4").s("triangle")
+).cpm(30)`} />
+
+<QA q="Show possible solution" client:visible>
+
+<MiniRepl client:visible tune={`stack(
+  sound("bd sd bd sd").pan(0.5).room(0.05),
+  sound("hh*8").pan(0.65).hpf(6000).gain(0.5),
+  note("c2 c2 eb2 c2").s("sawtooth").lpf(400).pan(0.5),
+  note("c4 eb4 g4").s("triangle").pan(0.35)
+    .hpf(400).room(0.3).juxBy(0.4, rev).gain(0.5)
+).cpm(30)`} />
+
+</QA>
+
+## 2. Genre Transformation
+
+Same notes, different spatial treatment. Start with this pattern and transform it into three different genres by changing only the spatial parameters (pan, room, delay, filters).
+
+<MiniRepl client:visible tune={`// Base pattern
+stack(
+  sound("bd ~ bd ~, ~ sd ~ sd"),
+  note("c2 ~ eb2 ~").s("sawtooth"),
+  note("<c3,eb3,g3>").s("triangle").slow(2)
+).cpm(28)`} />
+
+Try making it sound like:
+1. Tight techno (dry, punchy)
+2. Spacious dub (reverb, delay throws)
+3. Floating ambient (maximum depth, blurred)
+
+## 3. Width Challenge
+
+Make a single note sound as wide as possible using only built-in Strudel tools. No samples, just one synthesizer note filling the entire stereo field.
+
+<MiniRepl client:visible tune={`// Start here - make it WIDE
+note("c3").s("sawtooth").sustain(2)`} />
+
+<QA q="Show one approach" client:visible>
+
+<MiniRepl client:visible tune={`note("c3").s("sawtooth").sustain(2)
+  .jux(x => x.add(note(0.1)).fast(1.01))
+  .room(0.3).delay(0.2).delaytime(0.02)
+  .lpf(2000)`} />
+
+Detune and slight speed difference between L/R creates width. Short delay and reverb add dimension.
+
+</QA>
+
+## 4. Depth Staging
+
+Create a three-layer arrangement where each layer is at a distinctly different depth: one upfront, one middle distance, one far back. Make it obvious which is which.
+
+<MiniRepl client:visible tune={`// Create near / mid / far layers
+stack(
+  // Near:
+  sound("bd*4"),
+  // Mid:
+  note("c3 eb3").s("sawtooth").slow(2),
+  // Far:
+  note("g5").s("triangle").slow(4)
+).cpm(28)`} />
+
+---
+
+# Quick Reference
+
+| Dimension | Function | Parameters | Range | Purpose |
+|-----------|----------|------------|-------|---------|
+| **Width** | `pan` | position | 0-1 | Left (0) to Right (1) |
+| | `jux` | function | - | Apply function to right channel |
+| | `juxBy` | amount, fn | 0-1, fn | Controlled stereo split |
+| **Depth** | `room` | amount | 0-1+ | Reverb send level |
+| | `roomsize` | size | 0.1-20+ | Reverb decay time |
+| | `roomlp` | frequency | Hz | Reverb high-frequency damping |
+| | `roomfade` | time | seconds | Reverb fade time |
+| | `delay` | amount | 0-1 | Delay send level |
+| | `delaytime` | time | 0-2 seconds | Time between echoes |
+| | `delayfeedback` | amount | 0-1 | Number of echo repeats |
+| **Height** | `lpf` | frequency | Hz | Low-pass filter cutoff |
+| | `hpf` | frequency | Hz | High-pass filter cutoff |
+| | `bpf` | frequency | Hz | Band-pass filter center |
+| | `lpq` / `hpq` | resonance | 0-50+ | Filter resonance (Q) |
+
+---
+
+# Where to Go Next
+
+- [Audio Effects](/learn/effects) - Deep dive into all effects including the signal chain and orbit system
+- [Signals](/learn/signals) - Learn more about using `sine`, `perlin`, `saw` and other signals for modulation
+- [Synths](/learn/synths) - Explore synthesis techniques to create richer source sounds
+- [Recipes](/recipes/recipes) - Ready-to-use patterns demonstrating spatial techniques

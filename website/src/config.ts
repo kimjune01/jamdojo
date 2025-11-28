@@ -87,6 +87,7 @@ export const ACTIVITIES: SidebarSection[] = [
       { text: 'Samples', link: 'learn/samples', icon: '📀', description: 'Work with audio samples and drum kits' },
       { text: 'Synths', link: 'learn/synths', icon: '🎛️', description: 'Create sounds with synthesizers' },
       { text: 'Audio Effects', link: 'learn/effects', icon: '🎚️', description: 'Apply reverb, delay, filters and more' },
+      { text: 'Auditory Space', link: 'learn/auditory-space', icon: '🎛️', description: 'Master spatial audio: width, depth, and frequency separation' },
       { text: 'MIDI & OSC', link: 'learn/input-output', icon: '🔌', description: 'Connect to external devices and software' },
     ],
   },
