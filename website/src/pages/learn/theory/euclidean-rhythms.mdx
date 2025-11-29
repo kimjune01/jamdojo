@@ -23,11 +23,11 @@ Listen to these two patterns. Both have 3 kicks in 8 steps:
 
 **Pattern A:**
 
-<MiniRepl client:idle tune={`sound("bd [~ bd] ~ ~ ~ bd ~")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`sound("bd [~ bd] ~ ~ ~ bd ~")`} punchcard punchcardLabels={false} />
 
 **Pattern B:**
 
-<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
 
 Which one feels more balanced? More natural? More like it could loop forever without getting boring?
 
@@ -47,19 +47,19 @@ The same number of steps can hold different densities of beats. Listen to how th
 
 **Sparse (2 in 8):**
 
-<MiniRepl client:idle tune={`sound("bd").euclid(2, 8)`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`sound("bd").euclid(2, 8)`} punchcard punchcardLabels={false} />
 
 **Balanced (3 in 8):**
 
-<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
 
 **Dense (5 in 8):**
 
-<MiniRepl client:idle tune={`sound("bd").euclid(5, 8)`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`sound("bd").euclid(5, 8)`} punchcard punchcardLabels={false} />
 
 **Very Dense (7 in 8):**
 
-<MiniRepl client:idle tune={`sound("bd").euclid(7, 8)`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`sound("bd").euclid(7, 8)`} punchcard punchcardLabels={false} />
 
 Notice how each density creates a different rhythmic character. Sparse patterns breathe. Dense patterns drive. All remain balanced because the algorithm ensures even distribution.
 
