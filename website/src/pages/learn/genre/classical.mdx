@@ -852,18 +852,28 @@ Voices enter every quarter-cycle—very tight! This creates intensity and demons
 Let's build a complete mini-fugue with all the elements:
 
 <MiniRepl client:idle tune={`slowcat(
-  // Section 1: Exposition (voices enter)
-  stack(
+  // Section 1: Exposition (voices enter sequentially)
+  cat(
+    // Voice 1 enters
     note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
-    note("~ ~ ~ ~ ~ ~ ~ ~ a3 cs4 b3 d4 cs4 e4 d4 cs4").s('piano').gain(0.7),
-    note("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ d5 fs5 e5 g5 fs5 a5 g5 fs5").s('piano').gain(0.6)
+    // Voice 2 enters (Voice 1 continues)
+    stack(
+      note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
+      note("a3 cs4 b3 d4 cs4 e4 d4 cs4").s('piano').gain(0.7)
+    ),
+    // Voice 3 enters (all voices play)
+    stack(
+      note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
+      note("a3 cs4 b3 d4 cs4 e4 d4 cs4").s('piano').gain(0.7),
+      note("d5 fs5 e5 g5 fs5 a5 g5 fs5").s('piano').gain(0.6)
+    )
   ),
   // Section 2: Episode (sequences)
   stack(
     note("d4 fs4 e4 g4 e4 g4 fs4 a4 fs4 a4 g4 b4").s('piano'),
     note("d3 fs3 e3 g3 e3 g3 fs3 a3").s('piano').gain(0.7)
   ),
-  // Section 3: Stretto (climax)
+  // Section 3: Stretto (climax - tight overlapping)
   stack(
     note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
     note("d4 fs4 e4 g4 fs4 a4 g4 fs4").late(0.25).transpose(12).s('piano').gain(0.7),
