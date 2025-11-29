@@ -1201,7 +1201,7 @@ Random MIDI notes between 60 (C4) and 72 (C5).
 
 **`.irand` - random integer:**
 
-<MiniRepl client:idle tune={`irand(12).scale('C minor').note().s('piano')`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`n(irand(12)).scale('C minor').s('piano')`} punchcard punchcardLabels={false} />
 
 Random scale degrees in C minor.
 
@@ -1247,7 +1247,7 @@ Generates notes, then transposes them by different amounts.
 
 **`.scale()` - constrain to scale:**
 
-<MiniRepl client:idle tune={`irand(8).scale('D dorian').slow(2).note().s('piano')`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`n(irand(8)).scale('D dorian').slow(2).s('piano')`} punchcard punchcardLabels={false} />
 
 Random numbers → scale degrees in D Dorian, played over 2 cycles.
 
