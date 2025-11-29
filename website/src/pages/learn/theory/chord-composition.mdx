@@ -1599,7 +1599,7 @@ Full texture.
 **Stage 5: Polish (tempo, effects, final tweaks):**
 
 <MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 F^7 Dm7 G7 C^7@2>").layer(
-  x => x.anchor("c5").struct("[~ x]*2").voicing().lpf(800),
+  x => x.anchor("c5").struct("[~ x]*2").voicing().s('piano').lpf(800),
   x => x.rootNotes(2).note().s('sawtooth').lpf(600),
   x => n("0 1 2 1").chord(x).voicing().note().s('piano')
 ).cpm(25)`} punchcard punchcardLabels={false} />
