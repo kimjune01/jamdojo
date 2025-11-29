@@ -111,29 +111,42 @@ The algorithm doesn't create musical rhythms—it describes the mathematics unde
 
 </Box>
 
-## The Pairing Process
+<QA client:load question="How does the Bjorklund algorithm work? (Mathematical details)">
 
 Here's how the Bjorklund algorithm distributes 5 beats across 8 steps:
 
 **Step 1: Start with beats and rests**
-`[1] [1] [1] [1] [1]` (5 beats)
-`[0] [0] [0]` (3 rests)
+```
+[1] [1] [1] [1] [1]  (5 beats)
+[0] [0] [0]          (3 rests)
+```
 
 **Step 2: Pair beats with rests**
-`[1,0] [1,0] [1,0]` (3 pairs)
-`[1] [1]` (2 leftover beats)
+```
+[1,0] [1,0] [1,0]    (3 pairs)
+[1] [1]              (2 leftover beats)
+```
 
 **Step 3: Pair the pairs with leftovers**
-`[1,0,1] [1,0,1]` (2 groups)
-`[1,0]` (1 leftover)
+```
+[1,0,1] [1,0,1]      (2 groups)
+[1,0]                (1 leftover)
+```
 
 **Step 4: Continue until you can't pair anymore**
-`[1,0,1,1,0]` (Final pattern)
-`[1,0,1]`
+```
+[1,0,1,1,0]          (Final pattern)
+[1,0,1]
+```
 
 **Result:** `1 0 1 1 0 1 0 1` → The Cuban cinquillo rhythm!
 
 The algorithm recursively pairs groups to distribute them as evenly as possible. It's elegant, deterministic, and produces musically useful results.
+
+**Why this works:**
+The pairing process minimizes the difference between gap sizes. By recursively distributing the items, it ensures no two gaps differ by more than 1 step—achieving maximal evenness.
+
+</QA>
 
 <Box>
 
@@ -481,13 +494,30 @@ Certain density combinations naturally interlock. Here are proven formulas:
 
 **Prime Number Magic:**
 - Bell: (7,12) — timeline reference
-- Kick: (4,16) — won't align for 48 steps (lcm)
+- Kick: (4,16) — won't align for 48 steps
 - Creates long-form evolution
 
+<QA client:load question="The GCD Rule (Mathematical explanation)">
+
 **The GCD Rule:**
-- If GCD(pulses1, pulses2) = 1, patterns won't sync until lcm(steps1, steps2)
-- Example: (5,8) + (7,12) → GCD(5,7) = 1 → syncs at 24 steps
-- Creates maximum rhythmic variety
+
+If GCD(pulses1, pulses2) = 1 (coprime numbers), patterns won't sync until lcm(steps1, steps2).
+
+**Example:**
+- Pattern A: (5,8)
+- Pattern B: (7,12)
+- GCD(5,7) = 1 (coprime)
+- Combined cycle: lcm(8,12) = 24 steps
+
+This creates maximum rhythmic variety before the full pattern repeats.
+
+**Why this matters:**
+Coprime pulse numbers ensure the patterns hit together as infrequently as possible, maximizing the variety of rhythmic combinations. Non-coprime numbers (like 4 and 6, GCD=2) sync more often, creating more predictable patterns.
+
+**Practical application:**
+Choose pulse counts with GCD=1 for evolving, hypnotic grooves. Use pulse counts that share factors (GCD>1) for more stable, locked-in feels.
+
+</QA>
 
 <Box>
 
@@ -561,9 +591,12 @@ Here's where it gets interesting: **The pitch pattern and rhythm pattern can cyc
 
 The patterns cycle at different rates, creating evolving melodic phrases. On each repetition, different notes align with the downbeat.
 
-<Box>
+**Practical uses:**
+- **Bass lines:** (4 notes, 5 hits) creates a walking bass that never feels predictable
+- **Arpeggios:** (7 notes, 5 hits) makes chord tones dance around the beat
+- **Generative melodies:** Long pitch patterns + shorter euclidean rhythms = endless variation
 
-**Pattern Independence: The Power of Mismatched Cycles**
+<QA client:load question="Pattern Independence: The Power of Mismatched Cycles (Mathematical explanation)">
 
 When your pitch pattern length doesn't match your rhythm pattern length, you get **phasing melodies**—patterns that evolve over multiple cycles before repeating.
 
@@ -579,14 +612,16 @@ note("c e g a").euclid(3, 8)
 
 This creates melodic variation from static material—a powerful minimalist composition technique.
 
-**Practical uses:**
-- **Bass lines:** (4 notes, 5 hits) creates a walking bass that never feels predictable
-- **Arpeggios:** (7 notes, 5 hits) makes chord tones dance around the beat
-- **Generative melodies:** Long pitch patterns + shorter euclidean rhythms = endless variation
+**The math behind it:**
+The full pattern repeats after lcm(note_count, hit_count) hits. For 4 notes and 3 hits: lcm(4,3) = 12 hits.
 
-**Pro tip:** Try GCD(notes, hits) = 1 (coprime numbers) for maximum variation before repetition. Example: (7 notes, 5 hits) won't repeat for 35 iterations.
+**Pro tip:** Try GCD(notes, hits) = 1 (coprime numbers) for maximum variation before repetition. Example: (7 notes, 5 hits) won't repeat for 35 iterations because lcm(7,5) = 35.
 
-</Box>
+**Why coprime matters:**
+- Coprime (GCD=1): Maximum variation, longest evolution
+- Non-coprime (GCD>1): Shorter cycles, more predictable repetition
+
+</QA>
 
 ## Euclidean Bass Lines
 
