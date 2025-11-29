@@ -554,13 +554,134 @@ Here's a practical technique for layering:
 
 Three identical patterns (4,16), but rotations of 0, 4, and 8 create a three-part interlocking groove.
 
-## Euclidean with Melodies
+---
 
-Euclidean patterns work with any sound, including melodic ones:
+# Euclidean Patterns with Melody
 
-<MiniRepl client:idle tune={`note("c3 e3 g3").piano().euclid(3, 8)`} punchcard punchcardLabels={false} />
+Euclidean rhythms aren't just for drums. Apply them to melodic material and you open up fascinating compositional possibilities.
+
+## Basic Melodic Application
+
+Any melodic pattern can be filtered through a euclidean rhythm:
+
+**Simple chord progression (no euclidean):**
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 b3").piano()`} punchcard punchcardLabels={false} />
+
+**Same chords, euclidean rhythm (3,8):**
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 b3").piano().euclid(3, 8)`} punchcard punchcardLabels={false} />
+
+The euclidean function selects which notes play. Instead of hearing all 4 notes evenly, you hear 3 of them distributed across 8 steps.
+
+## Pattern Independence: Rhythm ≠ Pitch
+
+Here's where it gets interesting: **The pitch pattern and rhythm pattern can cycle independently**.
+
+<MiniRepl client:idle tune={`note("c3 e3 g3").piano().euclid(5, 8)`} punchcard punchcardLabels={false} />
+
+- **Pitch pattern:** 3 notes (C, E, G)
+- **Rhythm pattern:** 5 hits in 8 steps
+
+The patterns cycle at different rates, creating evolving melodic phrases. On each repetition, different notes align with the downbeat.
+
+<Box>
+
+**Pattern Independence: The Power of Mismatched Cycles**
+
+When your pitch pattern length doesn't match your rhythm pattern length, you get **phasing melodies**—patterns that evolve over multiple cycles before repeating.
+
+**Example: 4 notes, 3 hits**
+```
+note("c e g a").euclid(3, 8)
+```
+
+- Cycle 1: C, E, G
+- Cycle 2: A, C, E
+- Cycle 3: G, A, C
+- Cycle 4: E, G, A  (back to start after lcm(4,3) = 12 hits)
+
+This creates melodic variation from static material—a powerful minimalist composition technique.
+
+**Practical uses:**
+- **Bass lines:** (4 notes, 5 hits) creates a walking bass that never feels predictable
+- **Arpeggios:** (7 notes, 5 hits) makes chord tones dance around the beat
+- **Generative melodies:** Long pitch patterns + shorter euclidean rhythms = endless variation
+
+**Pro tip:** Try GCD(notes, hits) = 1 (coprime numbers) for maximum variation before repetition. Example: (7 notes, 5 hits) won't repeat for 35 iterations.
+
+</Box>
+
+## Euclidean Bass Lines
+
+Bass lines benefit enormously from euclidean rhythms—they create groove without being overly busy:
+
+**Four-note bass line, five hits (5,16):**
 
 <MiniRepl client:idle tune={`note("c2 e2 g2 b2").s("bass").euclid(5, 16)`} punchcard punchcardLabels={false} />
+
+The (5,16) rhythm creates a syncopated feel. Combined with a 4-note pattern, the bass line evolves over 4 cycles.
+
+**Add a kick for context:**
+
+<MiniRepl client:idle tune={`stack(
+  note("c2 e2 g2 b2").s("bass").euclid(5, 16),
+  sound("bd").euclid(4, 16)
+)`} punchcard punchcardLabels={false} />
+
+Notice how the bass and kick interlock—sometimes hitting together (accent), sometimes separate (syncopation).
+
+## Rhythmic Arpeggios
+
+Use dense euclidean patterns on melodic material for arpeggio-like textures:
+
+**7 hits across 8 steps:**
+
+<MiniRepl client:idle tune={`note("c4 d4 e4 g4 a4").piano().euclidRot(7, 8, 1)`} punchcard punchcardLabels={false} />
+
+This creates a nearly-continuous arpeggio with one strategic rest, generating rhythmic interest without silence.
+
+## Melodic Layering
+
+Layer multiple melodic euclidean patterns for counterpoint:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 e4 g4").piano().euclid(3, 8),
+  note("c5 b4 a4 g4").piano().euclid(5, 8).gain(0.6)
+)`} punchcard punchcardLabels={false} />
+
+Two independent melodic patterns with different densities create evolving harmonic relationships.
+
+<QA client:load question="How do I avoid melodic patterns sounding too random or chaotic?">
+
+Euclidean rhythms on melodies can sound abstract if you're not careful. Here's how to maintain musicality:
+
+**1. Use short pitch patterns (3-5 notes)**
+- Longer patterns take too long to cycle, losing coherence
+- Short patterns create recognizable motifs even with complex rhythms
+
+**2. Choose consonant intervals**
+- Stick to scale tones or chord tones for the pitch pattern
+- Save dissonance for intentional accent notes
+
+**3. Match rhythm density to melodic complexity**
+- Simple melodies can handle dense rhythms (7,8)
+- Complex melodies need sparser rhythms (3,8) to be heard clearly
+
+**4. Anchor with a bass or percussion pattern**
+- Melodic euclidean patterns work best when a clear pulse exists underneath
+- The bass/kick provides rhythmic orientation
+
+**5. Use rotation to control phrasing**
+- Rotate the pattern so the most important note lands on the downbeat
+- Example: `note("c e g a").euclidRot(3, 8, 2)` — experiment with rotation 0-7 to find the most musical phrasing
+
+**Good starting points:**
+- Bass: (4-5 notes, 3-5 hits, 16 steps)
+- Chords: (3-4 notes, 2-4 hits, 8 steps)
+- Lead: (4-7 notes, 5-7 hits, 8-12 steps)
+
+</QA>
 
 ## Comparing Euclidean to Mini-Notation
 
@@ -601,65 +722,222 @@ Create a four-part rhythm using euclidean patterns. Fill in the numbers:
 - Hi-hat: denser works well—`5, 8` or `7, 8`
 - Rim: odd numbers create interest—`3, 16` or `5, 12`
 
-## Genre Explorations
+---
 
-### Jazz Swing Feel (130 BPM)
+# Genre Explorations: Euclidean Rhythms in the Wild
 
-Jazz often uses uneven subdivisions. Try this swing-inspired pattern:
+Now that you understand the theory, let's see how euclidean patterns create the signature grooves of different musical styles.
 
-<MiniRepl client:idle tune={`stack(
-  sound("bd").euclid(2, 8),
-  sound("hh").euclidRot(5, 12, 1),
-  sound("rim").euclidRot(3, 8, 2),
-  sound("sd").euclidRot(2, 8, 4)
-).cpm(32.5)`} punchcard punchcardLabels={false} />
+## Traditional & World Rhythms
 
-The 12-step hi-hat creates a triplet feel against the 8-step kick.
+These genres showcase how euclidean patterns evolved naturally in musical cultures around the world.
 
-### Blues Shuffle (88 BPM)
+### Afrobeat (110-125 BPM)
 
-Blues shuffles have a distinctive loping feel. The 3-over-4 pattern captures this:
+Pioneered by Fela Kuti in 1970s Nigeria, Afrobeat fuses West African rhythms with jazz, funk, and highlife. The genre is defined by 4-6 interlocking percussion parts that phase against each other, creating hypnotic polyrhythmic textures.
 
 <MiniRepl client:idle tune={`stack(
-  sound("bd").euclid(4, 16),
-  sound("sd").euclidRot(2, 8, 4),
-  sound("hh").euclid(6, 12),
-  sound("rim").euclidRot(3, 16, 2)
-).cpm(22)`} punchcard punchcardLabels={false} />
-
-### Afrobeat (110 BPM)
-
-Afrobeat layers multiple interlocking patterns. Each instrument has its own euclidean cycle:
-
-<MiniRepl client:idle tune={`stack(
-  sound("bd").euclid(4, 16),
-  sound("sd").euclidRot(3, 8, 4),
-  sound("hh").euclid(9, 16),
-  sound("metal").euclidRot(7, 12, 3),
-  sound("rim").euclidRot(5, 16, 1)
+  sound("metal").euclidRot(7, 12, 3),  // Bell: timeline reference
+  sound("bd").euclidRot(4, 16, 0),     // Kick: responds to bell
+  sound("sd").euclidRot(3, 8, 4),      // Snare: backbeat variation
+  sound("hh").euclidRot(9, 16, 1),     // Hats: dense, rolling
+  sound("rim").euclidRot(5, 16, 2)     // Clave: adds complexity
 ).cpm(27.5)`} punchcard punchcardLabels={false} />
 
-### Reggae One Drop (75 BPM)
+<Box>
 
-Reggae emphasizes the third beat. Use rotation to shift the snare:
+**Afrobeat Characteristics:**
+
+**Core principle:** The bell pattern (7,12) acts as a **timeline**—all other parts orient themselves to it. Instruments enter and exit, but the bell never stops.
+
+**What to listen for:**
+- **Bell dominance:** Highest, most penetrating sound, continuous
+- **Interlocking, not doubling:** Kick and snare RESPOND to the bell, rarely hit simultaneously
+- **Dense hi-hats:** (9,16) or (11,16) creates rolling, liquid feel
+- **Polymeter phasing:** Patterns cycle at different lengths, revealing new combinations every 2-4 bars
+
+**Key parameters:**
+- Bell: Always (7,12), usually rotated 2-3 steps
+- Kick: Sparse (3,16) or (4,16), never on every beat
+- Snare: Often (3,8) rotated to avoid standard backbeat
+- Hats: Dense (9,16) or (11,16) for constant motion
+
+**Classic tracks to study:**
+- Fela Kuti - "Water No Get Enemy" (definitive Afrobeat)
+- Tony Allen - "Asiko" (the master drummer's solo work)
+
+**Common mistake:** Playing kick on every quarter note. Afrobeat kicks are sparse and syncopated—they dance around the beat, not pound it.
+
+</Box>
+
+### Reggae One Drop (70-80 BPM)
+
+Reggae's signature "one drop" pattern emphasizes beat 3, creating the laid-back, skanking groove that defines the genre. Developed in 1960s-70s Jamaica, it revolutionized how drums could support a groove.
 
 <MiniRepl client:idle tune={`stack(
-  sound("bd").euclidRot(2, 8, 2),
-  sound("sd").euclidRot(1, 4, 2),
-  sound("hh").euclid(8, 8),
-  sound("rim").euclidRot(3, 16, 4)
+  sound("bd").euclidRot(1, 4, 2),      // Kick: ONLY on beat 3
+  sound("sd").euclidRot(1, 4, 2),      // Snare: also beat 3 (doubled with kick!)
+  sound("hh").euclid(8, 8),            // Hats: straight 8ths
+  sound("rim").euclidRot(3, 16, 4)     // Rim: skank pattern
 ).cpm(18.75)`} punchcard punchcardLabels={false} />
 
-### Bossa Nova (140 BPM)
+<Box>
 
-Bossa nova uses the classic 3-3-2 pattern. Layer it with subtle percussion:
+**Reggae One Drop Characteristics:**
+
+**Core principle:** The kick and snare hit TOGETHER on beat 3 only. This is radical—most groove-based music separates kick and snare. The "drop" creates space for the bassline to breathe.
+
+**What to listen for:**
+- **The drop:** Massive kick+snare hit on beat 3, silence on beat 1
+- **Rim clicks:** Light skank rhythm filling the gaps (often (3,8) or (3,16))
+- **Hi-hat timing:** Straight eighths or upbeat emphasis (off the beat)
+- **Bass dominance:** With sparse drums, the bassline drives the rhythm
+
+**Key parameters:**
+- Kick: (1,4) rotated 2 steps to land on beat 3
+- Snare: (1,4) rotated 2 steps (doubles the kick!)
+- Hats: (8,8) for straight feel or (4,8) for half-time
+- Rim: (3,16) for cross-stick skank
+
+**Reggae variations:**
+- **Rockers:** (4,4) kick, more driving (Sly & Robbie style)
+- **Steppers:** (4,8) kick on all four beats, militant feel
+
+**Classic tracks:**
+- Bob Marley - "One Drop" (literally named for the pattern)
+- Augustus Pablo - "King Tubby Meets Rockers Uptown" (dub perfection)
+
+</Box>
+
+### Bossa Nova (130-150 BPM)
+
+Born in late 1950s Brazil, bossa nova ("new trend") blends samba rhythms with jazz harmony. The clave-based pattern creates the gentle, swaying feel that made it a global phenomenon.
 
 <MiniRepl client:idle tune={`stack(
-  sound("bd").euclid(3, 8),
-  sound("rim").euclidRot(5, 16, 2),
-  sound("hh").euclidRot(7, 16, 1),
-  sound("sd").euclidRot(2, 8, 3)
+  sound("bd").euclid(3, 8),            // Kick: tresillo/3-3-2 pattern
+  sound("rim").euclidRot(5, 16, 2),    // Rim: bossa clave variation
+  sound("hh").euclidRot(7, 16, 1),     // Hats: subtle syncopation
+  sound("sd").euclidRot(2, 8, 3)       // Snare: light touches
 ).cpm(35)`} punchcard punchcardLabels={false} />
+
+<Box>
+
+**Bossa Nova Characteristics:**
+
+**Core principle:** The kick plays the tresillo (3,8) pattern—the 3-3-2 subdivision that creates the characteristic lilt. Percussion stays light and subtle to leave space for voice/guitar.
+
+**What to listen for:**
+- **3-3-2 feel:** The tresillo pattern in the bass drum creates rhythmic lilt
+- **Lightness:** Bossa is whispered, not shouted—dynamics stay controlled
+- **Syncopated rim:** Often plays a (5,16) variation of son clave
+- **Jazz harmony over samba rhythm:** Complex chords with Brazilian groove
+
+**Key parameters:**
+- Kick: (3,8) is essential—this IS the bossa feel
+- Rim: (5,16) rotated, playing cross-stick
+- Hats: (7,16) or (6,16) for subtle complexity
+- Snare: (2,8) rotated, very light
+
+**Historical context:**
+João Gilberto reduced samba's complexity to this minimal pattern in the late 1950s. Combined with Antonio Carlos Jobim's sophisticated harmonies, it created a new genre.
+
+**Classic tracks:**
+- João Gilberto - "Chega de Saudade" (the track that started it all)
+- Stan Getz & João Gilberto - "The Girl from Ipanema" (global crossover hit)
+
+</Box>
+
+### Blues Shuffle (80-95 BPM)
+
+The shuffle rhythm—with its distinctive "long-short" swing feel—is the rhythmic foundation of blues, early rock and roll, and much of American popular music.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 16),           // Kick: steady quarter notes
+  sound("sd").euclidRot(2, 8, 4),      // Snare: backbeat on 2 & 4
+  sound("hh").euclid(6, 12),           // Hats: triplet feel (creates shuffle)
+  sound("rim").euclidRot(3, 16, 2)     // Rim: ghost notes
+).cpm(22)`} punchcard punchcardLabels={false} />
+
+<Box>
+
+**Blues Shuffle Characteristics:**
+
+**Core principle:** The hi-hat uses (6,12) instead of (8,16)—this creates a triplet subdivision. Playing pairs of triplets gives the "shuffle" feel: long-SHORT long-SHORT.
+
+**What to listen for:**
+- **Triplet subdivision:** The (X,12) patterns create a 3-feel against the 4-beat bar
+- **Loping rhythm:** The uneven eighth notes create a "rolling" quality
+- **Backbeat:** Snare solidly on beats 2 and 4
+- **Relaxed tempo:** Usually 80-100 BPM, allowing the shuffle to breathe
+
+**Key parameters:**
+- Kick: (4,16) or (4,8) for solid quarter notes
+- Snare: (2,8) rotated 4 steps for backbeat
+- **Hats: (6,12) is the KEY—this creates shuffle feel**
+- Rim: (3,16) for ghost note texture
+
+**Musical function:**
+The shuffle provides rhythmic momentum while maintaining a laid-back feel. It's the bridge between straight eighth notes (mechanical) and full swing (jazz).
+
+**Classic shuffle tracks:**
+- John Lee Hooker - "Boom Boom"
+- Muddy Waters - "Mannish Boy"
+- ZZ Top - "La Grange" (rock shuffle)
+
+**Variations:**
+- Slow shuffle: 70-80 BPM (John Lee Hooker)
+- Medium shuffle: 85-95 BPM (Chicago blues)
+- Fast shuffle: 100+ BPM (boogie-woogie)
+
+</Box>
+
+### Classic House (122-128 BPM)
+
+House music was born in early 1980s Chicago, taking its name from The Warehouse club. Built on four-on-the-floor kicks from disco, but with drum machine precision, house created the template for modern dance music.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR909").euclid(4, 4),        // Kick: four-on-the-floor
+  sound("sd").bank("RolandTR909").euclidRot(2, 8, 4),  // Snare: backbeat
+  sound("hh").bank("RolandTR909").euclid(8, 8),        // Hats: closed, driving
+  sound("oh").bank("RolandTR909").euclidRot(2, 8, 2),  // Open: syncopation
+  sound("cp").bank("RolandTR909").euclidRot(1, 4, 2)   // Clap: accent
+).cpm(31)`} punchcard punchcardLabels={false} />
+
+<Box>
+
+**Classic House Characteristics:**
+
+**Core principle:** Four-on-the-floor kick (4,4) provides unwavering pulse. Everything else adds syncopation and energy around this steady foundation.
+
+**What to listen for:**
+- **Relentless kick:** Quarter notes on every beat, driving the dance floor
+- **Backbeat:** Snare/clap on beats 2 and 4, like disco
+- **Hi-hat patterns:** Closed hats on 8ths (driving) or 16ths (urgent)
+- **Open hat syncopation:** Offbeat open hats create lift and space
+- **TR-909 sound:** Crisp, punchy, electronic—defines the genre
+
+**Key parameters:**
+- Kick: Always (4,4)—this is non-negotiable for house
+- Snare: (2,8) rotated 4 steps
+- Closed hats: (8,8) or (16,16) for intensity
+- Open hats: (2,8) rotated to upbeats for syncopation
+- Claps: (1,4) or (2,8) for emphasis
+
+**Historical context:**
+Frankie Knuckles and Ron Hardy pioneered this rhythm in Chicago clubs, using TR-909 drum machines to extend disco breaks into full tracks. The TR-909's specific sonic character became inseparable from the genre.
+
+**Classic house tracks:**
+- Marshall Jefferson - "Move Your Body" (house anthem)
+- Frankie Knuckles - "Your Love"
+- Mr. Fingers - "Can You Feel It"
+
+**Euclidean variations:**
+While the kick stays (4,4), experiment with:
+- Hats: (13,16) instead of (16,16) for subtle syncopation
+- Claps: (3,16) for less predictable accents
+- Ride: (7,8) for driving energy
+
+</Box>
 
 ### Drum & Bass (174 BPM)
 
