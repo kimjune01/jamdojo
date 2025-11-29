@@ -1,48 +1,18 @@
 ---
+import { ACTIVITIES } from '../config';
+
 const base = import.meta.env.BASE_URL;
 
-const activitySections = [
-  {
-    title: 'Interactive Tools',
-    icon: '🎮',
-    activities: [
-      { title: 'Piano', href: `${base}learn/interactive-tools/piano/`, icon: '🎹' },
-      { title: 'Guitar', href: `${base}learn/interactive-tools/guitar/`, icon: '🎸' },
-      { title: 'Sample Explorer', href: `${base}learn/interactive-tools/sample-explorer/`, icon: '🔊' },
-    ]
-  },
-  {
-    title: 'Quizzes',
-    icon: '🎯',
-    activities: [
-      { title: 'Sample Quiz', href: `${base}learn/quizzes/sample-guessing/`, icon: '🎯' },
-      { title: 'Waveform Quiz', href: `${base}learn/quizzes/waveform-guessing/`, icon: '〰' },
-      { title: 'Effect Quiz', href: `${base}learn/quizzes/effect-guessing/`, icon: '🎛' },
-      { title: 'Ear Training', href: `${base}learn/quizzes/ear-training/`, icon: '👂' },
-    ]
-  },
-  {
-    title: 'Music Theory',
-    icon: '🎵',
-    activities: [
-      { title: 'Harmony', href: `${base}learn/theory/harmony/`, icon: '🎶' },
-      { title: 'Chord Composition', href: `${base}learn/theory/chord-composition/`, icon: '🎼' },
-      { title: 'Rhythms', href: `${base}learn/theory/euclidean-rhythms/`, icon: '🥁' },
-      { title: 'Auditory Space', href: `${base}learn/theory/auditory-space/`, icon: '🎛️' },
-    ]
-  },
-  {
-    title: 'Genre Studies',
-    icon: '🎸',
-    activities: [
-      { title: 'Rock & Pop', href: `${base}learn/genre/rock-pop/`, icon: '🎤' },
-      { title: 'EDM', href: `${base}learn/genre/edm/`, icon: '🎧' },
-      { title: 'Metal', href: `${base}learn/genre/metal/`, icon: '🤘' },
-      { title: 'Demoscene', href: `${base}learn/genre/demoscene/`, icon: '🖥️' },
-      { title: 'Classical Music', href: `${base}learn/genre/classical/`, icon: '🎼' },
-    ]
-  },
-];
+// Transform ACTIVITIES from config to match the component's expected format
+const activitySections = ACTIVITIES.map(section => ({
+  title: section.title,
+  icon: section.icon,
+  activities: section.items.map(item => ({
+    title: item.text,
+    href: `${base}${item.link}/`,
+    icon: item.icon
+  }))
+}));
 
 const currentPath = Astro.url.pathname;
 
