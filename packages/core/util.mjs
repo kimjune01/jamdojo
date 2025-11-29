@@ -27,6 +27,21 @@ export const getAccidentalsOffset = (accidentals) => {
   return accidentals?.split('').reduce((o, char) => o + accs[char], 0) || 0;
 };
 
+/**
+ * Normalizes Haskell-style accidentals to standard # and b notation.
+ * TidalCycles/Haskell uses 's' for sharp and 'f' for flat (e.g., fs4, bf3, fss4)
+ * tonaljs and standard notation use # and b (e.g., f#4, bb3, f##4)
+ * @param {*} note - The note to normalize (can be string or other type)
+ * @returns The normalized note string, or original value if not a string
+ */
+export const normalizeNote = (note) => {
+  if (typeof note !== 'string') return note;
+  // Replace multiple s with multiple # and multiple f with multiple b for tonaljs compatibility
+  return note
+    .replace(/([a-g])(s+)(\d|$)/gi, (match, noteName, sharps, octave) => noteName + '#'.repeat(sharps.length) + octave)
+    .replace(/([a-g])(f+)(\d|$)/gi, (match, noteName, flats, octave) => noteName + 'b'.repeat(flats.length) + octave);
+};
+
 // turns the given note into its midi number representation
 export const noteToMidi = (note, defaultOctave = 3) => {
   const [pc, acc, oct = defaultOctave] = tokenizeNote(note);

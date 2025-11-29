@@ -5,7 +5,17 @@ This program is free software: you can redistribute it and/or modify it under th
 */
 
 import { Note, Interval, Scale } from '@tonaljs/tonal';
-import { register, _mod, logger, isNote, noteToMidi, removeUndefineds, getAccidentalsOffset } from '@strudel/core';
+import {
+  _mod,
+  errorLogger,
+  getAccidentalsOffset,
+  isNote,
+  logger,
+  normalizeNote,
+  noteToMidi,
+  register,
+  removeUndefineds,
+} from '@strudel/core';
 import { stepInNamedScale, nearestNumberIndex } from './tonleiter.mjs';
 
 const octavesInterval = (octaves) => (octaves <= 0 ? -1 : 1) + octaves * 7 + 'P';
@@ -44,7 +54,9 @@ function scaleOffset(scale, offset, note) {
   if (isNaN(offset)) {
     throw new Error(`scale offset "${offset}" not a number`);
   }
-  const { pc: fromPc, oct = 3 } = Note.get(note);
+  // Normalize Haskell-style accidentals before passing to tonaljs
+  const normalizedNote = normalizeNote(note);
+  const { pc: fromPc, oct = 3 } = Note.get(normalizedNote);
   const noteIndex = notes.indexOf(fromPc);
   if (noteIndex === -1) {
     throw new Error(`note "${note}" is not in scale "${scale}"`);
@@ -101,15 +113,6 @@ function scaleOffset(scale, offset, note) {
  * @example
  * "c2 c3".fast(2).transpose("<1P -2M 4P 3m>".slow(2)).note()
  */
-
-// Normalize Haskell-style accidentals to standard # and b notation
-// TidalCycles uses 's' for sharp and 'f' for flat (e.g., fs4, bf3)
-// tonaljs uses # and b (e.g., f#4, bb3)
-const normalizeNote = (note) => {
-  if (typeof note !== 'string') return note;
-  // Replace s with # and f with b for tonaljs compatibility
-  return note.replace(/([a-g])s(\d|$)/gi, '$1#$2').replace(/([a-g])f(\d|$)/gi, '$1b$2');
-};
 
 export const { transpose, trans } = register(['transpose', 'trans'], function transposeFn(intervalOrSemitones, pat) {
   return pat.withHap((hap) => {

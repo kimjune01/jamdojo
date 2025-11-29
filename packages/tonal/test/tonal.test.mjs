@@ -7,14 +7,58 @@ This program is free software: you can redistribute it and/or modify it under th
 // import { strict as assert } from 'assert';
 
 import '../tonal.mjs'; // need to import this to add prototypes
-import { pure, n, seq, note, noteToMidi } from '@strudel/core';
+import { pure, n, seq, note, noteToMidi, normalizeNote } from '@strudel/core';
 import { describe, it, expect } from 'vitest';
 import { mini } from '../../mini/mini.mjs';
 
 describe('tonal', () => {
+  describe('normalizeNote', () => {
+    it('converts single Haskell-style sharps to standard notation', () => {
+      expect(normalizeNote('fs4')).toBe('f#4');
+      expect(normalizeNote('cs3')).toBe('c#3');
+      expect(normalizeNote('gs')).toBe('g#');
+    });
+    it('converts single Haskell-style flats to standard notation', () => {
+      expect(normalizeNote('bf4')).toBe('bb4');
+      expect(normalizeNote('ef3')).toBe('eb3');
+      expect(normalizeNote('af')).toBe('ab');
+    });
+    it('converts multiple Haskell-style sharps to standard notation', () => {
+      expect(normalizeNote('fss4')).toBe('f##4');
+      expect(normalizeNote('css3')).toBe('c##3');
+      expect(normalizeNote('gss')).toBe('g##');
+    });
+    it('converts multiple Haskell-style flats to standard notation', () => {
+      expect(normalizeNote('bff4')).toBe('bbb4');
+      expect(normalizeNote('eff3')).toBe('ebb3');
+      expect(normalizeNote('aff')).toBe('abb');
+    });
+    it('handles mixed case note names', () => {
+      expect(normalizeNote('Fs4')).toBe('F#4');
+      expect(normalizeNote('CS3')).toBe('C#3');
+      expect(normalizeNote('Bf4')).toBe('Bb4');
+    });
+    it('returns non-string values unchanged', () => {
+      expect(normalizeNote(42)).toBe(42);
+      expect(normalizeNote(null)).toBe(null);
+      expect(normalizeNote(undefined)).toBe(undefined);
+    });
+    it('handles notes without octave numbers', () => {
+      expect(normalizeNote('fs')).toBe('f#');
+      expect(normalizeNote('bf')).toBe('bb');
+    });
+    it('handles already normalized notes', () => {
+      expect(normalizeNote('f#4')).toBe('f#4');
+      expect(normalizeNote('bb3')).toBe('bb3');
+    });
+  });
   describe('scaleTranspose', () => {
     it('transposes notes by scale degrees', () => {
       expect(pure('c3').scale('C major').scaleTranspose(1).firstCycleValues).toEqual(['D3']);
+    });
+    it('transposes Haskell-style notes by scale degrees', () => {
+      expect(pure('fs3').scale('D major').scaleTranspose(1).firstCycleValues).toEqual(['G3']);
+      expect(pure('cs4').scale('A major').scaleTranspose(2).firstCycleValues).toEqual(['E4']);
     });
   });
   describe('scale', () => {
