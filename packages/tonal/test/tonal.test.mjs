@@ -125,5 +125,25 @@ describe('tonal', () => {
       ).toEqual(['C', 'D', 'Eb']);
       expect(seq('c', 'c', 'c').transpose('1P', '2M', '3m').firstCycleValues).toEqual(['C', 'D', 'Eb']);
     });
+    it('transposes with mismatched count (8 notes, 4 transpose values)', () => {
+      const result = seq('fs4', 'e4', 'd4', 'cs4', 'b3', 'a3', 'b3', 'cs4')
+        .transpose(0, 5, 7, 0)
+        .firstCycleValues;
+      expect(result.length).toBe(8);
+      expect(result.every((note) => note !== '' && note !== undefined)).toBe(true);
+      // Each note samples the transpose value at its time position
+      // fs4(0-0.125)→0, e4(0.125-0.25)→0, d4(0.25-0.375)→5, cs4(0.375-0.5)→5
+      // b3(0.5-0.625)→7, a3(0.625-0.75)→7, b3(0.75-0.875)→0, cs4(0.875-1)→0
+      expect(result).toEqual(['F#4', 'E4', 'G4', 'F#4', 'F#4', 'E4', 'B3', 'C#4']);
+    });
+    it('transposes with slowcat pattern (angle bracket notation)', () => {
+      const { slowcat } = require('@strudel/core');
+      const transposePat = slowcat(0, 5, 7, 0);
+      const result = seq('fs4', 'e4', 'd4', 'cs4', 'b3', 'a3', 'b3', 'cs4')
+        .transpose(transposePat)
+        .firstCycleValues;
+      expect(result.length).toBe(8);
+      expect(result.every((note) => note !== '' && note !== undefined)).toBe(true);
+    });
   });
 });
