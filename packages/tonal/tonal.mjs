@@ -111,6 +111,15 @@ function scaleOffset(scale, offset, note) {
  * "c2 c3".fast(2).transpose("<1P -2M 4P 3m>".slow(2)).note()
  */
 
+// Normalize Haskell-style accidentals to standard # and b notation
+// TidalCycles uses 's' for sharp and 'f' for flat (e.g., fs4, bf3)
+// tonaljs uses # and b (e.g., f#4, bb3)
+const normalizeNote = (note) => {
+  if (typeof note !== 'string') return note;
+  // Replace s with # and f with b for tonaljs compatibility
+  return note.replace(/([a-g])s(\d|$)/gi, '$1#$2').replace(/([a-g])f(\d|$)/gi, '$1b$2');
+};
+
 export const { transpose, trans } = register(['transpose', 'trans'], function transposeFn(intervalOrSemitones, pat) {
   return pat.withHap((hap) => {
     const note = hap.value.note ?? hap.value;
@@ -121,26 +130,28 @@ export const { transpose, trans } = register(['transpose', 'trans'], function tr
         semitones = intervalOrSemitones;
       } else if (typeof intervalOrSemitones === 'string') {
         semitones = Interval.semitones(intervalOrSemitones) || 0;
+      } else {
+        semitones = 0;
       }
-      const targetNote = note + semitones;
-      if (typeof hap.value === 'object') {
-        return hap.withValue(() => ({ ...hap.value, note: targetNote }));
-      }
-      return hap.withValue(() => targetNote);
+      const value = hap.value.note ? { ...hap.value, note: note + semitones } : note + semitones;
+      return hap.withValue(() => value);
     }
-    if (typeof note !== 'string' || !isNote(note)) {
-      logger(`[tonal] transpose: not a note "${note}"`, 'warning');
+    if (!isNote(note)) {
+      if (note !== '' && note !== undefined && note !== null) {
+        logger(`[tonal] transpose: not a note "${note}"`, 'warning');
+      }
       return hap;
     }
-    // note is a string, so we might be able to preserve harmonics if interval is a string as well
-    const interval = !isNaN(Number(intervalOrSemitones))
+
+    // Normalize note name for tonaljs (fs -> f#, bf -> bb, etc.)
+    const normalizedNote = normalizeNote(note);
+
+    const intervalStr = !isNaN(Number(intervalOrSemitones))
       ? Interval.fromSemitones(intervalOrSemitones)
       : String(intervalOrSemitones);
-    const targetNote = Note.transpose(note, interval);
-    if (typeof hap.value === 'object') {
-      return hap.withValue(() => ({ ...hap.value, note: targetNote }));
-    }
-    return hap.withValue(() => targetNote);
+    const targetNote = Note.transpose(normalizedNote, intervalStr);
+    const value = hap.value.note ? { ...hap.value, note: targetNote } : targetNote;
+    return hap.withValue(() => value);
   });
 });
 
