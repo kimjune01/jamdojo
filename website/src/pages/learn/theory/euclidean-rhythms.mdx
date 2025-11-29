@@ -282,21 +282,32 @@ Rotation might seem like a simple shift, but it's one of the most powerful music
 
 ### Basic Rotation
 
-Use `.euclidRot()` to rotate the pattern. This shifts where it starts:
+Use `.euclidRot()` to rotate the pattern. This shifts where it starts.
+
+**Listen for the snare on beat 1** (the downbeat) to hear how the kick pattern shifts:
 
 **No rotation (0):**
 
-<MiniRepl client:idle tune={`sound("bd").euclidRot(3, 8, 0)`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 8, 0),
+  sound("sd").euclid(1, 8)  // Reference: marks beat 1
+)`} punchcard punchcardLabels={false} />
 
 **Rotation of 2:**
 
-<MiniRepl client:idle tune={`sound("bd").euclidRot(3, 8, 2)`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 8, 2),
+  sound("sd").euclid(1, 8)  // Reference: marks beat 1
+)`} punchcard punchcardLabels={false} />
 
 **Rotation of 4:**
 
-<MiniRepl client:idle tune={`sound("bd").euclidRot(3, 8, 4)`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 8, 4),
+  sound("sd").euclid(1, 8)  // Reference: marks beat 1
+)`} punchcard punchcardLabels={false} />
 
-Same beats, same spacing, completely different feel.
+Same beats, same spacing, completely different feel. The snare shows you where beat 1 is—notice how the kicks shift their relationship to the downbeat.
 
 <Box>
 
