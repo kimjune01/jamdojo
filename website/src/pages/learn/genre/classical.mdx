@@ -37,6 +37,8 @@ Mozart's themes were elegantly simple—a few notes that stick in your memory. B
 
 This theme from Pachelbel's Canon (c. 1680) is one of the most recognizable melodies in classical music. It's elegant, memorable, and perfect for demonstrating classical development techniques.
 
+> **Note:** The `note()` function wraps plain note names (like `"fs4"`) into labeled note parameters that Strudel can interpret. Without `.note()`, Strudel wouldn't know these are pitches. You can also chain it: `"fs4 e4".note()` is equivalent to `note("fs4 e4")`.
+
 ---
 
 ### Testing Your Theme
@@ -84,7 +86,7 @@ The chord progression (D → A → Bm → F#m → G → D → G → A) is one of
 <MiniRepl client:visible tune={`stack(
   note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6),
-  chord("<D A Bm F#m G D G A>").rootNotes(2).note().s('sawtooth').lpf(600).gain(0.7)
+  chord("<D A Bm F#m G D G A>").rootNotes(2).note().s('sawtooth').lpf(600).gain(0.7)  // .note() wraps plain root note values
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 Now we have the complete Pachelbel Canon texture: the famous melody, legendary chord progression, and walking bass line. This is our foundation—let's develop it!
