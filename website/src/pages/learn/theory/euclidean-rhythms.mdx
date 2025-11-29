@@ -81,30 +81,6 @@ This property appears in nature (sunflower seed spirals), architecture (dome con
 
 ---
 
-## Your First Euclidean Rhythm
-
-Let's put 3 kicks across 8 steps:
-
-<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
-
-Hit play. You'll hear the beats distributed evenly: **X** . . **X** . . **X** .
-
-The algorithm spreads 3 beats across 8 slots as evenly as it can.
-
-## Try Different Numbers
-
-What happens when you change the values?
-
-<MiniRepl client:idle tune={`sound("bd").euclid(5, 8)`} punchcard punchcardLabels={false} />
-
-Now you have 5 beats in 8 steps. More beats = denser rhythm.
-
-**Try it:** Change `5` to `2`. Then try `7`. Listen to how the feel changes.
-
-<MiniRepl client:idle tune={`sound("bd").euclid(2, 8)`} punchcard punchcardLabels={false} />
-
----
-
 # How It Works: The Bjorklund Algorithm
 
 Now that you've heard euclidean rhythms, let's understand **why** they sound so good.
@@ -682,45 +658,6 @@ Euclidean rhythms on melodies can sound abstract if you're not careful. Here's h
 - Lead: (4-7 notes, 5-7 hits, 8-12 steps)
 
 </QA>
-
-## Comparing Euclidean to Mini-Notation
-
-You can also write euclidean rhythms using mini-notation syntax `(beats, steps, offset)`:
-
-<MiniRepl client:idle tune={`sound("bd(3,8)")`} punchcard punchcardLabels={false} />
-
-This is equivalent to:
-
-<MiniRepl client:idle tune={`sound("bd").euclid(3, 8)`} punchcard punchcardLabels={false} />
-
-The mini-notation version is more compact, but the function version is easier to modify with patterns.
-
-## Dynamic Euclidean Rhythms
-
-With the function version, you can pattern the parameters:
-
-<MiniRepl client:idle tune={`sound("bd").euclid("<3 5 7>", 8)`} punchcard punchcardLabels={false} />
-
-The number of beats cycles through 3, 5, and 7 on each repetition.
-
-<MiniRepl client:idle tune={`sound("hh").euclidRot(5, "<8 16>", "<0 2 4>")`} punchcard punchcardLabels={false} />
-
-## Challenge: Build a Beat
-
-Create a four-part rhythm using euclidean patterns. Fill in the numbers:
-
-<MiniRepl client:idle tune={`stack(
-  sound("bd").euclid(3, 8),
-  sound("sd").euclidRot(2, 8, 4),
-  sound("hh").euclid(7, 8),
-  sound("rim").euclid(3, 16)
-)`} punchcard punchcardLabels={false} />
-
-**Hints:**
-- Kick: `3, 8` or `4, 16` for a solid foundation
-- Snare: `2, 8` with rotation for backbeat
-- Hi-hat: denser works well—`5, 8` or `7, 8`
-- Rim: odd numbers create interest—`3, 16` or `5, 12`
 
 ---
 
