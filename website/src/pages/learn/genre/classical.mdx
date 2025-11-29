@@ -323,7 +323,7 @@ Adding an independent counter-melody:
 
 <MiniRepl client:idle tune={`stack(
   note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
-  note("d3 a3 g3 fs3 d3 a3 fs3").s('piano').gain(0.7),
+  note("d3 a3 g3 fs3 d3 a3 fs3 e3").s('piano').gain(0.7),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.5)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -361,7 +361,7 @@ Let's put together a complete variation set with contrasting variations:
   // Variation 4: Contrapuntal (bars 9-10)
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
-    note("d3 a3 g3 fs3 d3 a3 fs3").s('piano').gain(0.7),
+    note("d3 a3 g3 fs3 d3 a3 fs3 e3").s('piano').gain(0.7),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.5)
   ).fast(4),
   // Variation 5: Return to simple (bars 11-12)
