@@ -171,14 +171,14 @@ Using `.late(0.125)` shifts the melody slightly, creating rhythmic tension.
 
 **Variation 5: Triplets**
 
-Grouping notes in threes using `.fast(3/2)`:
+Creating triplet groups within the beats:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 c4 d4 e4").fast(3/2).s('piano'),
+  note("fs4 [e4 d4 cs4] b3 [a3 b3 cs4]").s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
-Triplets add a flowing, lilting quality. Classical composers preferred even subdivision, while Romantic composers loved triplet figures.
+The brackets `[e4 d4 cs4]` create triplet groups—three notes in the space of one beat. Triplets add a flowing, lilting quality. Classical composers preferred even subdivision, while Romantic composers loved triplet figures.
 
 ---
 
@@ -801,21 +801,25 @@ Episodes are developmental sections between subject entries. They use fragments 
 
 **Episode using subject fragmentation:**
 
-<MiniRepl client:idle tune={`stack(
-  // Fragment: first 4 notes of subject, sequenced
-  cat(
-    note("d4 fs4 e4 g4"),
-    note("e4 g4 fs4 a4"),
-    note("fs4 a4 g4 b4")
-  ).s('piano'),
-  // Second voice with same fragment, delayed
-  cat(
-    note("~ ~ d3 fs3 e3 g3"),
-    note("e3 g3 fs3 a3")
-  ).s('piano').gain(0.7)
+<MiniRepl client:idle tune={`cat(
+  // Fragment 1: D-F#-E-G
+  stack(
+    note("d4 fs4 e4 g4").s('piano'),
+    note("~ ~ d3 fs3").s('piano').gain(0.7)
+  ),
+  // Fragment 2: E-G-F#-A
+  stack(
+    note("e4 g4 fs4 a4").s('piano'),
+    note("e3 g3 ~ ~").s('piano').gain(0.7)
+  ),
+  // Fragment 3: F#-A-G-B
+  stack(
+    note("fs4 a4 g4 b4").s('piano'),
+    note("fs3 a3 ~ ~").s('piano').gain(0.7)
+  )
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
-The first 4 notes of the subject (D-F#-E-G) repeat as a sequence, moving up by step. This is typical of fugue episodes—taking a recognizable fragment and developing it.
+The first 4 notes of the subject (D-F#-E-G) repeat as a sequence, moving up by step. Each fragment has both voices entering together, creating imitative counterpoint. This is typical of fugue episodes—taking a recognizable fragment and developing it.
 
 **Episode with inversion:**
 
@@ -871,7 +875,7 @@ Let's build a complete mini-fugue with all the elements:
   // Section 2: Episode (sequences)
   stack(
     note("d4 fs4 e4 g4 e4 g4 fs4 a4 fs4 a4 g4 b4").s('piano'),
-    note("d3 fs3 e3 g3 e3 g3 fs3 a3").s('piano').gain(0.7)
+    note("d3 fs3 e3 g3 e3 g3 fs3 a3 fs3 a3 g3 b3").s('piano').gain(0.7)
   ),
   // Section 3: Stretto (climax - tight overlapping)
   stack(
@@ -1304,7 +1308,65 @@ To deepen your understanding, listen to these masters:
 
 ---
 
-### Troubleshooting: `slowcat` with Inner Patterns
+### Troubleshooting: Pattern Duration and Compression
+
+#### Issue 1: `stack()` Compresses Patterns with Different Note Counts
+
+When using `stack()` to play multiple voices simultaneously, **all patterns are compressed to fit the same duration**. If your patterns have different numbers of notes, they will play at different speeds.
+
+**The Problem:**
+
+```javascript
+stack(
+  note("a b c d e f g h i j k l"),  // 12 notes
+  note("a b c d e f g h")            // 8 notes
+)
+```
+
+Both patterns are compressed into one cycle:
+- The 12-note pattern plays faster (compressed)
+- The 8-note pattern plays at normal speed
+- They don't align musically!
+
+**The Solution:** Make sure all patterns in a `stack()` have the same number of notes:
+
+```javascript
+stack(
+  note("a b c d e f g h"),  // 8 notes
+  note("e f g a b c d e")   // 8 notes
+)
+```
+
+Now both voices play at the same speed and align properly.
+
+**Common Patterns:**
+
+For fugue expositions with sequential entries, use `cat()` instead of `stack()` with rests:
+
+```javascript
+// WRONG: Different lengths compress
+stack(
+  note("subject 8 notes"),
+  note("~ ~ ~ ~ ~ ~ ~ ~ answer 8 notes"),  // 16 notes total - compresses!
+  note("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ subject 8 notes")  // 24 notes - compresses even more!
+)
+
+// RIGHT: Use cat() for sequential entries
+cat(
+  note("subject 8 notes"),  // Cycle 1
+  stack(
+    note("subject 8 notes"),  // Cycle 2: both 8 notes
+    note("answer 8 notes")
+  ),
+  stack(
+    note("subject 8 notes"),  // Cycle 3: all 8 notes
+    note("answer 8 notes"),
+    note("subject 8 notes")
+  )
+)
+```
+
+#### Issue 2: `slowcat` with Inner Patterns
 
 When using `slowcat` with sections that contain inner `<>` slowcat patterns (like chord progressions), you need to ensure each section completes its inner pattern before moving to the next section. This requires the `.fast().slow()` pattern:
 
