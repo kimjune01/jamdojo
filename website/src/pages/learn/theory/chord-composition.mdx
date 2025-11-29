@@ -347,7 +347,7 @@ chord("<C Am F G>").struct("x ~ [x x] ~").voicing().s("piano")`} punchcard punch
 **Try it:** Start with a drum groove, then add chords that match its rhythm. Or start with flowing chords, then add drums that complement them.
 
 <MiniRepl client:idle tune={`stack(
-  chord("<C Am F G>").struct("~ x ~ x").voicing(),
+  chord("<C Am F G>").struct("~ x ~ x").voicing().s('piano'),
   sound("bd ~ bd ~"),
   sound("~ sd ~ sd")
 )`} punchcard punchcardLabels={false} />
@@ -448,7 +448,7 @@ Each chord flows into the next. No large jumps.
 **3. Contrary motion—voices move in opposite directions:**
 
 <MiniRepl client:idle tune={`chord("<C G C>").layer(
-  x => x.anchor("c5").voicing(),
+  x => x.anchor("c5").voicing().s('piano'),
   x => x.rootNotes("<2 3 2>").note().s('sawtooth').lpf(600)
 )`} punchcard punchcardLabels={false} />
 
@@ -482,7 +482,7 @@ Too high? Try lower. Experiment until it sounds right for your context.
 **Step 4: Add bass and rhythm (complete the picture):**
 
 <MiniRepl client:idle tune={`chord("<C^7 Eb^7 Ab^7 Db^7>").layer(
-  x => x.anchor("c5").struct("[~ x]*2").voicing(),
+  x => x.anchor("c5").struct("[~ x]*2").voicing().s('piano'),
   x => x.rootNotes(2).note().s('sawtooth').lpf(600)
 )`} punchcard punchcardLabels={false} />
 
@@ -668,7 +668,7 @@ Think of your progression as a BASS LINE with chords on top:
 **Stepwise bass:**
 
 <MiniRepl client:idle tune={`chord("<C Dm Em F>").layer(
-  x => x.voicing(),
+  x => x.voicing().s('piano'),
   x => x.rootNotes(2).note().s('sawtooth').lpf(600)
 )`} punchcard punchcardLabels={false} />
 
@@ -1480,14 +1480,14 @@ Arpeggios work beautifully in layers—bass, chords, and melodic lines.
 
 <MiniRepl client:idle tune={`chord("<C Am F G>").layer(
   x => x.rootNotes(2).note().s('sawtooth').lpf(600),
-  x => x.struct("~ x ~ x").voicing()
+  x => x.struct("~ x ~ x").voicing().s('piano')
 )`} punchcard punchcardLabels={false} />
 
 **Layer 3: Add arpeggio on top:**
 
 <MiniRepl client:idle tune={`chord("<C Am F G>").layer(
   x => x.rootNotes(2).note().s('sawtooth').lpf(600),
-  x => x.struct("~ x ~ x").voicing(),
+  x => x.struct("~ x ~ x").voicing().s('piano'),
   x => x.voicing().arp("0 2 1 3").note().s('piano')
 )`} punchcard punchcardLabels={false} />
 
@@ -1500,7 +1500,7 @@ Three layers, clear hierarchy.
 **Chord tones (notes in the chord):**
 
 <MiniRepl client:idle tune={`chord("<C Am F G>").layer(
-  x => x.voicing(),
+  x => x.voicing().s('piano'),
   x => "c5 e5 f5 g5".note().s('piano')
 )`} punchcard punchcardLabels={false} />
 
@@ -1509,7 +1509,7 @@ Melody uses only chord tones—very consonant.
 **Passing tones (non-chord tones):**
 
 <MiniRepl client:idle tune={`chord("<C Am F G>").layer(
-  x => x.voicing(),
+  x => x.voicing().s('piano'),
   x => "c5 d5 e5 f5 e5 f5 g5 a5".note().s('piano')
 )`} punchcard punchcardLabels={false} />
 
@@ -1518,7 +1518,7 @@ D and A aren't in the chords—they pass through, adding motion.
 **Target tones (land on strong beats):**
 
 <MiniRepl client:idle tune={`chord("<C Am F G>").layer(
-  x => x.struct("x").voicing(),
+  x => x.struct("x").voicing().s('piano'),
   x => "c5 d5 e5 e5 f5 e5 d5 g5".note().s('piano')
 )`} punchcard punchcardLabels={false} />
 
@@ -1543,7 +1543,7 @@ Space to breathe.
 
 <MiniRepl client:idle tune={`chord("<C Am F G>").layer(
   x => x.rootNotes(2).note().s('sawtooth').lpf(600),
-  x => x.struct("~ x").voicing(),
+  x => x.struct("~ x").voicing().s('piano'),
   x => n("0 1 2 1").chord(x).voicing().note().s('piano')
 )`} punchcard punchcardLabels={false} />
 
@@ -1551,7 +1551,7 @@ Space to breathe.
 
 <MiniRepl client:idle tune={`chord("<C Am F G>").layer(
   x => x.rootNotes(2).note().s('sawtooth').lpf(600),
-  x => x.struct("x ~ x ~").voicing(),
+  x => x.struct("x ~ x ~").voicing().s('piano'),
   x => n("0 1 2 1").chord(x).voicing().note().s('piano'),
   x => "c5 d5 e5 f5".note().s('piano')
 )`} punchcard punchcardLabels={false} />
@@ -1589,7 +1589,7 @@ Added 7ths, smooth voice leading.
 **Stage 4: Arrangement (bass, rhythm, arpeggios):**
 
 <MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 F^7 Dm7 G7 C^7@2>").layer(
-  x => x.anchor("c5").struct("[~ x]*2").voicing(),
+  x => x.anchor("c5").struct("[~ x]*2").voicing().s('piano'),
   x => x.rootNotes(2).note().s('sawtooth').lpf(600),
   x => n("0 1 2 1").chord(x).voicing().note().s('piano')
 )`} punchcard punchcardLabels={false} />
