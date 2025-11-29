@@ -91,6 +91,52 @@ The chord progression (D → A → Bm → F#m → G → D → G → A) is one of
 
 Now we have the complete Pachelbel Canon texture: the famous melody, legendary chord progression, and walking bass line. This is our foundation—let's develop it!
 
+---
+
+### Bach's Prelude in C Major: Simple Pattern, Endless Elaboration
+
+Another masterpiece of classical development is Bach's Prelude in C Major (from Well-Tempered Clavier Book I, 1722). Unlike Pachelbel's melodic theme, Bach uses a single **arpeggiated pattern** repeated throughout the piece—it's the harmony underneath that creates the development.
+
+**The basic pattern:**
+
+<MiniRepl client:visible tune={`note("c3 e3 g3 c4 e4 g3 c4 e4").s('piano').cpm(40)`} punchcard punchcardLabels={false} />
+
+This is the famous opening: an ascending arpeggio of a C major chord. Eight notes per bar, continuously flowing. That's the entire "theme"—but listen to how it transforms when we change the underlying harmony:
+
+**Pattern with changing harmonies:**
+
+<MiniRepl client:visible tune={`stack(
+  // The constant arpeggiated pattern
+  note("c3 e3 g3 c4 e4 g3 c4 e4").s('piano'),
+  // Changing bass notes creating harmonic movement
+  note("<c2 d2 g2 c2>").s('sawtooth').lpf(400).sustain(2).gain(0.7)
+).cpm(40)`} punchcard punchcardLabels={false} />
+
+The pattern stays the same, but the bass note changes: C → D → G → C. This creates harmonic progression while maintaining the rhythmic continuity.
+
+**Full elaboration with chord progression:**
+
+<MiniRepl client:visible tune={`stack(
+  // Arpeggiated pattern adapting to each chord
+  chord("<C Dm7 G7 C Am Dm G7 C>").mode(0).arp("0 2 4 0 2 4 0 2").s('piano').octave(3),
+  // Bass line
+  chord("<C Dm7 G7 C Am Dm G7 C>").rootNotes(2).note().s('sawtooth').lpf(400).sustain(2).gain(0.7)
+).cpm(40)`} punchcard punchcardLabels={false} />
+
+Now the arpeggiated pattern follows the chord changes (C → Dm7 → G7 → C → Am → Dm → G7 → C), creating Bach's characteristic flowing texture. The pattern never stops, but the harmony constantly evolves.
+
+**Adding rhythmic variation:**
+
+<MiniRepl client:visible tune={`stack(
+  // Varied rhythm: some notes held longer
+  chord("<C Dm7 G7 C Am Dm G7 C>").mode(0).arp("0 2 4@2 0 2 4 0@2 2").s('piano').octave(3).decay(0.3),
+  chord("<C Dm7 G7 C Am Dm G7 C>").rootNotes(2).note().s('sawtooth').lpf(400).sustain(2).gain(0.7)
+).cpm(40)`} punchcard punchcardLabels={false} />
+
+Using `@2` makes certain notes last twice as long, creating rhythmic interest within the constant flow.
+
+**Bach's approach:** Take one simple pattern (ascending arpeggio) and elaborate it through **harmonic progression** rather than melodic variation. The pattern remains constant—the development happens underneath. This technique influenced centuries of keyboard music, from Chopin's études to modern minimalism.
+
 **Try it:** Modify the theme by changing the notes. Keep it simple and within an octave. Test if your theme loops well and transposes well before moving on.
 
 ---
