@@ -640,14 +640,14 @@ Bass lines benefit enormously from euclidean rhythms—they create groove withou
 
 **Four-note bass line, five hits (5,16):**
 
-<MiniRepl client:idle tune={`note("c2 e2 g2 b2").s("bass").euclid(5, 16)`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`note("c2 e2 g2 b2").s("sawtooth").lpf(800).euclid(5, 16)`} punchcard punchcardLabels={false} />
 
 The (5,16) rhythm creates a syncopated feel. Combined with a 4-note pattern, the bass line evolves over 4 cycles.
 
 **Add a kick for context:**
 
 <MiniRepl client:idle tune={`stack(
-  note("c2 e2 g2 b2").s("bass").euclid(5, 16),
+  note("c2 e2 g2 b2").s("sawtooth").lpf(800).euclid(5, 16),
   sound("bd").euclid(4, 16)
 )`} punchcard punchcardLabels={false} />
 
