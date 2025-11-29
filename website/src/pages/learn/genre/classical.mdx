@@ -1178,8 +1178,8 @@ Let's create a complete 4-movement piece using our theme from Part 1:
   // MOVEMENT 3: Canon (3 voices)
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.333).transpose(12).s('piano').gain(0.7),
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.666).transpose(-12).s('piano').gain(0.6),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.25).transpose(12).s('piano').gain(0.7),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.5).transpose(-12).s('piano').gain(0.6),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.5)
   ).fast(8),
   // MOVEMENT 4: Fugal Finale
