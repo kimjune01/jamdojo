@@ -672,11 +672,14 @@ Bach's Well-Tempered Clavier contains 48 fugues demonstrating every aspect of fu
 
 **Simple 2-voice fugue exposition:**
 
-<MiniRepl client:idle tune={`stack(
-  // Voice 1: Subject in D
+<MiniRepl client:idle tune={`cat(
+  // Entry 1: Subject alone
   note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
-  // Voice 2: Answer in A (enters later)
-  note("a3 cs4 b3 d4 cs4 e4 d4 cs4").late(1).s('piano').gain(0.7)
+  // Entry 2: Subject + Answer overlapping
+  stack(
+    note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
+    note("a3 cs4 b3 d4 cs4 e4 d4 cs4").s('piano').gain(0.7)
+  )
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 Voice 1 presents the subject in D major. Voice 2 enters with the "answer" (subject transposed to the dominant, A).
@@ -710,9 +713,12 @@ The answer is the subject transposed to the dominant (usually a perfect fifth hi
 
 **Real Answer** — Exact transposition:
 
-<MiniRepl client:idle tune={`stack(
+<MiniRepl client:idle tune={`cat(
   note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
-  note("d4 fs4 e4 g4 fs4 a4 g4 fs4").transpose(7).late(1).s('piano').gain(0.7)
+  stack(
+    note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
+    note("d4 fs4 e4 g4 fs4 a4 g4 fs4").transpose(7).s('piano').gain(0.7)
+  )
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 The answer is exactly 7 semitones higher (D → A). This is called a "real answer."
@@ -723,11 +729,14 @@ Sometimes a real answer doesn't fit the key perfectly, so composers adjust it sl
 
 **Two-Voice Exposition:**
 
-<MiniRepl client:idle tune={`stack(
-  // Voice 1: Subject
+<MiniRepl client:idle tune={`cat(
+  // Voice 1: Subject alone
   note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
-  // Voice 2: Answer (enters after subject completes)
-  note("d4 fs4 e4 g4 fs4 a4 g4 fs4").transpose(7).late(1).s('piano').gain(0.7)
+  // Voice 2: Subject + Answer together
+  stack(
+    note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
+    note("d4 fs4 e4 g4 fs4 a4 g4 fs4").transpose(7).s('piano').gain(0.7)
+  )
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 This is a complete 2-voice fugue exposition: subject in D major, then answer in A major.
@@ -810,9 +819,12 @@ The first 4 notes of the subject (D-F#-E-G) repeat as a sequence, moving up by s
 
 **Episode with inversion:**
 
-<MiniRepl client:idle tune={`stack(
+<MiniRepl client:idle tune={`cat(
   note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
-  note("d4 b3 cs4 a3 b3 g3 a3 b3").late(1).s('piano').gain(0.7)
+  stack(
+    note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
+    note("d4 b3 cs4 a3 b3 g3 a3 b3").s('piano').gain(0.7)
+  )
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 Voice 2 plays an inverted version of the subject (intervals flipped)—up becomes down.
@@ -991,14 +1003,20 @@ In a double fugue, each subject gets its own exposition, then they combine. Bach
 
 <MiniRepl client:idle tune={`slowcat(
   // Exposition of Subject 1
-  stack(
+  cat(
     note("d4 e4 fs4 g4 a4 g4 fs4 e4").s('piano'),
-    note("a3 b3 cs4 d4 e4 d4 cs4 b3").late(1).s('piano').gain(0.7)
+    stack(
+      note("d4 e4 fs4 g4 a4 g4 fs4 e4").s('piano'),
+      note("a3 b3 cs4 d4 e4 d4 cs4 b3").s('piano').gain(0.7)
+    )
   ),
   // Exposition of Subject 2
-  stack(
+  cat(
     note("d4 ~ fs4 ~ a4 ~ d5 ~").s('piano'),
-    note("a3 ~ cs4 ~ e4 ~ a4 ~").late(1).s('piano').gain(0.7)
+    stack(
+      note("d4 ~ fs4 ~ a4 ~ d5 ~").s('piano'),
+      note("a3 ~ cs4 ~ e4 ~ a4 ~").s('piano').gain(0.7)
+    )
   ),
   // Both subjects combined
   stack(
@@ -1036,9 +1054,12 @@ Using variation techniques in fugue episodes:
 
 <MiniRepl client:idle tune={`slowcat(
   // Exposition
-  stack(
+  cat(
     note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
-    note("a3 cs4 b3 d4 cs4 e4 d4 cs4").late(1).s('piano').gain(0.7)
+    stack(
+      note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
+      note("a3 cs4 b3 d4 cs4 e4 d4 cs4").s('piano').gain(0.7)
+    )
   ),
   // Episode: Subject in augmentation (slower)
   stack(
