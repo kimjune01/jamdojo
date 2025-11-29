@@ -482,7 +482,7 @@ Too high? Try lower. Experiment until it sounds right for your context.
 **Step 4: Add bass and rhythm (complete the picture):**
 
 <MiniRepl client:idle tune={`chord("<C^7 Eb^7 Ab^7 Db^7>").layer(
-  x => x.anchor("c5").voicing().struct("[~ x]*2").s('piano'),
+  x => x.anchor("c5").voicing().struct("[~ x]*2").note().s('piano'),
   x => x.rootNotes(2).note().s('sawtooth').lpf(600)
 )`} punchcard punchcardLabels={false} />
 
@@ -1589,7 +1589,7 @@ Added 7ths, smooth voice leading.
 **Stage 4: Arrangement (bass, rhythm, arpeggios):**
 
 <MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 F^7 Dm7 G7 C^7@2>").layer(
-  x => x.anchor("c5").voicing().struct("[~ x]*2").s('piano'),
+  x => x.anchor("c5").voicing().struct("[~ x]*2").note().s('piano'),
   x => x.rootNotes(2).note().s('sawtooth').lpf(600),
   x => n("0 1 2 1").chord(x).voicing().note().s('piano')
 )`} punchcard punchcardLabels={false} />
