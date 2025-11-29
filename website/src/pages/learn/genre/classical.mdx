@@ -342,34 +342,34 @@ Let's put together a complete variation set with contrasting variations:
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
-  ).fast(4),
+  ).fast(8),
   // Variation 1: Fast (bars 3-4)
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").fast(2).s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
-  ).fast(4),
+  ).fast(8),
   // Variation 2: Minor mode (bars 5-6)
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 a3").s('piano'),
-    chord("<Bm F#m A Bm>").voicing().s('piano').gain(0.6)
-  ).fast(4),
+    chord("<Bm F#m A Bm Bm F#m A Bm>").voicing().s('piano').gain(0.6)
+  ).fast(8),
   // Variation 3: Arpeggiated (bars 7-8)
   stack(
-    chord("<D Em F#m G F#m Em D>").voicing().arp("0 1 2 1").s('piano').octave(4),
+    chord("<D Em F#m G F#m Em D D>").voicing().arp("0 1 2 1").s('piano').octave(4),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
-  ).fast(4),
+  ).fast(8),
   // Variation 4: Contrapuntal (bars 9-10)
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     note("d3 a3 g3 fs3 d3 a3 fs3 e3").s('piano').gain(0.7),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.5)
-  ).fast(4),
+  ).fast(8),
   // Variation 5: Return to simple (bars 11-12)
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
-  ).fast(4)
-).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
+  ).fast(8)
+).slow(8).cpm(30)`} punchcard punchcardLabels={false} />
 
 This creates a dramatic arc: **simple → energetic → dark → elaborate → contrapuntal → simple**. This is how Bach, Mozart, and Brahms structured variation sets—building complexity then returning to clarity.
 
@@ -570,13 +570,13 @@ Moving from D major to A major (the dominant key):
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
-  ).fast(4),
+  ).fast(8),
   // Theme in A major (bars 3-4)
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").transpose(7).s('piano'),
-    chord("<A D E A>").voicing().s('piano').gain(0.6)
-  ).fast(4)
-).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
+    chord("<A D E A A D E A>").voicing().s('piano').gain(0.6)
+  ).fast(8)
+).slow(8).cpm(30)`} punchcard punchcardLabels={false} />
 
 The theme transposes up 7 semitones (perfect fifth) to A major. Classical composers modulated to the dominant in sonata form expositions.
 
@@ -587,13 +587,13 @@ The theme transposes up 7 semitones (perfect fifth) to A major. Classical compos
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
-  ).fast(4),
+  ).fast(8),
   // Theme in B minor (relative minor)
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 a3").s('piano'),
-    chord("<Bm Em F#m Bm>").voicing().s('piano').gain(0.6)
-  ).fast(4)
-).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
+    chord("<Bm Em F#m Bm Bm Em F#m Bm>").voicing().s('piano').gain(0.6)
+  ).fast(8)
+).slow(8).cpm(30)`} punchcard punchcardLabels={false} />
 
 B minor is the relative minor of D major (shares the same key signature). The theme takes on a darker character. Classical composers modulated to closely-related keys; Romantic composers explored distant keys.
 
@@ -860,9 +860,9 @@ Let's build a complete mini-fugue with all the elements:
   // Section 4: Coda (resolution)
   stack(
     chord("<D A Bm F#m G D G A>").voicing().s('piano'),
-    chord("<D A Bm F#m G D G A>").rootNotes(2).note().s('sawtooth').lpf(600).gain(0.7)
-  ).fast(4)
-).slow(2).cpm(30)`} punchcard punchcardLabels={false} />
+    chord("<D A Bm F#m G D G A>").rootNotes(2).note().s('sawtooth').lpf(600).gain(0.7)  // .note() wraps plain root note values
+  ).fast(8)
+).slow(8).cpm(30)`} punchcard punchcardLabels={false} />
 
 This complete fugue has:
 1. **Exposition** — 3 voices enter with subject/answer
@@ -994,18 +994,18 @@ In a double fugue, each subject gets its own exposition, then they combine. Bach
   stack(
     note("d4 e4 fs4 g4 a4 g4 fs4 e4").s('piano'),
     note("a3 b3 cs4 d4 e4 d4 cs4 b3").late(1).s('piano').gain(0.7)
-  ).fast(4),
+  ),
   // Exposition of Subject 2
   stack(
     note("d4 ~ fs4 ~ a4 ~ d5 ~").s('piano'),
     note("a3 ~ cs4 ~ e4 ~ a4 ~").late(1).s('piano').gain(0.7)
-  ).fast(4),
+  ),
   // Both subjects combined
   stack(
     note("d4 e4 fs4 g4 a4 g4 fs4 e4").s('piano'),
     note("d3 ~ fs3 ~ a3 ~ d4 ~").s('piano').gain(0.7)
-  ).fast(4)
-).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
+  )
+).cpm(30)`} punchcard punchcardLabels={false} />
 
 ---
 
@@ -1039,13 +1039,13 @@ Using variation techniques in fugue episodes:
   stack(
     note("d4 fs4 e4 g4 fs4 a4 g4 fs4").s('piano'),
     note("a3 cs4 b3 d4 cs4 e4 d4 cs4").late(1).s('piano').gain(0.7)
-  ).fast(4),
+  ),
   // Episode: Subject in augmentation (slower)
   stack(
     note("d4 fs4 e4 g4 fs4 a4 g4 fs4").slow(2).s('piano'),
     note("fs3 g3 a3 b3 a3 g3 fs3 e3").s('piano').gain(0.7)
-  ).fast(4)
-).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
+  )
+).cpm(30)`} punchcard punchcardLabels={false} />
 
 The episode uses the subject in augmentation (slower)—a variation technique within fugal structure.
 
@@ -1088,19 +1088,19 @@ Let's create a complete 4-movement piece using our theme from Part 1:
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
-  ).fast(4),
+  ).fast(8),
   // MOVEMENT 2: Variation - Fast & Minor
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 a3").fast(2).s('piano'),
-    chord("<Bm F#m A Bm>").voicing().s('piano').gain(0.6)
-  ).fast(4),
+    chord("<Bm F#m A Bm Bm F#m A Bm>").voicing().s('piano').gain(0.6)
+  ).fast(8),
   // MOVEMENT 3: Canon (3 voices)
   stack(
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.333).transpose(12).s('piano').gain(0.7),
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.666).transpose(-12).s('piano').gain(0.6),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.5)
-  ).fast(4),
+  ).fast(8),
   // MOVEMENT 4: Fugal Finale
   stack(
     // Subject
@@ -1108,9 +1108,11 @@ Let's create a complete 4-movement piece using our theme from Part 1:
     // Answer
     note("fs4 e4 d4 cs4 b3 a3 b3 cs4").transpose(7).late(0.5).s('piano').gain(0.7),
     // Stretto
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.25).transpose(12).s('piano').gain(0.6)
-  ).fast(4)
-).slow(16).cpm(30)`} punchcard punchcardLabels={false} />
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.25).transpose(12).s('piano').gain(0.6),
+    // Harmonic support
+    chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.5)
+  ).fast(8)
+).slow(8).cpm(30)`} punchcard punchcardLabels={false} />
 
 This complete work demonstrates:
 - **Movement 1**: Simple thematic presentation
@@ -1268,6 +1270,59 @@ To deepen your understanding, listen to these masters:
 | Bass lines | `.rootNotes(n).note()` | Ground bass, harmonic foundation |
 | Arpeggiation | `.arp()` | Melodic variation, texture |
 | Voice leading | `.anchor()`, `.mode()` | Smooth chord progressions |
+
+---
+
+### Troubleshooting: `slowcat` with Inner Patterns
+
+When using `slowcat` with sections that contain inner `<>` slowcat patterns (like chord progressions), you need to ensure each section completes its inner pattern before moving to the next section. This requires the `.fast().slow()` pattern:
+
+**The Problem:**
+
+```javascript
+slowcat(
+  stack(
+    note("..."),
+    chord("<D A Bm F#m G D G A>").voicing()  // 8-chord progression
+  ),
+  stack(
+    note("..."),
+    chord("<D A Bm F#m G D G A>").voicing()  // 8-chord progression
+  )
+)
+```
+
+Without `.fast()`, each section would only play a fraction of its chord progression before moving to the next section.
+
+**The Solution:**
+
+```javascript
+slowcat(
+  stack(
+    note("..."),
+    chord("<D A Bm F#m G D G A>").voicing()
+  ).fast(8),  // 8 matches the number of chords
+  stack(
+    note("..."),
+    chord("<D A Bm F#m G D G A>").voicing()
+  ).fast(8)   // 8 matches the number of chords
+).slow(8)     // Reverse the .fast(8) to restore normal speed
+```
+
+**The Rule:**
+
+1. Count the elements in your inner `<>` pattern (e.g., `<D A Bm F#m G D G A>` = 8 elements)
+2. Add `.fast(n)` to each section, where `n` = number of elements
+3. Add `.slow(n)` to the outer `slowcat`, where `n` = same number
+4. All sections in the same `slowcat` should use the same number (standardize chord progressions if needed)
+5. Sections without inner `<>` patterns should NOT use `.fast()`
+
+**Common Mistakes:**
+
+- Using `.fast(4)` when the chord progression has 8 chords
+- Forgetting to match `.fast()` and `.slow()` values
+- Using different numbers across sections (standardize first!)
+- Adding `.fast().slow()` to patterns with no inner `<>` slowcats
 
 ---
 
