@@ -124,8 +124,6 @@ export const { transpose, trans } = register(['transpose', 'trans'], function tr
         semitones = intervalOrSemitones;
       } else if (typeof intervalOrSemitones === 'string') {
         semitones = Interval.semitones(intervalOrSemitones) || 0;
-      } else {
-        semitones = 0;
       }
       const targetNote = note + semitones;
       if (typeof hap.value === 'object') {
