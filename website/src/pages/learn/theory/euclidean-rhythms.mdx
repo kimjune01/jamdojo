@@ -939,42 +939,95 @@ While the kick stays (4,4), experiment with:
 
 </Box>
 
-### Drum & Bass (174 BPM)
+## Electronic & Urban Styles
 
-Fast, syncopated patterns with offbeat snares:
+Modern electronic and urban genres use euclidean patterns for both their mathematical precision and ability to create evolving grooves.
+
+### Jazz Swing Feel (120-140 BPM)
+
+Jazz swing uses uneven subdivisions and polymeter to create the characteristic "swing" feel that distinguishes it from straight eighth notes.
 
 <MiniRepl client:idle tune={`stack(
-  sound("bd").euclidRot(3, 16, 0),
-  sound("sd").euclidRot(2, 16, 6),
-  sound("hh").euclid(11, 16),
-  sound("rim").euclidRot(5, 16, 3)
+  sound("bd").euclid(2, 8),            // Kick: minimal, on 1 & 3
+  sound("hh").euclidRot(5, 12, 1),     // Hats: triplet feel creates swing
+  sound("rim").euclidRot(3, 8, 2),     // Ride: cross-stick pattern
+  sound("sd").euclidRot(2, 8, 4)       // Snare: light backbeat
+).cpm(32.5)`} punchcard punchcardLabels={false} />
+
+The (5,12) hi-hat pattern creates a triplet subdivision against the (2,8) kick, generating the polymeter that gives jazz its characteristic swing feel.
+
+### Drum & Bass (170-180 BPM)
+
+Emerging from UK rave culture in the early 1990s, drum & bass features breakneck tempos with syncopated snare placements that create rhythmic tension.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(3, 16, 0),     // Kick: sparse at fast tempo
+  sound("sd").euclidRot(2, 16, 6),     // Snare: offbeat (key to D&B feel)
+  sound("hh").euclid(11, 16),          // Hats: dense, rolling
+  sound("rim").euclidRot(5, 16, 3)     // Rim: adds texture
 ).cpm(43.5)`} punchcard punchcardLabels={false} />
 
-### House Four-on-the-Floor (124 BPM)
+The offbeat snare rotation (typically 6 or 10 steps) creates the signature "Amen break" feel even with euclidean patterns.
 
-Even house music benefits from euclidean accents:
+### Techno (130-145 BPM)
 
-<MiniRepl client:idle tune={`stack(
-  sound("bd").euclid(4, 4),
-  sound("sd").euclidRot(2, 8, 4),
-  sound("hh").euclid(8, 8),
-  sound("oh").euclidRot(2, 8, 2)
-).cpm(31)`} punchcard punchcardLabels={false} />
-
-### Funk Breakbeat (105 BPM)
-
-Funk uses dense, syncopated patterns with ghost notes:
+Hard, driving techno emphasizes relentless energy through dense, mechanical patterns.
 
 <MiniRepl client:idle tune={`stack(
-  sound("bd").euclidRot(5, 16, 0),
-  sound("sd").euclidRot(4, 16, 4),
-  sound("hh").euclid(13, 16),
-  sound("rim").euclidRot(7, 16, 2)
+  sound("bd").bank("RolandTR909").euclid(4, 4),        // Kick: four-on-the-floor
+  sound("sd").bank("RolandTR909").euclidRot(2, 16, 8), // Snare: sparse accents
+  sound("hh").bank("RolandTR909").euclid(16, 16),      // Hats: continuous drive
+  sound("oh").bank("RolandTR909").euclidRot(4, 16, 2), // Open: syncopation
+  sound("rim").bank("RolandTR909").euclidRot(5, 16, 1) // Rim: rhythmic interest
+).cpm(34.5)`} punchcard punchcardLabels={false} />
+
+Techno often uses (16,16) closed hats for constant energy, with euclidean accents on percussion to prevent monotony.
+
+### Funk Breakbeat (95-110 BPM)
+
+Funk emphasizes syncopation and "ghost notes"—subtle hits between main beats that create groove depth.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclidRot(5, 16, 0),     // Kick: syncopated, NOT on every beat
+  sound("sd").euclidRot(4, 16, 4),     // Snare: dense, ghosted
+  sound("hh").euclid(13, 16),          // Hats: very dense
+  sound("rim").euclidRot(7, 16, 2)     // Rim: ghost note texture
 ).cpm(26.25)`} punchcard punchcardLabels={false} />
 
-### 80s Pop (118 BPM) — LinnDrum
+The dense patterns (13,16) and (7,16) create the busy, syncopated feel that makes funk "funky." The kick's (5,16) pattern avoids straight quarter notes.
 
-The LinnDrum defined the sound of 80s pop. Clean, punchy, and precise:
+### Trap (130-150 BPM half-time)
+
+Trap uses sparse kicks with dense, rolling hi-hats. The tempo is fast, but the groove feels half-time due to snare placement.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclidRot(2, 16, 0), // Kick: minimal, strategic
+  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),  // Snare: half-time backbeat
+  sound("hh").bank("RolandTR808").euclid(14, 16),      // Hats: dense, rolling
+  sound("oh").bank("RolandTR808").euclidRot(3, 16, 4)  // Open: accents
+).cpm(17.5)`} punchcard punchcardLabels={false} />
+
+The sparse kick (2,16) combined with dense hats (14,16) and half-time snare creates trap's characteristic sparse-yet-busy feel.
+
+### Hip Hop (85-95 BPM)
+
+Hip hop drums provide a pocket for the rapper, emphasizing groove and space over density.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").bank("RolandTR808").euclidRot(3, 16, 0), // Kick: boom-bap foundation
+  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),  // Snare: backbeat (the "bap")
+  sound("hh").bank("RolandTR808").euclid(6, 8),        // Hats: sparse, laid-back
+  sound("oh").bank("RolandTR808").euclidRot(2, 16, 6), // Open: syncopation
+  sound("cp").bank("RolandTR808").euclidRot(2, 16, 4)  // Clap: doubles snare
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+The (3,16) kick and (2,8) snare create the "boom-bap" pocket. Hi-hats stay sparse (6,8) to leave space for vocals.
+
+## Drum Machine Classics (Concise Examples)
+
+These examples showcase specific drum machines without extensive analysis. Experiment with the parameters to explore each machine's character.
+
+### 80s Pop (118 BPM) — LinnDrum
 
 <MiniRepl client:idle tune={`stack(
   sound("bd").bank("LinnDrum").euclid(4, 8),
@@ -983,33 +1036,9 @@ The LinnDrum defined the sound of 80s pop. Clean, punchy, and precise:
   sound("cp").bank("LinnDrum").euclidRot(2, 16, 8)
 ).cpm(29.5)`} punchcard punchcardLabels={false} />
 
-### Classic House (124 BPM) — TR-909
-
-The Roland TR-909 is the sound of house music. Four-on-the-floor with open hats:
-
-<MiniRepl client:idle tune={`stack(
-  sound("bd").bank("RolandTR909").euclid(4, 4),
-  sound("sd").bank("RolandTR909").euclidRot(2, 8, 4),
-  sound("hh").bank("RolandTR909").euclid(8, 8),
-  sound("oh").bank("RolandTR909").euclidRot(2, 8, 2),
-  sound("cp").bank("RolandTR909").euclidRot(1, 4, 2)
-).cpm(31)`} punchcard punchcardLabels={false} />
-
-### Hip Hop (90 BPM) — TR-808
-
-The TR-808's deep kick and snappy snare define hip hop:
-
-<MiniRepl client:idle tune={`stack(
-  sound("bd").bank("RolandTR808").euclidRot(3, 16, 0),
-  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),
-  sound("hh").bank("RolandTR808").euclid(6, 8),
-  sound("oh").bank("RolandTR808").euclidRot(2, 16, 6),
-  sound("cp").bank("RolandTR808").euclidRot(2, 16, 4)
-).cpm(22.5)`} punchcard punchcardLabels={false} />
+Clean, punchy drums that defined 80s pop.
 
 ### Electro (125 BPM) — TR-808
-
-Electro uses the 808 with more mechanical, robotic patterns:
 
 <MiniRepl client:idle tune={`stack(
   sound("bd").bank("RolandTR808").euclid(4, 16),
@@ -1019,21 +1048,9 @@ Electro uses the 808 with more mechanical, robotic patterns:
   sound("cb").bank("RolandTR808").euclidRot(3, 16, 2)
 ).cpm(31.25)`} punchcard punchcardLabels={false} />
 
-### Techno (138 BPM) — TR-909
-
-Hard, driving techno with relentless energy:
-
-<MiniRepl client:idle tune={`stack(
-  sound("bd").bank("RolandTR909").euclid(4, 4),
-  sound("sd").bank("RolandTR909").euclidRot(2, 16, 8),
-  sound("hh").bank("RolandTR909").euclid(16, 16),
-  sound("oh").bank("RolandTR909").euclidRot(4, 16, 2),
-  sound("rim").bank("RolandTR909").euclidRot(5, 16, 1)
-).cpm(34.5)`} punchcard punchcardLabels={false} />
+Mechanical, robotic 808 patterns for electro and Miami bass.
 
 ### New Wave (120 BPM) — TR-707
-
-The TR-707 brought digital crispness to 80s new wave:
 
 <MiniRepl client:idle tune={`stack(
   sound("bd").bank("RolandTR707").euclid(4, 8),
@@ -1043,9 +1060,9 @@ The TR-707 brought digital crispness to 80s new wave:
   sound("cb").bank("RolandTR707").euclidRot(2, 16, 6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
-### Lo-Fi (72 BPM) — TR-606
+Digital crispness for 80s new wave and synth-pop.
 
-The TR-606's gritty sound is perfect for lo-fi beats:
+### Lo-Fi (72 BPM) — TR-606
 
 <MiniRepl client:idle tune={`stack(
   sound("bd").bank("RolandTR606").euclidRot(3, 8, 0),
@@ -1054,9 +1071,9 @@ The TR-606's gritty sound is perfect for lo-fi beats:
   sound("oh").bank("RolandTR606").euclidRot(2, 8, 3)
 ).cpm(18)`} punchcard punchcardLabels={false} />
 
-### Modern Pop (100 BPM) — Mixed
+Gritty, lo-fi character perfect for bedroom beats.
 
-Modern pop often layers different drum machines:
+### Modern Pop (100 BPM) — Mixed Machines
 
 <MiniRepl client:idle tune={`stack(
   sound("bd").bank("RolandTR808").euclid(3, 8),
@@ -1066,23 +1083,293 @@ Modern pop often layers different drum machines:
   sound("rim").bank("RolandTR707").euclidRot(3, 16, 2)
 ).cpm(25)`} punchcard punchcardLabels={false} />
 
-### Trap (140 BPM half-time) — TR-808
+Modern production often layers sounds from multiple drum machines for hybrid character.
 
-Trap uses the 808 with rolling hi-hats and sparse kicks:
+---
+
+# Creative Production Techniques
+
+Beyond basic layering, euclidean rhythms enable advanced production techniques that create evolving, hypnotic grooves.
+
+## Phasing and Evolution (Steve Reich Approach)
+
+Use identical patterns with slight rotation differences to create gradual phase shifting:
 
 <MiniRepl client:idle tune={`stack(
-  sound("bd").bank("RolandTR808").euclidRot(2, 16, 0),
-  sound("sd").bank("RolandTR808").euclidRot(2, 8, 4),
-  sound("hh").bank("RolandTR808").euclid(14, 16),
-  sound("oh").bank("RolandTR808").euclidRot(3, 16, 4)
-).cpm(17.5)`} punchcard punchcardLabels={false} />
+  sound("cp").euclidRot(5, 16, 0),
+  sound("cp").euclidRot(5, 16, 1).gain(0.7)
+)`} punchcard punchcardLabels={false} />
 
-## What You Learned
+As the patterns cycle, they drift in and out of phase, creating constantly evolving rhythmic relationships. This is the principle behind Steve Reich's "Clapping Music."
 
-- `euclid(beats, steps)` distributes beats evenly
-- `euclidRot(beats, steps, rotation)` adds rotation
-- `.cpm(bpm/4)` sets the tempo (cycles per minute)
-- `.bank("DrumMachine")` selects classic drum machine sounds
-- Classic rhythms (tresillo, clave, bell pattern) are euclidean
-- Layering creates polyrhythms
-- Different genres emerge from specific BPM and pattern combinations
+## Rotation Builds (Spinning Tension)
+
+Gradually rotate a pattern over time to build tension:
+
+<MiniRepl client:idle tune={`sound("bd").euclidRot(3, 8, "0 1 2 3".slow(4))`} punchcard punchcardLabels={false} />
+
+The rotation parameter itself becomes patterned, causing the euclidean pattern to "spin" through different phase relationships.
+
+## Density Modulation (Rising Intensity)
+
+Increase the number of hits over time for crescendo effects:
+
+<MiniRepl client:idle tune={`sound("hh").euclid("<3 5 7 11>", 16)`} punchcard punchcardLabels={false} />
+
+The hi-hats get progressively denser, building energy. Reverse the sequence (`<11 7 5 3>`) for decrescendo.
+
+## Ghost Patterns (Subliminal Groove)
+
+Layer a very quiet euclidean pattern for subliminal rhythmic complexity:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 16),
+  sound("sd").euclidRot(2, 8, 4),
+  sound("hh").euclidRot(7, 12, 2).gain(0.2)  // Ghost layer
+)`} punchcard punchcardLabels={false} />
+
+The quiet (7,12) hi-hat adds polymeter complexity you feel more than hear—it enriches the groove without cluttering.
+
+## Cross-Rhythm Accents
+
+Use rotation to create accents that contradict the prevailing pulse:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 16),               // Steady pulse
+  sound("cp").euclidRot(3, 16, 1).gain(1.2) // Accent pattern (shifted)
+)`} punchcard punchcardLabels={false} />
+
+The (3,16) clap pattern, rotated by 1, creates accents that syncopate against the steady kick, adding rhythmic tension.
+
+---
+
+# Common Mistakes & Solutions
+
+Even with mathematical perfection, certain euclidean combinations sound bad. Here's how to avoid common pitfalls.
+
+## Mistake 1: Same Cycle Length for All Parts
+
+**Problem:** Using (4,8), (2,8), (6,8) for kick, snare, hats.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 8),
+  sound("sd").euclid(2, 8),
+  sound("hh").euclid(6, 8)
+)`} punchcard punchcardLabels={false} />
+
+Everything loops at 8 steps—no long-form evolution. This gets predictable and boring.
+
+**Solution:** Mix cycle lengths—use (4,16), (2,8), (7,12) to create polymetric interest that evolves over multiple bars.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(4, 16),
+  sound("sd").euclidRot(2, 8, 4),
+  sound("hh").euclid(7, 12)
+)`} punchcard punchcardLabels={false} />
+
+Now the combined pattern takes lcm(16,8,12) = 48 steps to repeat fully.
+
+## Mistake 2: Too Many Hits (Rhythmic Noise)
+
+**Problem:** Using (7,8), (6,8), (7,8) creates rhythmic "mud"—too dense, no breathing room.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(7, 8),
+  sound("sd").euclid(6, 8),
+  sound("hh").euclid(7, 8)
+)`} punchcard punchcardLabels={false} />
+
+Can't hear individual parts—just noise.
+
+**Solution:** Balance density—sparse kick (3,8), moderate snare (2,8), dense hats (7,8).
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(3, 8),
+  sound("sd").euclidRot(2, 8, 4),
+  sound("hh").euclid(7, 8)
+)`} punchcard punchcardLabels={false} />
+
+Now each layer occupies distinct rhythmic space.
+
+## Mistake 3: Ignoring Rotation (Predictable Downbeats)
+
+**Problem:** All patterns start on step 0—everything hits the downbeat together.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(3, 8),
+  sound("sd").euclid(2, 8),
+  sound("hh").euclid(5, 8)
+)`} punchcard punchcardLabels={false} />
+
+Too "on the beat"—lacks funk and syncopation.
+
+**Solution:** Rotate at least one pattern to create syncopation.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(3, 8),
+  sound("sd").euclidRot(2, 8, 4),   // Rotated for backbeat
+  sound("hh").euclidRot(5, 8, 1)    // Rotated for groove
+)`} punchcard punchcardLabels={false} />
+
+Now the snare creates backbeat and hats add off-beat energy.
+
+## Mistake 4: Overcrowded Arrangements
+
+**Problem:** Layering 6+ euclidean parts simultaneously.
+
+**Solution:** Use euclidean patterns to mute/unmute parts. Not every element needs to play all the time.
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd").euclid(3, 8),
+  sound("sd").euclidRot(2, 8, 4).struct("t t f t"),  // Drops out occasionally
+  sound("hh").euclid(7, 8),
+  sound("rim").euclidRot(5, 16, 2).struct("f t t t") // Enters on bar 2
+)`} punchcard punchcardLabels={false} />
+
+Use `.struct()` to create arrangement patterns—parts enter and exit, creating dynamic interest.
+
+---
+
+# Quick Reference
+
+## Euclidean Function Syntax
+
+| Function | Parameters | Example | Description |
+|----------|------------|---------|-------------|
+| `euclid()` | pulses, steps | `.euclid(3, 8)` | Distributes pulses evenly across steps |
+| `euclidRot()` | pulses, steps, rotation | `.euclidRot(5, 8, 2)` | Same as euclid with rotation offset |
+| `euclidLegato()` | pulses, steps | `.euclidLegato(3, 8)` | Holds each pulse until the next (no gaps) |
+| Mini-notation | `(pulses, steps, offset)` | `sound("bd(3,8)")` | Compact notation for euclid patterns |
+
+## Classic Euclidean Patterns Library
+
+| Name | Pattern | Origin | Character |
+|------|---------|--------|-----------|
+| Tresillo | (3,8) | Cuba/West Africa | Latin foundation, 3-3-2 subdivision |
+| Son Clave | (5,8) | Cuba | Sacred Latin pattern, balanced |
+| Rumba Clave | (5,8) rot 1 | Cuba | Funkier clave variant |
+| West African Bell | (7,12) | West Africa | Timeline pattern, maximally asymmetric |
+| Cinquillo | (5,8) | Cuba | Son clave variant |
+| Bossa Nova | (3,8) kick + (5,16) rim | Brazil | Gentle sway, jazz harmony |
+| Aksak | (4,9) | Turkey/Balkans | 2-2-2-3 dance rhythm |
+| Venda Clapping | (5,12) | South Africa | Children's song pattern |
+
+## Layering Strategies Cheatsheet
+
+**Sparse + Dense:**
+- Kick: (3,8) or (4,16)
+- Hats: (7,8) or (13,16)
+
+**Half + Half:**
+- Kick: (4,8)
+- Snare: (2,8) + rotation 4
+
+**Prime Number Magic (maximum evolution):**
+- Bell: (7,12)
+- Kick: (4,16)
+- Combined cycle: lcm(12,16) = 48 steps
+
+**GCD Rule:**
+If GCD(pulses1, pulses2) = 1, patterns won't sync until lcm(steps1, steps2). Use coprime numbers for maximum variation.
+
+## Common Density Ratios
+
+| Ratio | Feel | Examples | Use |
+|-------|------|----------|-----|
+| 0.25 | Sparse, breathing | (2,8), (3,12), (4,16) | Kick patterns, minimal grooves |
+| 0.375 | Balanced, classic | (3,8), (6,16), (5,16) | Tresillo, clave, foundational |
+| 0.5 | Half-time, syncopated | (4,8), (8,16) | Driving grooves, house kicks |
+| 0.583 | Maximally asymmetric | (7,12) | Bell patterns, timelines |
+| 0.75 | Dense, intense | (6,8), (12,16) | Hi-hats, constant motion |
+| 0.875 | Very dense, almost full | (7,8), (14,16) | Driving energy, buildups |
+
+---
+
+# What You Learned
+
+## Core Concepts
+
+- **Euclidean rhythms** distribute beats with **maximal evenness**—the most balanced spacing possible
+- The **Bjorklund algorithm** rediscovers patterns that evolved naturally in music cultures worldwide
+- **Rotation** changes phase relationship to the downbeat, creating different grooves from identical spacing
+- **Interlocking** patterns fill rhythmic space without clashing—the African drumming principle
+
+## Mathematical Foundations
+
+- **Density ratio** (pulses/steps) determines rhythmic character
+- **GCD relationships** predict when patterns sync—coprime numbers create maximum variation
+- **Polymeter** occurs when patterns have same pulse but different cycle lengths
+- **LCM** (least common multiple) determines when combined patterns fully repeat
+
+## Musical Applications
+
+- **Classic patterns** like tresillo (3,8), clave (5,8), and bell (7,12) are euclidean
+- **Cultural context** explains why these patterns appear globally—human ear prefers balanced rhythms
+- **Pattern independence** allows pitch and rhythm to cycle at different rates
+- **Genre identity** emerges from specific euclidean parameter choices and drum machine timbres
+
+## Production Techniques
+
+- **Complementary densities** create interlocking grooves (sparse kick + dense hats)
+- **Rotation prevents clashes** when layering similar patterns
+- **Phasing** creates evolving textures (Steve Reich approach)
+- **Dynamic parameters** allow euclidean values to change over time
+
+## Common Pitfalls to Avoid
+
+- Same cycle length for all parts → boring/predictable
+- Too many hits → rhythmic noise/mud
+- Ignoring rotation → square/on-the-beat feel
+- Overcrowding → use arrangement patterns (`.struct()`) to create space
+
+---
+
+# Where to Go Next
+
+## Explore More Strudel Features
+
+- **[Mini-Notation](/learn/reference/mini-notation/)** — Learn compact pattern syntax including euclidean notation
+- **[Tonal Harmony](/learn/theory/harmony/)** — Apply euclidean rhythms to chord progressions
+- **[Auditory Space](/learn/theory/auditory-space/)** — Pan euclidean patterns across the stereo field
+- **[Effects](/learn/reference/effects/)** — Process euclidean rhythms with reverb, delay, distortion
+
+## Dive Deeper into Theory
+
+- **[Godfried Toussaint's Paper](http://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf)** — "The Euclidean Algorithm Generates Traditional Musical Rhythms" (academic source)
+- **[Eric Bjorklund's Paper](https://ics-web.sns.ornl.gov/timing/Rep-Rate%20Tech%20Note.pdf)** — Original neutron pulse distribution paper that describes the algorithm
+- **Book: "The Geometry of Musical Rhythm" by Godfried Toussaint** — Comprehensive exploration of mathematical rhythm theory
+
+## Listen and Learn
+
+Study these artists who masterfully use the rhythms covered in this guide:
+
+**African/Afrobeat:**
+- Fela Kuti - "Zombie," "Water No Get Enemy"
+- Tony Allen - "Secret Agent," "Asiko"
+- King Sunny Adé - Master of Yoruba juju music
+
+**Latin:**
+- Tito Puente - Cuban timbale master
+- Buena Vista Social Club - Traditional son cubano
+- João Gilberto - Bossa nova pioneer
+
+**Electronic:**
+- Aphex Twin - Complex euclidean-style programming
+- Autechre - Algorithmic rhythms and polymeters
+- Squarepusher - Drum machine wizardry
+
+**Minimalism:**
+- Steve Reich - "Clapping Music," "Drumming" (phasing rhythms)
+- Terry Riley - "In C" (repeating patterns)
+
+## Keep Creating
+
+The best way to master euclidean rhythms is to **experiment constantly**:
+
+1. Pick a genre you love and recreate its euclidean feel
+2. Layer 3-4 patterns and adjust rotation until they groove
+3. Try "wrong" combinations—sometimes mistakes sound amazing
+4. Combine euclidean drums with melodic patterns for full compositions
+5. Share your creations with the Strudel community
+
+Remember: These patterns evolved over centuries because they **feel right**. Trust your ears more than the math. If it grooves, it works.
