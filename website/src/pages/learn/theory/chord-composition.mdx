@@ -19,41 +19,41 @@ The hardest part of composing is staring at a blank screen. Let's break through 
 
 **Start with a single chord:**
 
-<MiniRepl client:idle tune={`chord("C").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("C").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 That's your foundation. One chord, repeating. Now let's make it interesting.
 
 **Add a second chord for contrast:**
 
-<MiniRepl client:idle tune={`chord("<C F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 Listen to the movement. C → F creates forward motion. The F wants to go somewhere—it has energy.
 
 **Try different second chords:**
 
-<MiniRepl client:idle tune={`chord("<C G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 C → G feels stronger, more decisive. Each chord choice creates a different feeling.
 
-<MiniRepl client:idle tune={`chord("<C Am>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C Am>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 C → Am is gentle, contemplative. Same starting chord, completely different mood.
 
 **Now three chords:**
 
-<MiniRepl client:idle tune={`chord("<C F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 C → F → G creates a journey: start, move away, tension. But it feels unfinished.
 
 **Complete the circle—add a fourth chord:**
 
-<MiniRepl client:idle tune={`chord("<C F G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C F G C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 Coming back to C creates resolution. You've built a complete 4-chord progression from nothing.
 
 **Try it:** Change one chord in the sequence. Make the third chord `Am` instead of `G`. How does it change the feel?
 
-<MiniRepl client:idle tune={`chord("<C F Am G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C F Am G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 ---
 
@@ -63,7 +63,7 @@ Three chords are enough to write thousands of songs. Let's explore the classic I
 
 **I-IV-V in C = C - F - G**
 
-<MiniRepl client:idle tune={`chord("<C F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 These three chords work together because they represent three functions:
 - **I (C)** = home, stable
@@ -83,11 +83,11 @@ The circle of fifths shows all 12 keys arranged by perfect 5ths. Moving clockwis
 
 **Different orderings create different feels:**
 
-<MiniRepl client:idle tune={`chord("<C G F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C G F>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 C → G → F has a different arc. The tension (G) comes earlier.
 
-<MiniRepl client:idle tune={`chord("<F C G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<F C G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 Starting on F (away from home) creates anticipation from the first chord.
 
@@ -101,26 +101,26 @@ So far, every chord lasts one beat. Let's add rhythmic variety with `.struct()`:
 
 **Sparse rhythm:**
 
-<MiniRepl client:idle tune={`chord("<C F G C>").struct("x ~ x ~").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C F G C>").struct("x ~ x ~").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 The `~` means rest. Now chords only play on beats 1 and 3.
 
 **Syncopated rhythm:**
 
-<MiniRepl client:idle tune={`chord("<C F G C>").struct("x ~ [x x] ~").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C F G C>").struct("x ~ [x x] ~").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 The `[x x]` plays two chords quickly on beat 3—creating a push.
 
 **Sustained chords:**
 
-<MiniRepl client:idle tune={`chord("<C F G C>").struct("x@3 x").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C F G C>").struct("x@3 x").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 The `@3` makes each chord last 3 beats, with one quick change.
 
 
 **Try it:** Create a reggae feel by putting chords on the offbeats: `"~ x ~ x"`. How does it change the energy?
 
-<MiniRepl client:idle tune={`chord("<C F G C>").struct("~ x ~ x").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`chord("<C F G C>").struct("~ x ~ x").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 ---
 
@@ -1223,9 +1223,9 @@ Grabs 4 consecutive notes from the pool.
 
 **`.pick()` after `.segment()`:**
 
-<MiniRepl client:idle tune={`"[c d e f g a b]".segment(4).pick("0 1 2").note().s('piano')`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`"[c d e f g a b]".segment(4).slow(2).note().s('piano')`} punchcard punchcardLabels={false} />
 
-Picks specific indices from the segmented chunk.
+Grabs 4-note segments, playing them over 2 cycles for slower exploration.
 
 **`.slice()` - divide and select:**
 
@@ -1247,15 +1247,15 @@ Generates notes, then transposes them by different amounts.
 
 **`.scale()` - constrain to scale:**
 
-<MiniRepl client:idle tune={`irand(8).scale('D dorian').note().s('piano')`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`irand(8).scale('D dorian').slow(2).note().s('piano')`} punchcard punchcardLabels={false} />
 
-Random numbers → scale degrees in D Dorian.
+Random numbers → scale degrees in D Dorian, played over 2 cycles.
 
 **`.add()` - add interval:**
 
-<MiniRepl client:idle tune={`"c e g".choose().add("<0 7 12>").note().s('piano')`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`"<c e g>".add("<0 7 12>").note().s('piano')`} punchcard punchcardLabels={false} />
 
-Pick a note, add octave/fifth/unison.
+Pick a note from the sequence, add octave/fifth/unison.
 
 ---
 
