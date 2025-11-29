@@ -127,8 +127,11 @@ export const { transpose, trans } = register(['transpose', 'trans'], function tr
       } else {
         semitones = 0;
       }
-      const value = hap.value.note ? { ...hap.value, note: note + semitones } : note + semitones;
-      return hap.withValue(() => value);
+      const targetNote = note + semitones;
+      if (typeof hap.value === 'object') {
+        return hap.withValue(() => ({ ...hap.value, note: targetNote }));
+      }
+      return hap.withValue(() => targetNote);
     }
     if (!isNote(note)) {
       if (note !== '' && note !== undefined && note !== null) {
@@ -144,8 +147,10 @@ export const { transpose, trans } = register(['transpose', 'trans'], function tr
       ? Interval.fromSemitones(intervalOrSemitones)
       : String(intervalOrSemitones);
     const targetNote = Note.transpose(normalizedNote, intervalStr);
-    const value = hap.value.note ? { ...hap.value, note: targetNote } : targetNote;
-    return hap.withValue(() => value);
+    if (typeof hap.value === 'object') {
+      return hap.withValue(() => ({ ...hap.value, note: targetNote }));
+    }
+    return hap.withValue(() => targetNote);
   });
 });
 
