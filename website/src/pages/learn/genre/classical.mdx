@@ -1,0 +1,1274 @@
+---
+title: Classical Music
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+Classical music is built on a foundation of **development through layering**—taking simple musical ideas and transforming them through canon, variation, and fugue. This guide teaches you how to use Strudel's layering capabilities to explore the compositional techniques that shaped centuries of Western music.
+
+While Strudel doesn't have orchestral samples, we can use synthesizers creatively to demonstrate classical compositional techniques. The focus here is on *how* classical composers developed musical ideas through layering, not on authentic period sound.
+
+---
+
+## Part 1: Creating a Strong Theme
+
+Classical composition starts with a theme—a simple, memorable musical idea that can be developed and transformed. Before we can explore canon, variation, or fugue, we need a good theme to work with.
+
+### What Makes a Good Theme?
+
+A good theme for classical development has these characteristics:
+
+**1. Memorable** — You should be able to remember it after hearing it once
+
+**2. Simple** — Usually 4-8 bars with a clear melodic contour
+
+**3. Distinctive rhythm** — A rhythm pattern that stands out
+
+**4. Limited range** — Fits within an octave
+
+**5. Developable** — Works well when transposed, inverted, or varied
+
+Mozart's themes were elegantly simple—a few notes that stick in your memory. Bach's themes were efficient—every note contributing to both melody and harmony.
+
+**Here's a simple 4-bar theme in C major:**
+
+<MiniRepl client:visible tune={`note("c4 d4 e4 f4 e4 d4 c4").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+
+This theme is simple, memorable, and has a clear shape (up and back down). Let's see if it has what it takes for classical development.
+
+---
+
+### Testing Your Theme
+
+A good theme should work in different contexts. Let's test this theme:
+
+**Does it loop well?**
+
+<MiniRepl client:visible tune={`note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+
+Yes—the theme ends on C and can loop seamlessly.
+
+**Does it transpose well?**
+
+<MiniRepl client:visible tune={`note("c4 d4 e4 f4 e4 d4 c4 ~").transpose("<0 5 7 0>").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+
+It works in different keys! This means we can use it for modulation and sequences later.
+
+**Can it be inverted (flipped)?**
+
+<MiniRepl client:visible tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  note("c4 bb3 a3 g3 a3 bb3 c4 ~").s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The original goes up then down. The inversion goes down then up. Both work harmonically—this theme is developable!
+
+---
+
+### Adding Harmonic Support
+
+Classical music combines melody with harmony. Let's add chords underneath our theme using `chord().voicing()`:
+
+**Theme with simple harmonic support:**
+
+<MiniRepl client:visible tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The chords (C → F → G → C) provide harmonic movement that supports the melody.
+
+**Adding a bass line:**
+
+<MiniRepl client:visible tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6),
+  chord("<C F G C>").rootNotes(2).note().s('sawtooth').lpf(600).gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Now we have a complete texture: melody, harmony, and bass. This is our foundation theme—let's develop it!
+
+**Try it:** Modify the theme by changing the notes. Keep it simple and within an octave. Test if your theme loops well and transposes well before moving on.
+
+---
+
+## Part 2: Immediate Development — Variation Techniques
+
+Theme and variation is one of the most fundamental classical techniques. You take one theme and transform it in multiple ways while preserving its identity. This section explores the different types of variations you can create.
+
+### What is Theme & Variation?
+
+Theme and variation form means presenting a theme, then creating a series of variations that transform it. You can vary:
+
+- **Rhythm** — Faster, slower, dotted, syncopated
+- **Melody** — Ornamentation, octave changes, arpeggiation
+- **Harmony** — Major to minor, reharmonization, chromatic chords
+- **Texture** — Solo, chordal, contrapuntal
+
+Mozart's variations on "Ah! vous dirai-je, Maman" (Twinkle Twinkle) explore these exact transformations. Beethoven's Diabelli Variations take a simple waltz theme through 33 transformations, from simple to wildly complex.
+
+**Our theme (for reference):**
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Now let's vary it!
+
+---
+
+### Rhythmic Variations
+
+Rhythmic variation changes the timing without changing the notes.
+
+**Variation 1: Augmentation (slower)**
+
+Playing the theme at half speed using `.slow(2)`:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").slow(2).s('piano'),
+  chord("<C F G C>").slow(2).voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The theme feels more majestic and spacious.
+
+**Variation 2: Diminution (faster)**
+
+Playing the theme at double speed using `.fast(2)`:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").fast(2).s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Now it feels more energetic and playful.
+
+**Variation 3: Dotted Rhythms**
+
+Using `.struct()` to create long-short patterns:
+
+<MiniRepl client:idle tune={`stack(
+  note("<c4 d4 e4 f4 e4 d4 c4 ~>").struct("x@3 x").s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The `@3` makes each note last 3 beats followed by one quick beat—creating a Baroque-style dotted rhythm. Baroque composers loved this rhythm (think of the French Overture style).
+
+**Variation 4: Syncopation**
+
+Shifting the theme to off-beats:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.125).s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Using `.late(0.125)` shifts the melody slightly, creating rhythmic tension.
+
+**Variation 5: Triplets**
+
+Grouping notes in threes using `.fast(3/2)`:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~ c4 d4 e4 ~").fast(3/2).s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Triplets add a flowing, lilting quality. Classical composers preferred even subdivision, while Romantic composers loved triplet figures.
+
+---
+
+### Melodic Variations
+
+Melodic variation transforms the notes while keeping the harmonic structure.
+
+**Variation 6: Ornamentation**
+
+Adding neighboring tones and grace notes:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 [d4 c4 d4] e4 [f4 e4 f4] e4 d4 c4 ~").s('piano').decay(0.2),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The brackets `[d4 c4 d4]` create quick ornamental figures around the main notes—similar to trills and turns in classical music.
+
+**Variation 7: Octave Displacement**
+
+Moving notes up or down by octaves:
+
+<MiniRepl client:idle tune={`stack(
+  note("c5 d4 e5 f4 e4 d5 c4 ~").s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The melody jumps between octaves, creating a more dramatic contour.
+
+**Variation 8: Arpeggiation**
+
+Breaking the melody into arpeggiated patterns using chords:
+
+<MiniRepl client:idle tune={`stack(
+  chord("<C Dm Em F Em Dm C>").voicing().arp("0 1 2 1").s('piano').octave(4),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Instead of single notes, we're now arpeggiating chords built on the theme notes.
+
+**Variation 9: Sequence**
+
+Repeating a melodic fragment at different pitch levels within the key:
+
+<MiniRepl client:idle tune={`stack(
+  cat(
+    note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+    note("d4 e4 f4 g4 f4 e4 d4 ~").s('piano')
+  ),
+  chord("<C F G C D G C G>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The theme repeats one step higher (C→D). Baroque composers, especially Vivaldi, used sequences extensively in concertos.
+
+**Variation 10: Inversion**
+
+Flipping the melodic intervals (up becomes down):
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 bb3 a3 g3 a3 bb3 c4 ~").s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Where the original went up, the inversion goes down—a mirror image.
+
+---
+
+### Harmonic Variations
+
+Harmonic variation changes the chords while keeping the melody mostly intact.
+
+**Variation 11: Major to Minor**
+
+Changing the mode from major to minor:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 eb4 f4 eb4 d4 c4 ~").s('piano'),
+  chord("<Cm Fm G Cm>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Notice the E becomes Eb (flat) to fit the C minor tonality. The theme takes on a darker, more melancholic character.
+
+**Variation 12: Reharmonization**
+
+Using different chords under the same melody:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  chord("<C Am Dm G>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Instead of C → F → G → C, we use C → Am → Dm → G. The melody is the same, but the harmonic color is different.
+
+**Variation 13: Chromatic Harmony**
+
+Adding chromatic (outside-the-key) chords:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  chord("<C E7 Am D7 G7 C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The E7, D7, and G7 are chromatic chords (secondary dominants) that add harmonic color. Romantic composers explored chromatic harmony extensively.
+
+**Variation 14: Pedal Point**
+
+Sustaining the bass note while harmony changes above:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6),
+  note("c2").s('sawtooth').lpf(400).sustain(2)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The low C sustains throughout while chords change above—creating harmonic tension and release.
+
+---
+
+### Textural Variations
+
+Textural variation changes how many voices are sounding and how they relate.
+
+**Variation 15: Solo Melody**
+
+Just the melody, no accompaniment:
+
+<MiniRepl client:idle tune={`note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+
+Sparse and intimate—letting the melody speak for itself.
+
+**Variation 16: Chordal/Homophonic**
+
+The theme as block chords:
+
+<MiniRepl client:idle tune={`chord("<C Dm Em F Em Dm C>").voicing().struct("x").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+
+All notes sound together in harmony—typical of Classical period homophonic texture.
+
+**Variation 17: Contrapuntal Preview**
+
+Adding an independent counter-melody:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  note("c3 f3 e3 d3 c3 g3 e3 ~").s('piano').gain(0.7),
+  chord("<C F G C>").voicing().s('piano').gain(0.5)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The second voice moves independently while harmonizing with the first—a preview of counterpoint. Baroque composers favored this contrapuntal texture.
+
+---
+
+### Complete Variation Set
+
+Let's put together a complete variation set with contrasting variations:
+
+**Theme + 5 Variations:**
+
+<MiniRepl client:idle tune={`slowcat(
+  // Theme (bars 1-2)
+  stack(
+    note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+    chord("<C F G C>").voicing().s('piano').gain(0.6)
+  ).fast(4),
+  // Variation 1: Fast (bars 3-4)
+  stack(
+    note("c4 d4 e4 f4 e4 d4 c4 ~").fast(2).s('piano'),
+    chord("<C F G C>").voicing().s('piano').gain(0.6)
+  ).fast(4),
+  // Variation 2: Minor mode (bars 5-6)
+  stack(
+    note("c4 d4 eb4 f4 eb4 d4 c4 ~").s('piano'),
+    chord("<Cm Fm G Cm>").voicing().s('piano').gain(0.6)
+  ).fast(4),
+  // Variation 3: Arpeggiated (bars 7-8)
+  stack(
+    chord("<C Dm Em F Em Dm C>").voicing().arp("0 1 2 1").s('piano').octave(4),
+    chord("<C F G C>").voicing().s('piano').gain(0.6)
+  ).fast(4),
+  // Variation 4: Contrapuntal (bars 9-10)
+  stack(
+    note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+    note("c3 f3 e3 d3 c3 g3 e3 ~").s('piano').gain(0.7),
+    chord("<C F G C>").voicing().s('piano').gain(0.5)
+  ).fast(4),
+  // Variation 5: Return to simple (bars 11-12)
+  stack(
+    note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+    chord("<C F G C>").voicing().s('piano').gain(0.6)
+  ).fast(4)
+).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
+
+This creates a dramatic arc: **simple → energetic → dark → elaborate → contrapuntal → simple**. This is how Bach, Mozart, and Brahms structured variation sets—building complexity then returning to clarity.
+
+**Try it:** Create your own variation. Take the theme and change just one aspect (rhythm, harmony, or texture). What transformation creates the most interesting contrast?
+
+---
+
+## Part 3: Canonic Imitation — Voices in Conversation
+
+Canon is the art of one melody imitating itself at a time delay. Unlike variation (where the theme changes), in canon the theme stays the same but enters at different times and pitches. This creates independent voices that are unified by the same musical material.
+
+### What is Canon?
+
+A canon is a compositional technique where one voice imitates another voice at a fixed time interval. The most famous example is "Row, Row, Row Your Boat"—everyone sings the same melody, but starting at different times.
+
+Pachelbel's Canon in D (1680) uses three violins following a ground bass at 2-bar intervals—each violin plays the same melody, just delayed. We can recreate this structure in Strudel using `stack()` and `.late()`.
+
+**Simple 2-voice canon at the unison:**
+
+<MiniRepl client:visible tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.5).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Voice 2 enters halfway through the cycle (`.late(0.5)`), creating a canonic texture. Both voices play the same melody at the same pitch, but offset in time.
+
+---
+
+### Canon Techniques
+
+Let's explore different types of canons, from simple two-voice to complex multi-voice structures.
+
+**Canon at Different Intervals**
+
+Canon at the octave—second voice transposed up:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").transpose(12).late(0.5).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Canon at the fifth—more harmonic interest:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").transpose(7).late(0.5).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+**Tempo Canon (Mensuration Canon)**
+
+Voices at different speeds:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").slow(2).transpose(12).s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Voice 2 plays at half speed, creating a slower moving counterpoint. Bach explored this in his Musical Offering canons.
+
+**Retrograde Canon (Crab Canon)**
+
+One voice plays forward, the other backward:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 g3").s('piano'),
+  note("c4 d4 e4 f4 e4 d4 c4 g3").rev().transpose(12).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+**Three-Voice Canon**
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.333).transpose(12).s('piano').gain(0.7),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.666).transpose(-12).s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Three voices enter at evenly spaced intervals (0, 1/3, 2/3 of a cycle). Voice 2 is an octave higher, Voice 3 is an octave lower—creating clear register separation.
+
+**Four-Voice Canon (SATB texture)**
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano').gain(0.8),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.25).transpose(7).s('piano').gain(0.7),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.5).transpose(-5).s('piano').gain(0.7),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.75).transpose(-12).s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Four voices entering at quarter-cycle intervals create a full harmonic texture similar to SATB (Soprano, Alto, Tenor, Bass) choral writing.
+
+**Infinite Canon (Round)**
+
+A round is a canon where the melody loops seamlessly with itself:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 e4 g4 c5 g4 e4 c4 ~").s('piano'),
+  note("c4 e4 g4 c5 g4 e4 c4 ~").late(0.5).transpose(12).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The melody ends on C and begins on C, allowing seamless looping. "Frère Jacques" uses this structure.
+
+**Stretto (Tight Overlapping)**
+
+Voices entering very close together create intensity:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.125).transpose(12).s('piano').gain(0.7),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.25).transpose(7).s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Voices enter every 1/8 of a cycle—very tight! Bach used stretto at the climax of fugues to create maximum density.
+
+---
+
+### Complete Canon Example
+
+Let's create a complete 3-voice stretto canon with harmonic support:
+
+<MiniRepl client:idle tune={`stack(
+  // Canon voices (stretto - tight entries)
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.125).transpose(12).s('piano').gain(0.7),
+  note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.25).transpose(7).s('piano').gain(0.6),
+  // Harmonic support
+  chord("<C F G C>").voicing().s('piano').gain(0.5),
+  chord("<C F G C>").rootNotes(2).note().s('sawtooth').lpf(600).gain(0.6),
+  // Light rhythmic pulse
+  sound("hh*8").gain(0.3)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+This combines:
+- Three canonic voices in stretto
+- Harmonic support (chords + bass)
+- Rhythmic foundation (hi-hat)
+
+Baroque masters like Bach used canon extensively in complex polyphonic works. Classical composers used it more sparingly as a special effect. The technique never went out of style—it's a fundamental tool of musical development.
+
+**Try it:** Create a canon with your own melody. Start with 2 voices, then try adding a third. Experiment with different `.late()` values to find what sounds best.
+
+---
+
+## Part 4: Harmonic Development — Reharmonization & Modulation
+
+One of the most powerful ways to develop a theme is to change its harmonic context. The same melody can evoke completely different feelings depending on the chords underneath. This section explores reharmonization, modulation, and sequences.
+
+### Reharmonization
+
+Reharmonization means using different chords under the same melody.
+
+**Original harmonization (I-IV-V-I):**
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  chord("<C F G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+This uses the most basic progression: C (I) → F (IV) → G (V) → C (I).
+
+**Reharmonization 1 (vi-ii-V-I):**
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  chord("<Am Dm G C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Same melody, but using Am (vi) → Dm (ii) → G (V) → C (I). This is a more "sophisticated" progression with smoother voice leading.
+
+**Reharmonization 2 (ii-V-I jazz style):**
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  chord("<Dm7 G7 C^7>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Using seventh chords (Dm7 → G7 → C^7) adds harmonic color—influenced by jazz harmony.
+
+**Reharmonization 3 (Chromatic):**
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  chord("<C E7 Am D7 G7 C>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Adding chromatic chords (E7, D7) creates harmonic tension and color. Romantic composers explored this extensively—reharmonizing simple themes with rich, chromatic harmony.
+
+---
+
+### Modulation
+
+Modulation means changing keys. Classical music uses modulation to create long-term harmonic structure.
+
+**Modulation to the Dominant (C → G)**
+
+Moving from C major to G major (the dominant key):
+
+<MiniRepl client:idle tune={`slowcat(
+  // Theme in C major (bars 1-2)
+  stack(
+    note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+    chord("<C F G C>").voicing().s('piano').gain(0.6)
+  ).fast(4),
+  // Theme in G major (bars 3-4)
+  stack(
+    note("c4 d4 e4 f4 e4 d4 c4 ~").transpose(7).s('piano'),
+    chord("<G C D G>").voicing().s('piano').gain(0.6)
+  ).fast(4)
+).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
+
+The theme transposes up 7 semitones (perfect fifth) to G major. Classical composers modulated to the dominant in sonata form expositions.
+
+**Modulation to the Relative Minor (C → Am)**
+
+<MiniRepl client:idle tune={`slowcat(
+  // Theme in C major
+  stack(
+    note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+    chord("<C F G C>").voicing().s('piano').gain(0.6)
+  ).fast(4),
+  // Theme in A minor (relative minor)
+  stack(
+    note("a3 b3 c4 d4 c4 b3 a3 ~").s('piano'),
+    chord("<Am Dm E Am>").voicing().s('piano').gain(0.6)
+  ).fast(4)
+).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
+
+A minor is the relative minor of C major (shares the same key signature). The theme takes on a darker character. Classical composers modulated to closely-related keys; Romantic composers explored distant keys.
+
+---
+
+### Sequences
+
+A sequence is a musical pattern repeated at different pitch levels—a fundamental technique for development and modulation.
+
+**Ascending Sequence**
+
+Repeating a phrase, moving up by step:
+
+<MiniRepl client:idle tune={`stack(
+  cat(
+    note("c4 d4 e4 f4"),
+    note("d4 e4 f4 g4"),
+    note("e4 f4 g4 a4")
+  ).s('piano'),
+  chord("<C F Dm G Em Am>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The same melodic shape (ascending stepwise) repeats at C, D, and E—climbing higher each time.
+
+**Descending Sequence**
+
+<MiniRepl client:idle tune={`stack(
+  cat(
+    note("c5 b4 a4 g4"),
+    note("bb4 a4 g4 f4"),
+    note("a4 g4 f4 e4")
+  ).s('piano'),
+  chord("<C F Bb Eb Am Dm>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The pattern descends, creating a sense of falling or winding down.
+
+**Sequential Modulation**
+
+Using sequences to move to a new key:
+
+<MiniRepl client:idle tune={`stack(
+  cat(
+    note("c4 d4 e4 f4 e4 d4 c4 ~"),
+    note("d4 e4 f4 g4 f4 e4 d4 ~"),
+    note("e4 f4 g4 a4 g4 f4 e4 ~")
+  ).s('piano'),
+  chord("<C F G C D G A D E A B E>").voicing().s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The theme sequences up by step (C → D → E), with harmony following the modulation. Vivaldi's concertos use sequences extensively for harmonic drama. Bach's fugue episodes often feature sequential development.
+
+**Try it:** Take the theme and create your own sequence. Try moving up or down by different intervals (thirds, fourths, fifths) and see how it changes the effect.
+
+---
+
+## Part 5: Fugal Development — Complex Imitation
+
+A fugue is the pinnacle of imitative counterpoint—multiple independent voices entering with a subject (main theme), developing it through episodes, and building to a climactic conclusion. This section breaks down fugue structure and shows how to build one in Strudel.
+
+### What is Fugue?
+
+A fugue is a compositional form built on imitation. It has a clear structure:
+
+1. **Exposition** — Voices enter one by one with the subject
+2. **Episodes** — Developmental sections using subject fragments
+3. **Middle Entries** — Subject returns in new keys
+4. **Stretto** — Overlapping subject entries (climax)
+5. **Coda** — Final resolution
+
+Bach's Well-Tempered Clavier contains 48 fugues demonstrating every aspect of fugal technique. The Art of Fugue explores every possible transformation of a single subject—a masterclass in development.
+
+**Fugue vs Canon:**
+- Canon: All voices play the complete melody
+- Fugue: Voices enter with the subject, then move to free counterpoint
+
+**Simple 2-voice fugue exposition:**
+
+<MiniRepl client:idle tune={`stack(
+  // Voice 1: Subject in C
+  note("c4 d4 e4 f4 g4 a4 g4 f4").s('piano'),
+  // Voice 2: Answer in G (enters later)
+  note("g3 a3 b3 c4 d4 e4 d4 c4").late(1).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Voice 1 presents the subject in C. Voice 2 enters with the "answer" (subject transposed to the dominant, G).
+
+---
+
+### The Subject
+
+The subject is the main theme of a fugue. A good fugue subject has:
+
+**1. Distinctive rhythm** — Easy to recognize when it returns
+**2. Clear tonal center** — Outlines the home key
+**3. Moderate length** — Usually 4-8 notes
+**4. Developmental potential** — Works well fragmented and sequenced
+
+**Example fugue subject in C major:**
+
+<MiniRepl client:visible tune={`note("c4 e4 d4 f4 e4 g4 f4 e4").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+
+This subject:
+- Outlines a C major triad (C-E-G)
+- Has a clear rhythmic pattern
+- Is 8 notes long (moderate)
+- Can be easily fragmented (C-E-D-F could be a motif)
+
+---
+
+### The Answer
+
+The answer is the subject transposed to the dominant (usually a perfect fifth higher, or 7 semitones).
+
+**Real Answer** — Exact transposition:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 e4 d4 f4 e4 g4 f4 e4").s('piano'),
+  note("c4 e4 d4 f4 e4 g4 f4 e4").transpose(7).late(1).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The answer is exactly 7 semitones higher (C → G). This is called a "real answer."
+
+**Tonal Answer** — Adjusted for tonal integrity:
+
+Sometimes a real answer doesn't fit the key perfectly, so composers adjust it slightly (tonal answer). For simplicity, we'll use real answers in our examples.
+
+**Two-Voice Exposition:**
+
+<MiniRepl client:idle tune={`stack(
+  // Voice 1: Subject
+  note("c4 e4 d4 f4 e4 g4 f4 e4").s('piano'),
+  // Voice 2: Answer (enters after subject completes)
+  note("c4 e4 d4 f4 e4 g4 f4 e4").transpose(7).late(1).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+This is a complete 2-voice fugue exposition: subject, then answer.
+
+---
+
+### Counter-Subject
+
+The counter-subject is a melody that plays against the subject/answer. It must:
+
+**1. Harmonize with the subject**
+**2. Have contrasting rhythm** (if subject is fast, counter-subject is slow)
+**3. Work in multiple voices** (it will recur throughout)
+
+**Adding a counter-subject:**
+
+<MiniRepl client:idle tune={`stack(
+  // Voice 1: Subject, then counter-subject
+  cat(
+    note("c4 e4 d4 f4 e4 g4 f4 e4"),
+    note("c3 c3 d3 d3 e3 e3 f3 f3")
+  ),
+  // Voice 2: Rest, then answer
+  cat(
+    note("~ ~ ~ ~ ~ ~ ~ ~"),
+    note("g3 b3 a3 c4 b3 d4 c4 b3")
+  )
+).s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+
+Voice 1 plays the subject, then the counter-subject. Voice 2 rests, then plays the answer while Voice 1 plays the counter-subject underneath.
+
+**Three-voice fugue exposition with counter-subject:**
+
+<MiniRepl client:idle tune={`stack(
+  // Voice 1: Subject → counter-subject → free counterpoint
+  cat(
+    note("c4 e4 d4 f4 e4 g4 f4 e4"),
+    note("c3 c3 d3 d3 e3 e3 f3 f3"),
+    note("e3 f3 g3 a3 g3 f3 e3 d3")
+  ),
+  // Voice 2: Rest → answer → counter-subject
+  cat(
+    note("~ ~ ~ ~ ~ ~ ~ ~"),
+    note("g3 b3 a3 c4 b3 d4 c4 b3"),
+    note("g2 g2 a2 a2 b2 b2 c3 c3")
+  ),
+  // Voice 3: Rest → rest → subject
+  cat(
+    note("~ ~ ~ ~ ~ ~ ~ ~"),
+    note("~ ~ ~ ~ ~ ~ ~ ~"),
+    note("c4 e4 d4 f4 e4 g4 f4 e4")
+  )
+).s('piano').gain(0.7).cpm(30)`} punchcard punchcardLabels={false} />
+
+This is a complete 3-voice exposition: Subject → Answer → Subject, with counter-subjects interwoven.
+
+---
+
+### Episodes
+
+Episodes are developmental sections between subject entries. They use fragments of the subject in sequences, inversions, or free development.
+
+**Episode using subject fragmentation:**
+
+<MiniRepl client:idle tune={`stack(
+  // Fragment: first 4 notes of subject, sequenced
+  cat(
+    note("c4 e4 d4 f4"),
+    note("d4 f4 e4 g4"),
+    note("e4 g4 f4 a4")
+  ).s('piano'),
+  // Second voice with same fragment, delayed
+  cat(
+    note("~ ~ c3 e3 d3 f3"),
+    note("d3 f3 e3 g3")
+  ).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The first 4 notes of the subject (C-E-D-F) repeat as a sequence, moving up by step. This is typical of fugue episodes—taking a recognizable fragment and developing it.
+
+**Episode with inversion:**
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 e4 d4 f4 e4 g4 f4 e4").s('piano'),
+  note("c4 a3 bb3 g3 a3 f3 g3 a3").late(1).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Voice 2 plays an inverted version of the subject (intervals flipped)—up becomes down.
+
+---
+
+### Stretto
+
+Stretto occurs when subject entries overlap before the previous entry finishes. It creates maximum density and is often used for the climax.
+
+**Stretto with 3 voices:**
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 e4 d4 f4 e4 g4 f4 e4").s('piano'),
+  note("c4 e4 d4 f4 e4 g4 f4 e4").late(0.25).transpose(12).s('piano').gain(0.7),
+  note("c4 e4 d4 f4 e4 g4 f4 e4").late(0.5).transpose(7).s('piano').gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Voices enter every quarter-cycle—very tight! This creates intensity and demonstrates mastery—the subject must be designed so it harmonizes with itself at multiple delays.
+
+---
+
+### Complete Fugue Example
+
+Let's build a complete mini-fugue with all the elements:
+
+<MiniRepl client:idle tune={`slowcat(
+  // Section 1: Exposition (voices enter)
+  stack(
+    note("c4 e4 d4 f4 e4 g4 f4 e4").s('piano'),
+    note("~ ~ ~ ~ ~ ~ ~ ~ g3 b3 a3 c4 b3 d4 c4 b3").s('piano').gain(0.7),
+    note("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c5 e5 d5 f5 e5 g5 f5 e5").s('piano').gain(0.6)
+  ),
+  // Section 2: Episode (sequences)
+  stack(
+    note("c4 e4 d4 f4 d4 f4 e4 g4 e4 g4 f4 a4").s('piano'),
+    note("c3 e3 d3 f3 d3 f3 e3 g3").s('piano').gain(0.7)
+  ),
+  // Section 3: Stretto (climax)
+  stack(
+    note("c4 e4 d4 f4 e4 g4 f4 e4").s('piano'),
+    note("c4 e4 d4 f4 e4 g4 f4 e4").late(0.25).transpose(12).s('piano').gain(0.7),
+    note("c4 e4 d4 f4 e4 g4 f4 e4").late(0.5).transpose(7).s('piano').gain(0.6)
+  ),
+  // Section 4: Coda (resolution)
+  stack(
+    chord("<C F G C>").voicing().s('piano'),
+    chord("<C F G C>").rootNotes(2).note().s('sawtooth').lpf(600).gain(0.7)
+  ).fast(4)
+).slow(2).cpm(30)`} punchcard punchcardLabels={false} />
+
+This complete fugue has:
+1. **Exposition** — 3 voices enter with subject/answer
+2. **Episode** — Sequential development
+3. **Stretto** — Tight overlapping entries (climax)
+4. **Coda** — Harmonic resolution
+
+---
+
+### Fugue Analysis Checklist
+
+When writing your own fugue, check these elements:
+
+**Subject Quality:**
+- [ ] Is it 4-8 notes long?
+- [ ] Does it outline the tonic key clearly?
+- [ ] Does it have a distinctive rhythm?
+- [ ] Can it be fragmented into recognizable motifs?
+- [ ] Does it transpose well to the dominant?
+
+**Counterpoint:**
+- [ ] Does the counter-subject harmonize with the subject?
+- [ ] Does it have contrasting rhythm?
+- [ ] Can it work in multiple voices?
+
+**Structure:**
+- [ ] Exposition: Do all voices enter clearly?
+- [ ] Episodes: Do they develop subject material?
+- [ ] Middle entries: Do they explore new keys?
+- [ ] Stretto: Do overlapping entries work harmonically?
+- [ ] Coda: Does it provide satisfying resolution?
+
+---
+
+### Simpler Alternatives
+
+If fugue seems too complex, try these simpler imitative forms:
+
+**Invention (2-voice imitative piece)**
+
+Simpler than fugue—just two voices in dialogue:
+
+<MiniRepl client:idle tune={`stack(
+  cat(
+    note("c4 e4 d4 f4 e4 g4 f4 e4"),
+    note("d4 f4 e4 g4 f4 a4 g4 f4")
+  ).s('piano'),
+  cat(
+    note("~ ~ ~ ~ g3 b3 a3 c4 b3 d4 c4 b3"),
+    note("a3 c4 b3 d4 c4 e4 d4 c4")
+  ).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Bach wrote 15 two-part Inventions as teaching pieces—perfect models for learning imitative counterpoint.
+
+**Fughetta (short fugue)**
+
+A mini-fugue with 2-3 voices and simpler structure:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 e4 d4 f4").s('piano'),
+  note("g3 b3 a3 c4").late(0.5).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Just an exposition—subject and answer—without episodes or stretto. A complete little piece!
+
+**Try it:** Write your own simple fugue subject (4-6 notes). Test if it works when transposed by 7 semitones. Try creating a 2-voice exposition with your subject.
+
+---
+
+### Pedal Point in Fugues
+
+A pedal point is a sustained bass note while harmony changes above—often used before the final entry or coda:
+
+**Dominant Pedal (sustaining G):**
+
+<MiniRepl client:idle tune={`stack(
+  // Upper voices with subject fragments
+  note("c4 e4 d4 f4").s('piano'),
+  note("g4 b4 a4 c5").late(0.25).s('piano').gain(0.7),
+  // Pedal point on G (dominant)
+  note("g2").s('sawtooth').lpf(400).sustain(2).gain(0.8)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+The low G sustains while voices move above, creating tension that resolves to C.
+
+**Tonic Pedal with Final Stretto:**
+
+<MiniRepl client:idle tune={`stack(
+  // Stretto entries
+  note("c4 e4 d4 f4 e4 g4 f4 e4").s('piano'),
+  note("c4 e4 d4 f4 e4 g4 f4 e4").late(0.25).transpose(12).s('piano').gain(0.7),
+  note("c4 e4 d4 f4 e4 g4 f4 e4").late(0.5).transpose(7).s('piano').gain(0.6),
+  // Tonic pedal point
+  note("c2").s('sawtooth').lpf(400).sustain(2).gain(0.8)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+A sustained C under the final stretto creates stability and grandeur—often used in fugue codas.
+
+---
+
+### Double Fugue
+
+A double fugue has two subjects that can work together:
+
+**Subject 1 (stepwise):**
+
+<MiniRepl client:idle tune={`note("c4 d4 e4 f4 g4 f4 e4 d4").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+
+**Subject 2 (rhythmic, contrasting):**
+
+<MiniRepl client:idle tune={`note("c4 ~ e4 ~ g4 ~ c5 ~").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+
+**Both subjects combined:**
+
+<MiniRepl client:idle tune={`stack(
+  // Subject 1
+  note("c4 d4 e4 f4 g4 f4 e4 d4").s('piano'),
+  // Subject 2 (works harmonically with Subject 1)
+  note("c3 ~ e3 ~ g3 ~ c4 ~").s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+In a double fugue, each subject gets its own exposition, then they combine. Bach's Fugue in E-flat (WTC Book I) is a famous triple fugue with three subjects!
+
+**Double fugue exposition pattern:**
+
+<MiniRepl client:idle tune={`slowcat(
+  // Exposition of Subject 1
+  stack(
+    note("c4 d4 e4 f4 g4 f4 e4 d4").s('piano'),
+    note("g3 a3 b3 c4 d4 c4 b3 a3").late(1).s('piano').gain(0.7)
+  ).fast(4),
+  // Exposition of Subject 2
+  stack(
+    note("c4 ~ e4 ~ g4 ~ c5 ~").s('piano'),
+    note("g3 ~ b3 ~ d4 ~ g4 ~").late(1).s('piano').gain(0.7)
+  ).fast(4),
+  // Both subjects combined
+  stack(
+    note("c4 d4 e4 f4 g4 f4 e4 d4").s('piano'),
+    note("c3 ~ e3 ~ g3 ~ c4 ~").s('piano').gain(0.7)
+  ).fast(4)
+).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
+
+---
+
+## Part 6: Complete Classical Piece — Integration
+
+Now let's combine everything we've learned—variation, canon, harmonic development, and fugue—into complete multi-movement works.
+
+### Combining Techniques
+
+Classical composers used multiple techniques within single pieces.
+
+**Canon with Variation**
+
+A canon where each voice plays a variation:
+
+<MiniRepl client:idle tune={`stack(
+  // Voice 1: Original theme
+  note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+  // Voice 2: Rhythmic variation (faster)
+  note("c4 d4 e4 f4 e4 d4 c4 ~").fast(2).late(0.5).transpose(12).s('piano').gain(0.7)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+Voice 1 plays the original, Voice 2 plays a faster variation in canon—combining two techniques!
+
+**Fugue with Variation Episodes**
+
+Using variation techniques in fugue episodes:
+
+<MiniRepl client:idle tune={`slowcat(
+  // Exposition
+  stack(
+    note("c4 e4 d4 f4 e4 g4 f4 e4").s('piano'),
+    note("g3 b3 a3 c4 b3 d4 c4 b3").late(1).s('piano').gain(0.7)
+  ).fast(4),
+  // Episode: Subject in augmentation (slower)
+  stack(
+    note("c4 e4 d4 f4 e4 g4 f4 e4").slow(2).s('piano'),
+    note("e3 f3 g3 a3 g3 f3 e3 d3").s('piano').gain(0.7)
+  ).fast(4)
+).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
+
+The episode uses the subject in augmentation (slower)—a variation technique within fugal structure.
+
+---
+
+### Form Planning
+
+Classical forms provide structure for longer pieces:
+
+**Theme & Variations Form**
+- Theme
+- Variation 1 (rhythmic)
+- Variation 2 (harmonic - minor mode)
+- Variation 3 (textural - contrapuntal)
+- Variation 4 (climax)
+- Variation 5 (return to simple)
+
+**ABA (Ternary) Form**
+- A section: Theme in C major
+- B section: Contrasting material (canon, fugue, or new theme)
+- A section: Theme returns
+
+**Rondo Form (ABACA)**
+- A: Main theme (refrain)
+- B: Contrasting episode
+- A: Refrain returns
+- C: New contrasting episode
+- A: Final refrain
+
+Baroque composers used suite forms (Allemande, Courante, Sarabande, Gigue). Classical composers preferred sonata form. Romantic composers favored character pieces and song forms.
+
+---
+
+### Complete Multi-Movement Work
+
+Let's create a complete 4-movement piece using our theme from Part 1:
+
+<MiniRepl client:idle tune={`slowcat(
+  // MOVEMENT 1: Theme (simple presentation)
+  stack(
+    note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+    chord("<C F G C>").voicing().s('piano').gain(0.6)
+  ).fast(4),
+  // MOVEMENT 2: Variation - Fast & Minor
+  stack(
+    note("c4 d4 eb4 f4 eb4 d4 c4 ~").fast(2).s('piano'),
+    chord("<Cm Fm G Cm>").voicing().s('piano').gain(0.6)
+  ).fast(4),
+  // MOVEMENT 3: Canon (3 voices)
+  stack(
+    note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+    note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.333).transpose(12).s('piano').gain(0.7),
+    note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.666).transpose(-12).s('piano').gain(0.6),
+    chord("<C F G C>").voicing().s('piano').gain(0.5)
+  ).fast(4),
+  // MOVEMENT 4: Fugal Finale
+  stack(
+    // Subject
+    note("c4 d4 e4 f4 e4 d4 c4 ~").s('piano'),
+    // Answer
+    note("c4 d4 e4 f4 e4 d4 c4 ~").transpose(7).late(0.5).s('piano').gain(0.7),
+    // Stretto
+    note("c4 d4 e4 f4 e4 d4 c4 ~").late(0.25).transpose(12).s('piano').gain(0.6)
+  ).fast(4)
+).slow(16).cpm(30)`} punchcard punchcardLabels={false} />
+
+This complete work demonstrates:
+- **Movement 1**: Simple thematic presentation
+- **Movement 2**: Variation (fast, minor mode)
+- **Movement 3**: Canon (3 voices)
+- **Movement 4**: Fugue (subject, answer, stretto)
+
+Total duration: ~2 minutes. This shows how one simple theme can be developed through all classical techniques!
+
+---
+
+### Practice Challenges
+
+Try these exercises to develop your skills:
+
+**Challenge 1: Simple 2-Voice Canon**
+
+Write a simple melody (4-8 notes) and create a canon at the octave with `.late(0.5)`.
+
+**Challenge 2: Three Variations**
+
+Take any simple melody and create:
+- Rhythmic variation (use `.fast()` or `.slow()`)
+- Harmonic variation (change the chords)
+- Melodic variation (add ornamentation or octave displacement)
+
+**Challenge 3: Two-Voice Invention**
+
+Write a short subject (4-6 notes) and create a 2-voice imitative piece with:
+- Voice 1: Subject
+- Voice 2: Answer (transposed by 7 semitones, entering with `.late()`)
+
+**Challenge 4: Canon Variation Set**
+
+Create a theme that works as both a variation and a canon:
+- Present theme simply
+- Variation 1: Theme in canon with itself
+- Variation 2: Theme in 3-voice canon
+
+**Challenge 5: Mini Theme & Variations**
+
+Create a complete variation set:
+- Theme (8-16 bars)
+- Variation 1 (rhythmic)
+- Variation 2 (harmonic)
+- Variation 3 (contrapuntal with `stack()`)
+- Variation 4 (return to simplicity)
+
+---
+
+## Part 7: Conclusion & Next Steps
+
+You've learned how classical composers developed musical ideas through layering—the same techniques that shaped centuries of Western music.
+
+### What You've Learned
+
+**Canon Techniques:**
+- Canon at the unison, octave, and fifth
+- Multi-voice canons (3-4 voices)
+- Stretto (tight overlapping)
+- Retrograde and tempo canons
+
+**Variation Techniques:**
+- Rhythmic variation (augmentation, diminution, dotted rhythms)
+- Melodic variation (ornamentation, octave displacement, arpeggiation, sequences)
+- Harmonic variation (major/minor, reharmonization, chromatic harmony)
+- Textural variation (solo, chordal, contrapuntal)
+
+**Fugal Techniques:**
+- Subject and answer structure
+- Counter-subject
+- Episodes (sequences, fragmentation)
+- Stretto (climactic overlapping)
+- Simpler forms (invention, fughetta)
+
+**Integration:**
+- Combining techniques (canon + variation, fugue + variation)
+- Classical forms (theme & variations, ABA, rondo)
+- Multi-movement works
+
+---
+
+### Classical Composers & Listening
+
+To deepen your understanding, listen to these masters:
+
+**Baroque Period (1600-1750):**
+- **J.S. Bach** — Fugues (Well-Tempered Clavier), Inventions, Goldberg Variations (canons)
+- **Vivaldi** — Concertos (sequences and development)
+- **Handel** — Variations, ground bass techniques
+
+**Classical Period (1750-1820):**
+- **Mozart** — Variations (K. 265 "Twinkle Twinkle"), clarity in development
+- **Haydn** — Symphonies (thematic development, humor)
+
+**Romantic Period (1820-1900):**
+- **Brahms** — Variations on a Theme by Haydn, Handel Variations
+- **Schumann** — Character pieces, thematic transformation
+
+**Recommended Listening:**
+1. Bach — Invention No. 1 in C major (simple 2-voice imitation)
+2. Bach — Fugue in C major (WTC Book I) (clear fugue structure)
+3. Mozart — Variations on "Ah! vous dirai-je, Maman" (theme & variations)
+4. Pachelbel — Canon in D (ground bass with canon)
+5. Beethoven — Diabelli Variations (variation form mastery)
+
+---
+
+### Where to Go Next
+
+**Learn More Strudel Techniques:**
+- [Harmony](/learn/theory/harmony) — Understanding chord theory, voicings, and progressions
+- [Chord Composition](/learn/theory/chord-composition) — Advanced harmonic techniques and composition workflow
+- [Tonal Functions](/learn/reference/tonal) — API reference for chords, scales, and harmony
+
+**Practice Recommendations:**
+
+1. **Start with Canon** (easiest)
+   - Write simple 2-voice canons
+   - Experiment with different `.late()` values
+   - Try canon at different intervals
+
+2. **Then Variation** (medium difficulty)
+   - Take a simple theme and create 3 variations
+   - Focus on one type of variation at a time (rhythm, then harmony, then melody)
+   - Build to a complete variation set
+
+3. **Finally Fugue** (most complex)
+   - Start with 2-voice inventions
+   - Write subjects that transpose well
+   - Build up to 3-voice expositions
+   - Add episodes once you're comfortable
+
+**Remember:**
+- All these techniques are still used today (not just historical!)
+- Start simple—classical masters spent years developing these skills
+- Listen to classical music with new ears—you can now hear the techniques in action
+- Experiment freely—Strudel lets you try ideas faster than any classical composer could
+
+---
+
+### Quick Reference
+
+| Technique | Strudel Function | Use Case |
+|-----------|-----------------|----------|
+| Canon delay | `.late(n)` | Voice imitation across time |
+| Transposition | `.transpose(n)` | Fugue answer, sequences, modulation |
+| Augmentation | `.slow(n)` | Slower variation, tempo canon |
+| Diminution | `.fast(n)` | Faster variation, tempo canon |
+| Independent voices | `stack()` | Canon, fugue, counterpoint |
+| Variations | `layer()` | Multiple versions of same material |
+| Reverse | `.rev()` | Retrograde canon |
+| Rhythmic patterns | `.struct()` | Dotted rhythms, syncopation |
+| Harmony | `chord().voicing()` | Harmonic support, reharmonization |
+| Bass lines | `.rootNotes(n).note()` | Ground bass, harmonic foundation |
+| Arpeggiation | `.arp()` | Melodic variation, texture |
+| Voice leading | `.anchor()`, `.mode()` | Smooth chord progressions |
+
+---
+
+**Congratulations!** You now have the tools to compose in classical style using Strudel. The techniques you've learned—canon, variation, fugue—are the foundation of Western musical development. Use them to create your own compositions, and explore how these timeless techniques can combine with modern electronic music production.
+
+Now go create something beautiful!

@@ -95,6 +95,7 @@ export const ACTIVITIES: SidebarSection[] = [
       { text: 'Electronic Dance Music', link: 'learn/genre/edm', icon: '🎧', description: 'House, techno, trance, and more' },
       { text: 'Metal', link: 'learn/genre/metal', icon: '🤘', description: 'Heavy riffs, blast beats, and power' },
       { text: 'Demoscene', link: 'learn/genre/demoscene', icon: '🖥️', description: 'Chiptune, tracker music, and keygen styles' },
+      { text: 'Classical Music', link: 'learn/genre/classical', icon: '🎼', description: 'Canon, fugue, and theme & variation techniques' },
     ],
   },
   {
