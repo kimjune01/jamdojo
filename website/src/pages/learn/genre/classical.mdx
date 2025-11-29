@@ -45,7 +45,7 @@ A good theme should work in different contexts. Let's test this theme:
 
 **Does it loop well?**
 
-<MiniRepl client:visible tune={`note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+<MiniRepl client:visible tune={`note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
 
 Yes—the theme ends on C# which leads beautifully back to the F#, allowing seamless looping.
 
@@ -58,8 +58,8 @@ It works in different keys! This means we can use it for modulation and sequence
 **Can it be inverted (flipped)?**
 
 <MiniRepl client:visible tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-  note("fs4 g4 a4 b4 cs5 d5 cs5 b4 ~").s('piano').gain(0.7)
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+  note("fs4 g4 a4 b4 cs5 d5 cs5 b4").s('piano').gain(0.7)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 The original descends then ascends. The inversion mirrors these intervals upward. Both work harmonically—this theme is highly developable!
@@ -73,7 +73,7 @@ Classical music combines melody with harmony. Let's add the famous Pachelbel cho
 **Theme with the iconic Pachelbel progression:**
 
 <MiniRepl client:visible tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -82,7 +82,7 @@ The chord progression (D → A → Bm → F#m → G → D → G → A) is one of
 **Adding a bass line:**
 
 <MiniRepl client:visible tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6),
   chord("<D A Bm F#m G D G A>").rootNotes(2).note().s('sawtooth').lpf(600).gain(0.7)
 ).cpm(30)`} punchcard punchcardLabels={false} />
@@ -111,7 +111,7 @@ Mozart's variations on "Ah! vous dirai-je, Maman" (Twinkle Twinkle) explore thes
 **Our theme (for reference):**
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -128,7 +128,7 @@ Rhythmic variation changes the timing without changing the notes.
 Playing the theme at half speed using `.slow(2)`:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").slow(2).s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").slow(2).s('piano'),
   chord("<D A Bm F#m G D G A>").slow(2).voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -139,7 +139,7 @@ The theme feels more majestic and spacious.
 Playing the theme at double speed using `.fast(2)`:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").fast(2).s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").fast(2).s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -161,7 +161,7 @@ The `@3` makes each note last 3 beats followed by one quick beat—creating a Ba
 Shifting the theme to off-beats:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.125).s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.125).s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -172,7 +172,7 @@ Using `.late(0.125)` shifts the melody slightly, creating rhythmic tension.
 Grouping notes in threes using `.fast(3/2)`:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~ c4 d4 e4 ~").fast(3/2).s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 c4 d4 e4").fast(3/2).s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -189,7 +189,7 @@ Melodic variation transforms the notes while keeping the harmonic structure.
 Adding neighboring tones and grace notes:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 [g4 fs4 g4] e4 [fs4 e4 fs4] d4 cs4 d4 ~").s('piano').decay(0.2),
+  note("fs4 [g4 fs4 g4] e4 [fs4 e4 fs4] d4 cs4 d4").s('piano').decay(0.2),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -200,7 +200,7 @@ The brackets `[g4 fs4 g4]` create quick ornamental figures around the main notes
 Moving notes up or down by octaves:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs5 e4 d5 cs4 b3 a5 fs4 e4 ~").s('piano'),
+  note("fs5 e4 d5 cs4 b3 a5 fs4 e4").s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -223,8 +223,8 @@ Repeating a melodic fragment at different pitch levels within the key:
 
 <MiniRepl client:idle tune={`stack(
   cat(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-    note("g4 fs4 e4 d4 cs4 b3 cs4 d4 ~").s('piano')
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+    note("g4 fs4 e4 d4 cs4 b3 cs4 d4").s('piano')
   ),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
@@ -236,7 +236,7 @@ The Pachelbel melody repeats one step higher (D→E). Baroque composers, especia
 Flipping the melodic intervals (up becomes down):
 
 <MiniRepl client:idle tune={`stack(
-  note("a3 b3 d4 e4 fs4 g4 fs4 e4 ~").s('piano'),
+  note("a3 b3 d4 e4 fs4 g4 fs4 e4").s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -253,7 +253,7 @@ Harmonic variation changes the chords while keeping the melody mostly intact.
 Changing the mode from major to minor:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 a3 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 a3").s('piano'),
   chord("<Bm F#m A Bm>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -264,7 +264,7 @@ In D minor, we modify the theme to fit the new mode. The theme takes on a darker
 Using different chords under the same melody:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<D Bm Em A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -275,7 +275,7 @@ Instead of the original Pachelbel progression, we use D → Bm → Em → A. The
 Adding chromatic (outside-the-key) chords:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<D F#7 Bm E7 A7 D>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -286,7 +286,7 @@ The F#7, E7, and A7 are chromatic chords (secondary dominants) that add harmonic
 Sustaining the bass note while harmony changes above:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6),
   note("d2").s('sawtooth').lpf(400).sustain(2)
 ).cpm(30)`} punchcard punchcardLabels={false} />
@@ -303,7 +303,7 @@ Textural variation changes how many voices are sounding and how they relate.
 
 Just the melody, no accompaniment:
 
-<MiniRepl client:idle tune={`note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano').cpm(30)`} punchcard punchcardLabels={false} />
 
 Sparse and intimate—letting the melody speak for itself.
 
@@ -320,8 +320,8 @@ All notes sound together in harmony—typical of Classical period homophonic tex
 Adding an independent counter-melody:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-  note("d3 a3 g3 fs3 d3 a3 fs3 ~").s('piano').gain(0.7),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+  note("d3 a3 g3 fs3 d3 a3 fs3").s('piano').gain(0.7),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.5)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -338,17 +338,17 @@ Let's put together a complete variation set with contrasting variations:
 <MiniRepl client:idle tune={`slowcat(
   // Theme (bars 1-2)
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
   ).fast(4),
   // Variation 1: Fast (bars 3-4)
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").fast(2).s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").fast(2).s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
   ).fast(4),
   // Variation 2: Minor mode (bars 5-6)
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 a3 ~").s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 a3").s('piano'),
     chord("<Bm F#m A Bm>").voicing().s('piano').gain(0.6)
   ).fast(4),
   // Variation 3: Arpeggiated (bars 7-8)
@@ -358,13 +358,13 @@ Let's put together a complete variation set with contrasting variations:
   ).fast(4),
   // Variation 4: Contrapuntal (bars 9-10)
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-    note("d3 a3 g3 fs3 d3 a3 fs3 ~").s('piano').gain(0.7),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+    note("d3 a3 g3 fs3 d3 a3 fs3").s('piano').gain(0.7),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.5)
   ).fast(4),
   // Variation 5: Return to simple (bars 11-12)
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
   ).fast(4)
 ).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
@@ -388,8 +388,8 @@ Pachelbel's Canon in D (1680) uses three violins following a ground bass at 2-ba
 **Simple 2-voice canon at the unison:**
 
 <MiniRepl client:visible tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.5).s('piano').gain(0.7)
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.5).s('piano').gain(0.7)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 Voice 2 enters halfway through the cycle (`.late(0.5)`), creating a canonic texture. Both voices play the same melody at the same pitch, but offset in time.
@@ -405,15 +405,15 @@ Let's explore different types of canons, from simple two-voice to complex multi-
 Canon at the octave—second voice transposed up:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").transpose(12).late(0.5).s('piano').gain(0.7)
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").transpose(12).late(0.5).s('piano').gain(0.7)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 Canon at the fifth—more harmonic interest:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").transpose(7).late(0.5).s('piano').gain(0.7)
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").transpose(7).late(0.5).s('piano').gain(0.7)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 **Tempo Canon (Mensuration Canon)**
@@ -421,8 +421,8 @@ Canon at the fifth—more harmonic interest:
 Voices at different speeds:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").slow(2).transpose(12).s('piano').gain(0.6)
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").slow(2).transpose(12).s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 Voice 2 plays at half speed, creating a slower moving counterpoint. Bach explored this in his Musical Offering canons.
@@ -439,9 +439,9 @@ One voice plays forward, the other backward:
 **Three-Voice Canon**
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.333).transpose(12).s('piano').gain(0.7),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.666).transpose(-12).s('piano').gain(0.6)
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.333).transpose(12).s('piano').gain(0.7),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.666).transpose(-12).s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 Three voices enter at evenly spaced intervals (0, 1/3, 2/3 of a cycle). Voice 2 is an octave higher, Voice 3 is an octave lower—creating clear register separation.
@@ -449,10 +449,10 @@ Three voices enter at evenly spaced intervals (0, 1/3, 2/3 of a cycle). Voice 2 
 **Four-Voice Canon (SATB texture)**
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano').gain(0.8),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.25).transpose(7).s('piano').gain(0.7),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.5).transpose(-5).s('piano').gain(0.7),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.75).transpose(-12).s('piano').gain(0.6)
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano').gain(0.8),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.25).transpose(7).s('piano').gain(0.7),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.5).transpose(-5).s('piano').gain(0.7),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.75).transpose(-12).s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 Four voices entering at quarter-cycle intervals create a full harmonic texture similar to SATB (Soprano, Alto, Tenor, Bass) choral writing.
@@ -462,8 +462,8 @@ Four voices entering at quarter-cycle intervals create a full harmonic texture s
 A round is a canon where the melody loops seamlessly with itself:
 
 <MiniRepl client:idle tune={`stack(
-  note("d4 fs4 a4 d5 a4 fs4 d4 ~").s('piano'),
-  note("d4 fs4 a4 d5 a4 fs4 d4 ~").late(0.5).transpose(12).s('piano').gain(0.7)
+  note("d4 fs4 a4 d5 a4 fs4 d4").s('piano'),
+  note("d4 fs4 a4 d5 a4 fs4 d4").late(0.5).transpose(12).s('piano').gain(0.7)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 The melody ends on D and begins on D, allowing seamless looping. "Frère Jacques" uses this structure.
@@ -473,9 +473,9 @@ The melody ends on D and begins on D, allowing seamless looping. "Frère Jacques
 Voices entering very close together create intensity:
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.125).transpose(12).s('piano').gain(0.7),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.25).transpose(7).s('piano').gain(0.6)
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.125).transpose(12).s('piano').gain(0.7),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.25).transpose(7).s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 Voices enter every 1/8 of a cycle—very tight! Bach used stretto at the climax of fugues to create maximum density.
@@ -488,9 +488,9 @@ Let's create a complete 3-voice stretto canon with harmonic support:
 
 <MiniRepl client:idle tune={`stack(
   // Canon voices (stretto - tight entries)
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.125).transpose(12).s('piano').gain(0.7),
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.25).transpose(7).s('piano').gain(0.6),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.125).transpose(12).s('piano').gain(0.7),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.25).transpose(7).s('piano').gain(0.6),
   // Harmonic support
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.5),
   chord("<D A Bm F#m G D G A>").rootNotes(2).note().s('sawtooth').lpf(600).gain(0.6),
@@ -520,7 +520,7 @@ Reharmonization means using different chords under the same melody.
 **Original harmonization (Pachelbel progression):**
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -529,7 +529,7 @@ This uses Pachelbel's famous progression: D (I) → A (V) → Bm (vi) → F#m (i
 **Reharmonization 1 (vi-ii-V-I):**
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<Bm Em A D>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -538,7 +538,7 @@ Same melody, but using Bm (vi) → Em (ii) → A (V) → D (I). This is a more "
 **Reharmonization 2 (ii-V-I jazz style):**
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<Em7 A7 D^7>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -547,7 +547,7 @@ Using seventh chords (Em7 → A7 → D^7) adds harmonic color—influenced by ja
 **Reharmonization 3 (Chromatic):**
 
 <MiniRepl client:idle tune={`stack(
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   chord("<D F#7 Bm E7 A7 D>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
@@ -566,12 +566,12 @@ Moving from D major to A major (the dominant key):
 <MiniRepl client:idle tune={`slowcat(
   // Theme in D major (bars 1-2)
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
   ).fast(4),
   // Theme in A major (bars 3-4)
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").transpose(7).s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").transpose(7).s('piano'),
     chord("<A D E A>").voicing().s('piano').gain(0.6)
   ).fast(4)
 ).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
@@ -583,12 +583,12 @@ The theme transposes up 7 semitones (perfect fifth) to A major. Classical compos
 <MiniRepl client:idle tune={`slowcat(
   // Theme in D major
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
   ).fast(4),
   // Theme in B minor (relative minor)
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 a3 ~").s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 a3").s('piano'),
     chord("<Bm Em F#m Bm>").voicing().s('piano').gain(0.6)
   ).fast(4)
 ).slow(4).cpm(30)`} punchcard punchcardLabels={false} />
@@ -635,9 +635,9 @@ Using sequences to move to a new key:
 
 <MiniRepl client:idle tune={`stack(
   cat(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~"),
-    note("g4 fs4 e4 d4 cs4 b3 cs4 d4 ~"),
-    note("a4 g4 fs4 e4 d4 cs4 d4 e4 ~")
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4"),
+    note("g4 fs4 e4 d4 cs4 b3 cs4 d4"),
+    note("a4 g4 fs4 e4 d4 cs4 d4 e4")
   ).s('piano'),
   chord("<D G A D E A B E F# B C# F#>").voicing().s('piano').gain(0.6)
 ).cpm(30)`} punchcard punchcardLabels={false} />
@@ -1021,9 +1021,9 @@ A canon where each voice plays a variation:
 
 <MiniRepl client:idle tune={`stack(
   // Voice 1: Original theme
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
   // Voice 2: Rhythmic variation (faster)
-  note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").fast(2).late(0.5).transpose(12).s('piano').gain(0.7)
+  note("fs4 e4 d4 cs4 b3 a3 b3 cs4").fast(2).late(0.5).transpose(12).s('piano').gain(0.7)
 ).cpm(30)`} punchcard punchcardLabels={false} />
 
 Voice 1 plays the original, Voice 2 plays a faster variation in canon—combining two techniques!
@@ -1084,29 +1084,29 @@ Let's create a complete 4-movement piece using our theme from Part 1:
 <MiniRepl client:idle tune={`slowcat(
   // MOVEMENT 1: Theme (simple presentation)
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.6)
   ).fast(4),
   // MOVEMENT 2: Variation - Fast & Minor
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 a3 ~").fast(2).s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 a3").fast(2).s('piano'),
     chord("<Bm F#m A Bm>").voicing().s('piano').gain(0.6)
   ).fast(4),
   // MOVEMENT 3: Canon (3 voices)
   stack(
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.333).transpose(12).s('piano').gain(0.7),
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.666).transpose(-12).s('piano').gain(0.6),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.333).transpose(12).s('piano').gain(0.7),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.666).transpose(-12).s('piano').gain(0.6),
     chord("<D A Bm F#m G D G A>").voicing().s('piano').gain(0.5)
   ).fast(4),
   // MOVEMENT 4: Fugal Finale
   stack(
     // Subject
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").s('piano'),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").s('piano'),
     // Answer
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").transpose(7).late(0.5).s('piano').gain(0.7),
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").transpose(7).late(0.5).s('piano').gain(0.7),
     // Stretto
-    note("fs4 e4 d4 cs4 b3 a3 b3 cs4 ~").late(0.25).transpose(12).s('piano').gain(0.6)
+    note("fs4 e4 d4 cs4 b3 a3 b3 cs4").late(0.25).transpose(12).s('piano').gain(0.6)
   ).fast(4)
 ).slow(16).cpm(30)`} punchcard punchcardLabels={false} />
 
