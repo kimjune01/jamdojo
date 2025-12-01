@@ -648,9 +648,10 @@ export function SampleExplorer() {
       const key = e.key.toLowerCase();
 
       // Number keys for dirt sample indices when a sample is selected
+      // Key 1 = :1, Key 2 = :2, ... Key 9 = :9, Key 0 = :0
       const numKey = e.key;
       if (/^[0-9]$/.test(numKey) && !heldKeys.current.has(numKey) && selectedDirtSample) {
-        const index = numKey === '0' ? 9 : parseInt(numKey) - 1;
+        const index = parseInt(numKey);
         const sampleInfo = ALL_DIRT_SAMPLES.find((s) => s.name === selectedDirtSample);
         if (sampleInfo && index < sampleInfo.count) {
           heldKeys.current.add(numKey);
@@ -846,7 +847,7 @@ export function SampleExplorer() {
                     ))}
                   </div>
                   <div className="mt-2 text-xs text-gray-500">
-                    Keys 1-9, 0
+                    Keys 0-9
                   </div>
                 </>
               ) : (
