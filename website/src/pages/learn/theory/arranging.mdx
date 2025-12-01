@@ -1,0 +1,524 @@
+---
+title: Arranging Patterns
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+Arranging is how you organize musical patterns over time and space. While individual patterns create rhythms and melodies, arranging combines them into complete pieces of music. This guide covers Strudel's powerful tools for sequencing, layering, and structuring your compositions.
+
+## What is Arranging?
+
+In traditional music production, arranging means deciding what plays when—which instruments enter in the intro, how the verse differs from the chorus, when the drums drop out for a breakdown. In Strudel, we have functions that give you precise control over these decisions.
+
+There are two fundamental dimensions to arranging:
+
+- **Time** — What plays in sequence (one after another)
+- **Space** — What plays simultaneously (layered together)
+
+Let's explore both.
+
+---
+
+## Functions vs Mini Notation: The Rosetta Stone
+
+Before diving in, here's the key insight: **every arranging function has a mini notation equivalent**. You can write the same patterns either way:
+
+| What you want | Function | Mini Notation | Symbol |
+|---------------|----------|---------------|--------|
+| One per cycle (slow) | `cat(a, b, c)` | `"<a b c>"` | `< >` angle brackets |
+| All in one cycle (fast) | `seq(a, b, c)` | `"a b c"` | ` ` space |
+| Play together (layer) | `stack(a, b, c)` | `"a,b,c"` | `,` comma |
+| Different lengths | `polymeter([a,b,c],[x,y])` | `"{a b c, x y}"` | `{ }` curly braces |
+
+**Side-by-side examples:**
+
+<MiniRepl client:idle tune={`// Function: cat - one per cycle
+cat(s("bd"), s("sd"), s("hh"))`} />
+
+<MiniRepl client:idle tune={`// Mini notation: <> - one per cycle
+s("<bd sd hh>")`} />
+
+<MiniRepl client:idle tune={`// Function: seq - all in one cycle
+seq(s("bd"), s("sd"), s("hh"), s("cp"))`} />
+
+<MiniRepl client:idle tune={`// Mini notation: space - all in one cycle
+s("bd sd hh cp")`} />
+
+<MiniRepl client:idle tune={`// Function: stack - play together
+stack(s("bd ~ bd ~"), s("~ sd ~ sd"), s("hh*4"))`} />
+
+<MiniRepl client:idle tune={`// Mini notation: comma - play together
+s("bd ~ bd ~, ~ sd ~ sd, hh*4")`} />
+
+Understanding these equivalencies lets you choose the style that fits your workflow. Functions are great for complex structures and variables; mini notation is concise for inline patterns.
+
+---
+
+## Sequential Patterns: cat and fastcat
+
+The simplest way to arrange patterns over time is with `cat` (short for "concatenate").
+
+### cat / slowcat = `< >` angle brackets
+
+`cat` plays each pattern for one complete cycle, then moves to the next.
+
+> **Mini notation:** `"<x y z>"` = `cat(x, y, z)`
+
+**Using the function:**
+
+<MiniRepl client:idle tune={`cat(
+  s("bd sd bd sd"),
+  s("hh hh hh hh"),
+  s("cp ~ cp ~")
+)`} />
+
+**Same thing in mini notation:**
+
+<MiniRepl client:idle tune={`s("<[bd sd bd sd] [hh hh hh hh] [cp ~ cp ~]>")`} />
+
+Each pattern gets a full cycle. After all patterns play, it loops back to the beginning.
+
+---
+
+### fastcat / seq = `space` between elements
+
+`fastcat` (or its alias `seq`) squeezes all patterns into a single cycle.
+
+> **Mini notation:** `"x y z"` = `seq(x, y, z)` = `fastcat(x, y, z)`
+
+**Using the function:**
+
+<MiniRepl client:idle tune={`fastcat(
+  s("bd"),
+  s("sd"),
+  s("hh"),
+  s("cp")
+)`} />
+
+**Same thing in mini notation (just spaces):**
+
+<MiniRepl client:idle tune={`s("bd sd hh cp")`} />
+
+All four sounds play within one cycle, each taking 1/4 of the time.
+
+---
+
+### Comparing `< >` vs `space`
+
+The difference becomes clear when you compare the same content:
+
+**`< >` angle brackets** — Each pattern takes one full cycle:
+
+<MiniRepl client:idle tune={`// cat = <>
+note("<[c4 e4] [g4 b4]>").s("piano")`} />
+
+**`space`** — Both patterns fit in one cycle:
+
+<MiniRepl client:idle tune={`// seq = space
+note("[c4 e4] [g4 b4]").s("piano")`} />
+
+Use `< >` (cat) when you want patterns to take their time. Use spaces (seq) when building phrases within a single cycle.
+
+---
+
+## Layering Patterns: stack = `,` comma
+
+While `cat` arranges patterns in time, `stack` arranges them in space—playing multiple patterns simultaneously.
+
+> **Mini notation:** `"x,y,z"` = `stack(x, y, z)`
+
+### Basic Layering
+
+**Using the function:**
+
+<MiniRepl client:idle tune={`stack(
+  s("bd ~ bd ~"),
+  s("~ hh ~ hh"),
+  s("~ ~ cp ~")
+).room(.3)`} />
+
+**Same thing in mini notation (commas):**
+
+<MiniRepl client:idle tune={`s("bd ~ bd ~, ~ hh ~ hh, ~ ~ cp ~").room(.3)`} />
+
+All three patterns play at once, creating a basic drum beat.
+
+---
+
+### Building Full Beats
+
+Stack is perfect for layering drums, bass, and melody:
+
+<MiniRepl client:idle tune={`stack(
+  s("bd ~ bd ~"),
+  s("~ sd ~ sd"),
+  s("hh*8"),
+  note("<c2 g2>").s("sawtooth").lpf(400)
+).room(.3)`} />
+
+Each layer maintains its own pattern while playing together.
+
+---
+
+### Combining Symbols: Nesting `< >`, `,`, and spaces
+
+You can nest these symbols freely. Use `cat` inside `stack` to create evolving layers:
+
+**Using functions:**
+
+<MiniRepl client:idle tune={`stack(
+  s("bd ~ bd ~"),
+  cat(
+    s("~ sd ~ sd"),
+    s("~ sd ~ [sd sd]")
+  ),
+  s("hh*8")
+).room(.3)`} />
+
+**Same thing in pure mini notation:**
+
+<MiniRepl client:idle tune={`s("bd ~ bd ~, <[~ sd ~ sd] [~ sd ~ [sd sd]]>, hh*8").room(.3)`} />
+
+The snare pattern (inside `< >`) alternates each cycle while other layers (separated by `,`) stay constant.
+
+Here's how the symbols nest:
+- `,` separates simultaneous layers (stack)
+- `< >` creates one-per-cycle alternation within a layer (cat)
+- `space` creates subdivisions within each element (seq)
+
+---
+
+## Timed Arrangements: timeCat and arrange
+
+Sometimes you need more control over how long each section plays.
+
+### timeCat / stepcat = `@` for duration
+
+`timeCat` lets you specify relative durations for each pattern.
+
+> **Mini notation:** `"x@3 y"` = element x takes 3 steps, y takes 1 step
+
+<MiniRepl client:idle tune={`timeCat(
+  [3, s("bd sd bd")],
+  [1, s("cp")]
+).room(.3)`} />
+
+The first pattern takes 3/4 of the cycle, the second takes 1/4.
+
+**In mini notation, use `@` with brackets for sub-patterns:**
+
+<MiniRepl client:idle tune={`s("[bd sd bd]@3 cp").room(.3)`} />
+
+For single elements, `@` is simpler:
+
+<MiniRepl client:idle tune={`s("bd@3 cp")`} />
+
+This holds "bd" for 3 steps before "cp" plays.
+
+**Useful for uneven phrase lengths:**
+
+<MiniRepl client:idle tune={`timeCat(
+  [7, note("c4 d4 e4 f4 g4 a4 b4")],
+  [1, note("c5")]
+).s("piano")`} />
+
+---
+
+### arrange — Multi-Cycle Song Structures
+
+`arrange` is the most powerful tool for building complete songs. It lets you specify how many cycles each section should play:
+
+<MiniRepl client:idle tune={`arrange(
+  [4, s("hh*8").room(.2)],
+  [4, stack(s("bd ~ bd ~"), s("hh*8")).room(.2)],
+  [2, s("cp*4").room(.5)]
+)`} />
+
+- First section: 4 cycles of hi-hats only
+- Second section: 4 cycles of kick + hi-hats
+- Third section: 2 cycles of claps
+
+The pattern loops after all sections complete (10 cycles total).
+
+---
+
+## Advanced Layering: polymeter = `{ }` curly braces
+
+### Polyrhythmic Patterns
+
+`polymeter` creates layers that cycle at different rates, creating complex polyrhythms.
+
+> **Mini notation:** `"{a b c, x y}"` = `polymeter([a,b,c], [x,y])`
+
+**Using the function:**
+
+<MiniRepl client:idle tune={`polymeter(
+  ["c4", "e4", "g4"],
+  ["c5", "d5"]
+).note().s("piano").room(.4)`} />
+
+**Same thing in mini notation (curly braces):**
+
+<MiniRepl client:idle tune={`note("{c4 e4 g4, c5 d5}").s("piano").room(.4)`} />
+
+The first layer has 3 notes, the second has 2. They cycle independently, creating shifting relationships. The curly braces `{ }` tell Strudel to keep each layer's step count independent.
+
+---
+
+## Genre-Specific Arranging Techniques
+
+Different genres have characteristic arrangement patterns. Here's how to create them in Strudel.
+
+---
+
+### Pop/Rock: Verse-Chorus Structure
+
+Pop songs reuse sections. Define your parts as variables, then arrange them:
+
+<MiniRepl client:idle tune={`let verse = stack(
+  s("bd ~ bd ~"),
+  s("~ sd ~ sd"),
+  note("<c3 g3>").s("sawtooth").lpf(600)
+)
+
+let chorus = stack(
+  s("bd sd bd sd"),
+  s("hh*8"),
+  note("<c3 e3 g3 c4>").s("sawtooth").lpf(1200)
+)
+
+arrange(
+  [4, verse],
+  [4, chorus],
+  [4, verse],
+  [4, chorus]
+).room(.3).cpm(70)`} />
+
+The verse is sparse, the chorus is fuller. This contrast creates the typical pop dynamic.
+
+**Adding a bridge:**
+
+<MiniRepl client:idle tune={`let verse = stack(
+  s("bd ~ bd ~"),
+  s("~ sd ~ sd"),
+  note("<c3 g3>").s("sawtooth").lpf(600)
+)
+
+let chorus = stack(
+  s("bd sd bd sd"),
+  s("hh*8"),
+  note("<c3 e3 g3 c4>").s("sawtooth").lpf(1200)
+)
+
+let bridge = stack(
+  s("~ ~ bd ~"),
+  note("<a2 f2>").s("sawtooth").lpf(400)
+)
+
+arrange(
+  [4, verse],
+  [4, chorus],
+  [4, verse],
+  [4, chorus],
+  [4, bridge],
+  [4, chorus]
+).room(.3).cpm(70)`} />
+
+---
+
+### EDM: Loop-Based with Buildups
+
+EDM arranges loops with gradual additions and filter sweeps:
+
+<MiniRepl client:idle tune={`let intro = s("hh*8").lpf(800)
+
+let buildup = stack(
+  s("hh*16"),
+  s("bd").fast("<1 2 4 8>")
+).lpf(sine.range(400, 8000).slow(4))
+
+let drop = stack(
+  s("bd ~ [~ bd] ~"),
+  s("~ cp ~ cp"),
+  s("hh*8"),
+  note("c2").s("sawtooth").lpf(200)
+)
+
+arrange(
+  [4, intro],
+  [4, buildup],
+  [8, drop]
+).room(.2).cpm(70)`} />
+
+The buildup uses a filter sweep (`lpf(sine.range(...))`) to create tension before the drop.
+
+**Adding a breakdown:**
+
+<MiniRepl client:idle tune={`let drop = stack(
+  s("bd ~ [~ bd] ~"),
+  s("~ cp ~ cp"),
+  s("hh*8"),
+  note("c2").s("sawtooth").lpf(200)
+)
+
+let breakdown = s("~ ~ ~ ~").room(.5)
+
+let buildup = stack(
+  s("hh*16"),
+  s("bd").fast("<1 2 4 8>")
+).lpf(sine.range(400, 8000).slow(4))
+
+arrange(
+  [8, drop],
+  [2, breakdown],
+  [4, buildup],
+  [8, drop]
+).room(.2).cpm(70)`} />
+
+---
+
+### Classical: Theme and Variation
+
+Classical music develops themes through transformation. Use `cat` to present variations:
+
+<MiniRepl client:idle tune={`let theme = note("c4 d4 e4 g4")
+
+cat(
+  theme,
+  theme.rev(),
+  theme.add(note(5)),
+  theme.fast(2)
+).s("piano").room(.4)`} />
+
+Each cycle presents:
+1. Original theme
+2. Retrograde (reversed)
+3. Transposed up a fourth
+4. Diminution (twice as fast)
+
+**More elaborate variations:**
+
+<MiniRepl client:idle tune={`let theme = note("c4 d4 e4 g4")
+
+cat(
+  theme,
+  theme.rev(),
+  theme.add(note(7)),
+  stack(theme, theme.add(note(4))),
+  theme.slow(2),
+  theme.add(note("<0 12>"))
+).s("piano").room(.4).cpm(40)`} />
+
+This adds:
+- Harmonized (thirds added)
+- Augmentation (twice as slow)
+- Octave displacement
+
+---
+
+### Hip-Hop: Sample Loops with Layers
+
+Hip-hop builds on a core loop, adding and removing elements for sections:
+
+<MiniRepl client:idle tune={`let drums = stack(
+  s("bd ~ bd ~"),
+  s("~ sd ~ sd")
+)
+
+let hats = s("hh*8").gain(.6)
+
+let bass = note("<c2 c2 g1 g1>").s("sawtooth").lpf(300)
+
+arrange(
+  [4, drums],
+  [4, stack(drums, bass)],
+  [8, stack(drums, bass, hats)],
+  [4, stack(drums, bass)]
+).room(.2).cpm(90)`} />
+
+Elements are introduced gradually:
+1. Drums only (intro)
+2. Drums + bass (verse starts)
+3. Full beat with hats (chorus)
+4. Drop the hats (back to verse)
+
+---
+
+### Ambient: Evolving Textures
+
+Ambient music uses slow evolution and layered drones:
+
+<MiniRepl client:idle tune={`stack(
+  note("c3").s("sawtooth").lpf(sine.range(200, 800).slow(16)),
+  note("g3").s("sine").gain(.5).slow(2),
+  cat(
+    note("c5 e5 g5 ~"),
+    note("d5 f5 a5 ~"),
+    note("e5 g5 b5 ~"),
+    note("c5 e5 g5 ~")
+  ).s("sine").gain(.3).slow(4)
+).room(.8).delay(.5).cpm(20)`} />
+
+Long cycles with subtle changes create an evolving soundscape.
+
+---
+
+## Combining Techniques
+
+Real arrangements often nest these functions. Here's a more complete example:
+
+<MiniRepl client:idle tune={`let kick = s("bd ~ [~ bd] ~")
+let snare = s("~ sd ~ sd")
+let hats = s("hh*8").gain(.7)
+
+let verse_drums = stack(kick, snare)
+let chorus_drums = stack(kick, snare, hats)
+
+let verse_bass = note("<c2 c2 g1 a1>").s("sawtooth").lpf(400)
+let chorus_bass = note("<c2 e2 g2 c3>").s("sawtooth").lpf(800)
+
+let verse = stack(verse_drums, verse_bass)
+let chorus = stack(chorus_drums, chorus_bass)
+
+arrange(
+  [4, verse_drums],
+  [8, verse],
+  [8, chorus],
+  [8, verse],
+  [8, chorus],
+  [4, chorus_drums]
+).room(.3).cpm(85)`} />
+
+This creates a complete song structure:
+1. Drums intro (4 cycles)
+2. Verse with bass (8 cycles)
+3. Chorus with fuller arrangement (8 cycles)
+4. Repeat verse and chorus
+5. Drums outro (4 cycles)
+
+---
+
+## Quick Reference
+
+| Function | Mini Notation | Description |
+|----------|---------------|-------------|
+| `cat(x,y)` | `"<x y>"` | One pattern per cycle, sequential |
+| `seq(x,y)` / `fastcat` | `"x y"` | All patterns in one cycle |
+| `stack(x,y)` | `"x,y"` | Patterns play simultaneously |
+| `timeCat([3,x],[1,y])` | `"x@3 y"` | Proportional timing within cycle |
+| `arrange([4,x],[8,y])` | — | Multi-cycle song sections |
+| `polymeter([a,b,c],[x,y])` | `"{a b c, x y}"` | Polyrhythmic layering |
+
+---
+
+## Tips for Effective Arranging
+
+1. **Start simple** — Begin with a basic loop, then add complexity
+2. **Use variables** — Name your sections for easy reuse
+3. **Create contrast** — Sections should sound different (sparse vs. full, low vs. high energy)
+4. **Think in powers of 2** — 4, 8, 16 cycle sections feel natural
+5. **Leave space** — Silence and breakdowns make the full sections hit harder
+6. **Layer strategically** — Each layer should have its own frequency range
+
+Try combining these techniques to build your own complete tracks!

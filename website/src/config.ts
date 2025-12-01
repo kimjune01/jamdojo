@@ -83,8 +83,11 @@ export const ACTIVITIES: SidebarSection[] = [
     items: [
       { text: 'Harmony', link: 'learn/theory/harmony', icon: '🎶', description: 'Learn chords, voicings, and jazz harmony' },
       { text: 'Chord Composition', link: 'learn/theory/chord-composition', icon: '🎼', description: 'Compose with chord progressions and voicings' },
+      { text: 'Classical Terminology', link: 'learn/theory/classical-terminology', icon: '🎻', description: 'Form, harmony, and counterpoint vocabulary' },
       { text: 'Euclidean Rhythms', link: 'learn/theory/euclidean-rhythms', icon: '🥁', description: 'Learn about mathematical patterns in music' },
       { text: 'Auditory Space', link: 'learn/theory/auditory-space', icon: '🎛️', description: 'Master spatial audio: width, depth, and frequency separation' },
+      { text: 'Sampling Composition', link: 'learn/theory/sampling-composition', icon: '🎚️', description: 'Compose with samples from Freesound and public libraries' },
+      { text: 'Arranging Patterns', link: 'learn/theory/arranging', icon: '🎬', description: 'Organize patterns with cat, stack, and arrange' },
     ],
   },
   {
