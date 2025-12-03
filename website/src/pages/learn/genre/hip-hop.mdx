@@ -1,0 +1,883 @@
+---
+title: Hip-Hop
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+Hip-hop production is built on drums, bass, and samples. From the breakbeat origins of DJ Kool Herc in 1970s Bronx to modern trap and drill, hip-hop has always been about making something fresh from existing sounds. This guide covers the essential techniques for creating hip-hop beats in Strudel.
+
+## The Foundation: Drums First
+
+Hip-hop beats center on the relationship between kick, snare, and hi-hat. Unlike EDM's four-on-the-floor, hip-hop drums are syncopated—kicks land off the grid, snares crack on 2 and 4, and hi-hats weave between them.
+
+**The Basic Pattern:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~"),
+  sound("~ ~ ~ ~ sd ~ ~ ~"),
+  sound("hh hh hh hh hh hh hh hh")
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+## The Roland TR-808: Hip-Hop's Heartbeat
+
+The Roland TR-808 drum machine, released in 1980, became the defining sound of hip-hop. Its booming kick, snappy snare, and crisp hi-hats appear on countless classics:
+
+- [**"Planet Rock"**](https://www.youtube.com/watch?v=9J3lwZjHenA) by Afrika Bambaataa (1982) — the 808 enters hip-hop
+- [**"808s & Heartbreak"**](https://www.youtube.com/watch?v=Co0tTeuUVhU) by Kanye West (2008) — revived the 808 for modern hip-hop
+- [**"Mask Off"**](https://www.youtube.com/watch?v=xvZqHgFz51I) by Future (2017) — trap's signature 808 sound
+- [**"Sicko Mode"**](https://www.youtube.com/watch?v=6ONRf7h3Mdk) by Travis Scott (2018) — 808 bass as the foundation
+
+<MiniRepl client:idle tune={`sound("bd").bank("RolandTR808").cpm(22.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Building a Hip-Hop Beat
+
+### Step 1: The Kick Pattern
+
+Hip-hop kicks are punchy and syncopated. They don't just land on 1—they bounce:
+
+<MiniRepl client:idle tune={`sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808").cpm(22.5)`} punchcard punchcardLabels={false} />
+
+**Variation with more bounce:**
+
+<MiniRepl client:idle tune={`sound("bd ~ bd ~ ~ bd ~ bd").bank("RolandTR808").cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Step 2: Snare on 2 and 4
+
+The snare is the backbone—always on beats 2 and 4:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808")
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+**With claps layered:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ [sd,cp] ~ ~ ~").bank("RolandTR808")
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Step 3: Hi-Hat Patterns
+
+Closed hi-hats drive the groove. Start simple, then add variations:
+
+**Basic eighth notes:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh hh hh hh hh hh hh hh").bank("RolandTR808").gain(0.6)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+**Sixteenth notes for energy:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh*16").bank("RolandTR808").gain(0.5)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+**With open hi-hat accents:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh hh oh hh hh hh oh hh").bank("RolandTR808").gain(0.6)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Step 4: The Complete Kit
+
+Layer everything together:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ [sd,cp] ~ ~ ~").bank("RolandTR808"),
+  sound("hh hh oh hh hh hh oh hh").bank("RolandTR808").gain(0.6)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## 808 Bass Design
+
+The 808 bass is hip-hop's signature sound—a deep, booming sub that you feel in your chest. It's created with a sine wave and careful envelope shaping.
+
+### Basic 808 Bass
+
+<MiniRepl client:idle tune={`note("c1 ~ ~ ~ c1 ~ c1 ~")
+  .s("sine")
+  .decay(0.3)
+  .sustain(0.2)
+  .gain(0.8)
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Long Sustain 808
+
+For notes that ring out:
+
+<MiniRepl client:idle tune={`note("c1 ~ ~ ~ ~ ~ ~ ~")
+  .s("sine")
+  .attack(0.01)
+  .decay(0.1)
+  .sustain(0.8)
+  .release(0.5)
+  .gain(0.7)
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Short Punchy 808
+
+For tight, punchy patterns:
+
+<MiniRepl client:idle tune={`note("c1 ~ c1 ~ c1 ~ c1 c1")
+  .s("sine")
+  .decay(0.15)
+  .sustain(0)
+  .gain(0.8)
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### 808 with Pitch Slide
+
+The signature "808 glide"—notes sliding into each other:
+
+<MiniRepl client:idle tune={`note("c1 ~ ~ ~ eb1 ~ c1 ~")
+  .s("sine")
+  .decay(0.4)
+  .sustain(0.3)
+  .slide(0.1)
+  .gain(0.7)
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Distorted 808
+
+Add warmth and presence with distortion:
+
+<MiniRepl client:idle tune={`note("c1 ~ ~ ~ c1 ~ c1 ~")
+  .s("sine")
+  .decay(0.3)
+  .sustain(0.2)
+  .distort(1.2)
+  .lpf(150)
+  .gain(0.7)
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Layering 808 with Kick
+
+For maximum impact, layer the 808 with the kick:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  note("c1 ~ ~ ~ c1 ~ c1 ~")
+    .s("sine")
+    .decay(0.3)
+    .sustain(0.2)
+    .gain(0.7),
+  sound("~ ~ ~ ~ [sd,cp] ~ ~ ~").bank("RolandTR808"),
+  sound("hh hh oh hh hh hh oh hh").bank("RolandTR808").gain(0.5)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Sampling & Chopping
+
+Sampling is at the heart of hip-hop—taking existing recordings and transforming them into something new. Strudel offers several ways to work with samples.
+
+### Loading Sample Libraries
+
+To use breakbeats and other samples, first load a sample library:
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+sound("breaks165").cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Slicing Loops
+
+Use `.slice()` to chop a sample into pieces and rearrange them:
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+sound("breaks165")
+  .slice(8, "0 1 2 3 4 5 6 7")
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+**Rearranged chops:**
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+sound("breaks165")
+  .slice(8, "0 0 3 2 4 6 5 7")
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+**With repeats and stutters:**
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+sound("breaks165")
+  .slice(8, "0 0 0 0 4 4 6 7")
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Pitch Shifting Samples
+
+Change the pitch to create new textures:
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+sound("breaks165")
+  .note(-5)
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Speed/Time Stretching
+
+Slow down or speed up samples:
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+sound("breaks165")
+  .speed(0.8)
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Lo-fi Vinyl Effect
+
+Add warmth and texture with filtering and effects:
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+sound("breaks165")
+  .lpf(2000)
+  .hpf(200)
+  .room(0.2)
+  .gain(0.8)
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Chops Over a Beat
+
+Layer chopped samples over your drums:
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh*8").bank("RolandTR808").gain(0.4),
+  sound("breaks165")
+    .slice(8, "0 2 4 6")
+    .lpf(3000)
+    .gain(0.5)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Genre Deep Dives
+
+### Boom Bap (85-95 BPM)
+
+Boom bap is the classic East Coast sound—punchy kicks, cracking snares, and jazzy samples. The name comes from the sound: "boom" (kick) and "bap" (snare). Pioneered by producers like DJ Premier, Pete Rock, and J Dilla.
+
+**Classic Tracks:**
+- ["Mass Appeal"](https://www.youtube.com/watch?v=y9lNbNGbo24) by Gang Starr (DJ Premier, 1994)
+- ["T.R.O.Y."](https://www.youtube.com/watch?v=k6mdRv0ZdR8) by Pete Rock & CL Smooth (1992)
+- ["The Light"](https://www.youtube.com/watch?v=OjHX7jf-znA) by Common (J Dilla, 2000)
+- ["Shook Ones Pt. II"](https://www.youtube.com/watch?v=yoYZf-lBF_U) by Mobb Deep (Havoc, 1995)
+
+**Characteristics:** 85-95 BPM, sampled drums, jazzy chords, minimal layers
+
+**Basic Boom Bap Beat:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ ~ bd"),
+  sound("~ ~ ~ ~ sd ~ ~ ~"),
+  sound("hh hh hh hh hh hh hh hh").gain(0.5)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+**With 808 Bass:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ ~ bd").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh hh hh hh hh hh hh hh").bank("RolandTR808").gain(0.5),
+  note("c2 ~ ~ ~ f2 ~ ~ c2")
+    .s("sine")
+    .decay(0.25)
+    .sustain(0.1)
+    .gain(0.6)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+**Boom Bap with Rhodes Chords:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ ~ bd").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh hh hh hh hh hh hh hh").bank("RolandTR808").gain(0.4),
+  note("c2 ~ ~ ~ f2 ~ ~ c2")
+    .s("sine")
+    .decay(0.25)
+    .sustain(0.1)
+    .gain(0.5),
+  note("<c3,eb3,g3,bb3> ~ <f3,ab3,c4,eb4> ~")
+    .s("sawtooth")
+    .lpf(1200)
+    .attack(0.02)
+    .decay(0.3)
+    .sustain(0.2)
+    .room(0.2)
+    .gain(0.3)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+---
+
+### Trap (140 BPM, Half-Time)
+
+Trap emerged from Atlanta in the early 2000s, characterized by rapid hi-hats, 808 bass, and dark atmospheres. Producers like Lex Luger, Metro Boomin, and Zaytoven defined the sound.
+
+**Classic Tracks:**
+- ["Hard in da Paint"](https://www.youtube.com/watch?v=WkkC9cK8Hz0) by Waka Flocka Flame (Lex Luger, 2010)
+- ["Mask Off"](https://www.youtube.com/watch?v=xvZqHgFz51I) by Future (Metro Boomin, 2017)
+- ["Bad and Boujee"](https://www.youtube.com/watch?v=S-sJp1FfG7Q) by Migos (Metro Boomin, 2016)
+- ["Black Beatles"](https://www.youtube.com/watch?v=b8m9zhNAgKs) by Rae Sremmurd (Mike WiLL Made-It, 2016)
+
+**Characteristics:** 140 BPM (felt as 70 half-time), rolling hi-hats, 808 slides, snare on beat 3
+
+**Basic Trap:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ ~ ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh*16").bank("RolandTR808").gain(0.5)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+**With Hi-Hat Rolls:**
+
+The signature trap sound—hi-hats that speed up:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ ~ ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh").bank("RolandTR808").fast("<8 8 8 16>").gain(0.5)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+**With 808 Bass:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ ~ ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh").bank("RolandTR808").fast("<8 8 8 16>").gain(0.4),
+  note("c1 ~ ~ ~ ~ ~ c1 eb1")
+    .s("sine")
+    .decay(0.4)
+    .sustain(0.3)
+    .slide(0.08)
+    .gain(0.7)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+**Full Trap Beat:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ ~ ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ ~ ~ ~ oh").bank("RolandTR808").gain(0.4),
+  sound("hh").bank("RolandTR808").fast("<8 8 8 16>").gain(0.4),
+  note("c1 ~ ~ ~ ~ ~ c1 eb1")
+    .s("sine")
+    .decay(0.4)
+    .sustain(0.3)
+    .slide(0.08)
+    .distort(1.1)
+    .gain(0.6)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+### Lo-fi Hip-Hop (75-90 BPM)
+
+Lo-fi hip-hop emerged in the 2010s, influenced by J Dilla's soulful production and the "beats to study to" aesthetic. It features dusty textures, jazz samples, and a relaxed swing.
+
+**Key Producers:**
+- Nujabes — Japanese producer who pioneered the jazzy, melodic style ([Feather](https://www.youtube.com/watch?v=hQ5x8pHoIPA))
+- J Dilla — ["Donuts"](https://www.youtube.com/watch?v=crZF0YNORIY) (2006) influenced the entire genre
+- Madlib — intricate sampling on [Madvillainy](https://www.youtube.com/watch?v=rpaonSDPw7Y) (2004)
+
+**Characteristics:** 75-90 BPM, swing/shuffle feel, vinyl crackle, jazz samples, mellow
+
+**Basic Lo-fi Beat:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ bd ~ ~ bd ~"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").gain(0.8),
+  sound("hh ~ hh ~ hh ~ hh ~").gain(0.4)
+).cpm(20)`} punchcard punchcardLabels={false} />
+
+**With Swing:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ bd ~ ~ bd ~"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").gain(0.8),
+  sound("hh ~ hh ~ hh ~ hh ~").gain(0.4)
+).cpm(20).swing(0.1)`} punchcard punchcardLabels={false} />
+
+**Lo-fi with Rhodes:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ bd ~ ~ bd ~").gain(0.9),
+  sound("~ ~ ~ ~ sd ~ ~ ~").gain(0.7),
+  sound("hh ~ hh ~ hh ~ hh ~").gain(0.3),
+  note("<c3,eb3,g3> <bb2,d3,f3> <ab2,c3,eb3> <g2,bb2,d3>")
+    .s("sawtooth")
+    .lpf(800)
+    .attack(0.02)
+    .decay(0.3)
+    .sustain(0.2)
+    .room(0.3)
+    .gain(0.25)
+).cpm(20).swing(0.1)`} punchcard punchcardLabels={false} />
+
+**Full Lo-fi Track:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ bd ~ ~ bd ~").gain(0.9),
+  sound("~ ~ ~ ~ sd ~ ~ ~").gain(0.7),
+  sound("hh ~ hh ~ hh ~ hh ~").gain(0.3),
+  note("c2 ~ ~ ~ g1 ~ ~ ~")
+    .s("sine")
+    .decay(0.3)
+    .sustain(0.1)
+    .gain(0.5),
+  note("<c3,eb3,g3> <bb2,d3,f3> <ab2,c3,eb3> <g2,bb2,d3>")
+    .s("sawtooth")
+    .lpf(800)
+    .attack(0.02)
+    .decay(0.3)
+    .sustain(0.2)
+    .room(0.3)
+    .gain(0.2)
+).cpm(20).swing(0.1)`} punchcard punchcardLabels={false} />
+
+---
+
+### Drill (140-145 BPM)
+
+Drill originated in Chicago around 2010, later spreading to the UK and Brooklyn. It features dark, aggressive 808s, sliding bass, and sparse, menacing arrangements.
+
+**Classic Tracks:**
+- ["I Don't Like"](https://www.youtube.com/watch?v=2WcRXJ4piHg) by Chief Keef (Young Chop, 2012)
+- ["Computers"](https://www.youtube.com/watch?v=k4tQGd65bqc) by Bobby Shmurda (Jahlil Beats, 2014)
+- ["Big Drip"](https://www.youtube.com/watch?v=iGkvG4lMQUo) by Fivio Foreign (Yamaica, 2019) — Brooklyn drill
+
+**Characteristics:** 140-145 BPM, sliding 808s, minimal melodies, dark atmosphere, sparse hats
+
+**Chicago Drill:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ ~ ~ ~ bd").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh ~ hh ~ hh ~ hh ~").bank("RolandTR808").gain(0.4)
+).cpm(36)`} punchcard punchcardLabels={false} />
+
+**With Sliding 808:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ ~ ~ ~ bd").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh ~ hh ~ hh ~ hh ~").bank("RolandTR808").gain(0.4),
+  note("c1 ~ ~ ~ ~ ~ eb1 c1")
+    .s("sine")
+    .decay(0.5)
+    .sustain(0.3)
+    .slide(0.15)
+    .distort(1.3)
+    .gain(0.6)
+).cpm(36)`} punchcard punchcardLabels={false} />
+
+**UK Drill Style:**
+
+UK drill has a bouncier, more rhythmic feel:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ bd ~ ~ ~ bd").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh ~ hh hh ~ hh hh ~").bank("RolandTR808").gain(0.4),
+  note("c1 ~ ~ c1 ~ ~ eb1 c1")
+    .s("sine")
+    .decay(0.4)
+    .sustain(0.2)
+    .slide(0.12)
+    .distort(1.2)
+    .gain(0.6)
+).cpm(35.5)`} punchcard punchcardLabels={false} />
+
+---
+
+### Afrobeats / Afro-Swing (95-110 BPM)
+
+Afrobeats blends West African rhythms with hip-hop and R&B production. It features bouncy, polyrhythmic drums and melodic hooks.
+
+**Key Artists:**
+- Burna Boy, Wizkid, Davido — Nigerian afrobeats pioneers
+- J Hus, Not3s — UK afro-swing sound
+
+**Classic Tracks:**
+- ["Ojuelegba"](https://www.youtube.com/watch?v=a7E0Yc3SqvM) by Wizkid (2014)
+- ["Ye"](https://www.youtube.com/watch?v=d5fEHNjDAKE) by Burna Boy (2018)
+- ["Did You See"](https://www.youtube.com/watch?v=3rk4S8RnXCI) by J Hus (2017)
+
+**Characteristics:** 95-110 BPM, polyrhythmic percussion, log drums, bouncy feel
+
+**Basic Afrobeats:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ bd ~ bd ~ bd ~"),
+  sound("~ ~ ~ ~ sd ~ ~ sd").gain(0.8),
+  sound("hh hh hh hh hh hh hh hh").gain(0.4)
+).cpm(26)`} punchcard punchcardLabels={false} />
+
+**With Percussion Layers:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ bd ~ bd ~ bd ~"),
+  sound("~ ~ ~ ~ sd ~ ~ sd").gain(0.8),
+  sound("hh hh hh hh hh hh hh hh").gain(0.4),
+  sound("~ rim ~ rim ~ rim rim ~").gain(0.5)
+).cpm(26)`} punchcard punchcardLabels={false} />
+
+**With Melodic Elements:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ bd ~ bd ~ bd ~"),
+  sound("~ ~ ~ ~ sd ~ ~ sd").gain(0.8),
+  sound("hh hh hh hh hh hh hh hh").gain(0.3),
+  sound("~ rim ~ rim ~ rim rim ~").gain(0.4),
+  note("c2 ~ g2 ~ c2 ~ g2 ~")
+    .s("sine")
+    .decay(0.2)
+    .sustain(0.1)
+    .gain(0.5),
+  note("c4 ~ eb4 ~ g4 ~ eb4 c4")
+    .s("sawtooth")
+    .lpf(2000)
+    .decay(0.1)
+    .sustain(0)
+    .gain(0.3)
+).cpm(26)`} punchcard punchcardLabels={false} />
+
+---
+
+### Phonk (130-145 BPM)
+
+Phonk is a subgenre blending Memphis rap with modern trap. It features distorted samples, cowbells, and a dark, aggressive aesthetic.
+
+**Key Producers:**
+- DJ Smokey, SpaceGhostPurrp — early pioneers
+- Kordhell, DVRST — modern drift phonk
+
+**Classic Tracks:**
+- ["Murder Rate"](https://www.youtube.com/watch?v=YrPP6zlNvi4) by DJ Smokey (2012)
+- ["Close Eyes"](https://www.youtube.com/watch?v=ao4RCon11eY) by DVRST (2020)
+- ["Murder in My Mind"](https://www.youtube.com/watch?v=rlHB3mdFr1c) by Kordhell (2021)
+
+**Characteristics:** 130-145 BPM, cowbells, distorted 808s, vocal samples, dark atmosphere
+
+**Basic Phonk:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ ~ ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh*8").bank("RolandTR808").gain(0.4),
+  sound("~ cb ~ cb ~ cb cb ~").bank("RolandTR808").gain(0.6)
+).cpm(34)`} punchcard punchcardLabels={false} />
+
+**With Heavy 808:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ ~ ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh*8").bank("RolandTR808").gain(0.4),
+  sound("~ cb ~ cb ~ cb cb ~").bank("RolandTR808").gain(0.5),
+  note("c1 ~ ~ ~ c1 ~ eb1 ~")
+    .s("sine")
+    .decay(0.4)
+    .sustain(0.2)
+    .distort(2)
+    .gain(0.6)
+).cpm(34)`} punchcard punchcardLabels={false} />
+
+**Drift Phonk Style:**
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808").distort(1.5),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808").distort(1.3),
+  sound("hh*16").bank("RolandTR808").gain(0.35),
+  sound("~ cb ~ cb ~ cb cb cb").bank("RolandTR808").gain(0.5),
+  note("c1 ~ c1 ~ c1 ~ c1 eb1")
+    .s("sine")
+    .decay(0.3)
+    .sustain(0.2)
+    .distort(2.5)
+    .lpf(120)
+    .gain(0.6)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+---
+
+## Effects & Processing
+
+### Sidechain Compression
+
+Create the pumping effect where other elements duck when the kick hits:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  note("c2")
+    .s("sawtooth")
+    .lpf(400)
+    .gain(perlin.range(0.2, 0.7).fast(4))
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Lo-fi Textures
+
+Add warmth by filtering and adding room:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~"),
+  sound("~ ~ ~ ~ sd ~ ~ ~"),
+  sound("hh*8").gain(0.4),
+  note("<c3,eb3,g3>")
+    .s("sawtooth")
+    .lpf(1500)
+    .hpf(200)
+    .room(0.3)
+    .gain(0.3)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Reverb for Atmosphere
+
+Add space and depth:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808").room(0.4),
+  sound("hh hh oh hh hh hh oh hh").bank("RolandTR808").gain(0.4).room(0.2)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Delay Throws
+
+Add rhythmic interest with delay:
+
+<MiniRepl client:idle tune={`note("c4 ~ eb4 ~")
+  .s("sawtooth")
+  .lpf(2000)
+  .decay(0.1)
+  .sustain(0)
+  .delay(0.4)
+  .delaytime(0.25)
+  .delayfeedback(0.3)
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Distortion & Saturation
+
+Add grit and aggression to 808s:
+
+<MiniRepl client:idle tune={`note("c1 ~ ~ ~ c1 ~ c1 ~")
+  .s("sine")
+  .decay(0.3)
+  .sustain(0.2)
+  .distort(2)
+  .lpf(150)
+  .gain(0.6)
+  .cpm(22.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Arrangement & Structure
+
+Hip-hop tracks typically follow this structure:
+
+**Intro → Verse → Hook → Verse → Hook → Bridge → Hook → Outro**
+
+### Building Energy with Filtering
+
+Start filtered and open up:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh*8").bank("RolandTR808").gain(0.4),
+  note("c2 ~ ~ ~ c2 ~ c2 ~")
+    .s("sine")
+    .decay(0.3)
+    .sustain(0.2)
+    .lpf(sine.range(100, 400).slow(8))
+    .gain(0.6)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Drop Techniques
+
+Remove elements and bring them back:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808").gain("<1 1 1 0>"),
+  sound("hh*8").bank("RolandTR808").gain("<0.4 0.4 0.4 0>"),
+  note("c1 ~ ~ ~ c1 ~ c1 ~")
+    .s("sine")
+    .decay(0.3)
+    .sustain(0.2)
+    .gain("<0 0 0 0.8>")
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Layering and Building
+
+Add elements gradually:
+
+<MiniRepl client:idle tune={`stack(
+  sound("bd ~ ~ ~ bd ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("hh*8").bank("RolandTR808").gain(0.4),
+  sound("oh").bank("RolandTR808").euclidRot(2, 8, 2).gain("<0 0 0.3 0.3>"),
+  note("c1 ~ ~ ~ c1 ~ c1 ~")
+    .s("sine")
+    .decay(0.3)
+    .sustain(0.2)
+    .gain(0.6),
+  note("<c3,eb3,g3>")
+    .s("sawtooth")
+    .lpf(1200)
+    .attack(0.02)
+    .decay(0.2)
+    .sustain(0.2)
+    .gain("<0 0.2 0.2 0.3>")
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+---
+
+## Complete Tracks
+
+### Boom Bap Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd ~ ~ ~ bd ~ ~ bd").bank("RolandTR808"),
+  sound("~ ~ ~ ~ [sd,cp] ~ ~ ~").bank("RolandTR808"),
+  sound("hh hh oh hh hh hh oh hh").bank("RolandTR808").gain(0.4),
+
+  // Bass
+  note("c2 ~ ~ ~ f2 ~ ~ c2")
+    .s("sine")
+    .decay(0.25)
+    .sustain(0.1)
+    .gain(0.55),
+
+  // Chords
+  note("<c3,eb3,g3,bb3> ~ <f3,ab3,c4,eb4> ~")
+    .s("sawtooth")
+    .lpf(1000)
+    .attack(0.02)
+    .decay(0.25)
+    .sustain(0.15)
+    .room(0.25)
+    .gain(0.25)
+).cpm(22.5)`} punchcard punchcardLabels={false} />
+
+### Trap Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd ~ ~ ~ ~ ~ bd ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ sd ~ ~ ~").bank("RolandTR808"),
+  sound("~ ~ ~ ~ ~ ~ ~ oh").bank("RolandTR808").gain(0.35),
+  sound("hh").bank("RolandTR808").fast("<8 8 8 16>").gain(0.4),
+
+  // 808 Bass
+  note("c1 ~ ~ ~ ~ ~ c1 eb1")
+    .s("sine")
+    .decay(0.45)
+    .sustain(0.3)
+    .slide(0.1)
+    .distort(1.2)
+    .gain(0.6),
+
+  // Melody
+  note("c4 ~ eb4 ~ g4 ~ eb4 ~")
+    .s("sawtooth")
+    .lpf(2500)
+    .attack(0.01)
+    .decay(0.15)
+    .sustain(0)
+    .room(0.2)
+    .gain(0.25)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+### Lo-fi Track
+
+<MiniRepl client:idle tune={`stack(
+  // Drums
+  sound("bd ~ ~ bd ~ ~ bd ~").gain(0.85),
+  sound("~ ~ ~ ~ sd ~ ~ ~").gain(0.7),
+  sound("hh ~ hh ~ hh ~ hh ~").gain(0.3),
+
+  // Bass
+  note("c2 ~ ~ ~ g1 ~ ~ ~")
+    .s("sine")
+    .decay(0.3)
+    .sustain(0.1)
+    .gain(0.45),
+
+  // Rhodes Chords
+  note("<c3,eb3,g3,bb3> <bb2,d3,f3,ab3> <ab2,c3,eb3,g3> <g2,bb2,d3,f3>")
+    .s("sawtooth")
+    .lpf(900)
+    .attack(0.03)
+    .decay(0.35)
+    .sustain(0.15)
+    .room(0.35)
+    .gain(0.22)
+).cpm(20).swing(0.1)`} punchcard punchcardLabels={false} />
+
+---
+
+## Hip-Hop Quick Reference
+
+| Subgenre | BPM | Feel | Key Elements |
+|----------|-----|------|--------------|
+| Boom Bap | 85-95 | Straight | Punchy kicks, snare on 2&4, jazzy samples |
+| Trap | 140 | Half-time | Fast hi-hats, 808 slides, sparse |
+| Lo-fi | 75-90 | Swung | Dusty, jazzy, mellow |
+| Drill | 140-145 | Half-time | Sliding 808s, dark, sparse |
+| Afrobeats | 95-110 | Bouncy | Polyrhythmic, log drums |
+| Phonk | 130-145 | Half-time | Cowbells, distorted 808s, dark |
+
+### Common Drum Patterns
+
+| Style | Kick | Snare | Hi-Hat |
+|-------|------|-------|--------|
+| Boom Bap | `bd ~ ~ ~ bd ~ ~ bd` | `~ ~ ~ ~ sd ~ ~ ~` | Eighth notes |
+| Trap | `bd ~ ~ ~ ~ ~ bd ~` | `~ ~ ~ ~ sd ~ ~ ~` | 16ths + rolls |
+| Lo-fi | `bd ~ ~ bd ~ ~ bd ~` | `~ ~ ~ ~ sd ~ ~ ~` | Sparse 8ths |
+| Drill | `bd ~ ~ ~ ~ ~ ~ bd` | `~ ~ ~ ~ sd ~ ~ ~` | Sparse 8ths |
+
+### Effect Settings
+
+| Effect | Light | Medium | Heavy |
+|--------|-------|--------|-------|
+| Distort | 1.0-1.3 | 1.5-2.0 | 2.5-4.0 |
+| Room | 0.1-0.2 | 0.3-0.4 | 0.5+ |
+| Decay (808) | 0.15-0.25 | 0.3-0.4 | 0.5+ |
+
+---
+
+## What You Learned
+
+- The TR-808 is hip-hop's essential drum machine
+- Hip-hop kicks are syncopated, not on every beat like EDM
+- Snares anchor the groove on beats 2 and 4
+- 808 bass uses `s("sine")` with `.decay()` and `.sustain()`
+- `.slide()` creates the signature 808 pitch slide
+- `.distort()` adds warmth and presence to 808s
+- `.slice()` chops samples into rearrangeable pieces
+- Boom bap (85-95 BPM) uses punchy drums and jazzy chords
+- Trap (140 BPM) uses fast hi-hats with `.fast()` for rolls
+- Lo-fi uses `.swing()` for laid-back grooves
+- Drill features dark, sliding 808s with heavy `.slide()`
+- Afrobeats layers polyrhythmic percussion patterns
+- Phonk adds cowbells and heavy distortion
+- Filter automation (`.lpf()` with `sine.range()`) builds energy
+- Each subgenre has distinct BPM ranges and sonic characteristics

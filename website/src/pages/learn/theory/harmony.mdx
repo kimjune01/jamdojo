@@ -97,11 +97,11 @@ This four-chord progression appears in hundreds of hit songs:
 <MiniRepl client:idle tune={`chord("<C G Am F>").voicing().room(.5)`} punchcard punchcardLabels={false} />
 
 **Songs using I-V-vi-IV:**
-- "Let It Be" — The Beatles
-- "No Woman No Cry" — Bob Marley
-- "With or Without You" — U2
-- "Someone Like You" — Adele
-- "Demons" — Imagine Dragons
+- ["Let It Be"](https://www.youtube.com/watch?v=QDYfEBY9NM4) — The Beatles
+- ["No Woman No Cry"](https://www.youtube.com/watch?v=x59kS2AOrGM) — Bob Marley
+- ["With or Without You"](https://www.youtube.com/watch?v=ujNeHIo7oTE) — U2
+- ["Someone Like You"](https://www.youtube.com/watch?v=hLQl3WQQoQ0) — Adele
+- ["Demons"](https://www.youtube.com/watch?v=mWRsgZuwf_8) — Imagine Dragons
 
 Try it in different keys:
 
@@ -122,9 +122,9 @@ This "doo-wop" progression defined 1950s rock and roll:
 <MiniRepl client:idle tune={`chord("<C Am F G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
 
 **Songs using I-vi-IV-V:**
-- "Stand By Me" — Ben E. King
-- "Every Breath You Take" — The Police
-- "Earth Angel" — The Penguins
+- ["Stand By Me"](https://www.youtube.com/watch?v=hwZNL7QVJjE) — Ben E. King
+- ["Every Breath You Take"](https://www.youtube.com/watch?v=OMOGaugKpzs) — The Police
+- ["Earth Angel"](https://www.youtube.com/watch?v=VJcGi4-n_Yw) — The Penguins
 
 ---
 
@@ -135,9 +135,9 @@ Starting on the minor chord creates a more emotional, melancholic feel:
 <MiniRepl client:idle tune={`chord("<Am F C G>").voicing().room(.5)`} punchcard punchcardLabels={false} />
 
 **Songs using vi-IV-I-V:**
-- "Despacito" — Luis Fonsi
-- "Africa" — Toto
-- "Grenade" — Bruno Mars
+- ["Despacito"](https://www.youtube.com/watch?v=kJQP7kiw5Fk) — Luis Fonsi
+- ["Africa"](https://www.youtube.com/watch?v=FTQbiNvZqaY) — Toto
+- ["Grenade"](https://www.youtube.com/watch?v=SR6iYWJxHqs) — Bruno Mars
 
 ---
 
@@ -148,8 +148,8 @@ Sometimes two chords are all you need:
 <MiniRepl client:idle tune={`chord("<C F C F>").voicing().room(.5)`} punchcard punchcardLabels={false} />
 
 **Songs using mostly I-IV:**
-- "Achy Breaky Heart" — Billy Ray Cyrus
-- "Jamming" — Bob Marley
+- ["Achy Breaky Heart"](https://www.youtube.com/watch?v=byQIPdHMpjc) — Billy Ray Cyrus
+- ["Jamming"](https://www.youtube.com/watch?v=oFRbZJXjWIA) — Bob Marley
 - Many folk and country songs
 
 ---
@@ -385,9 +385,9 @@ The **ii-V-I** (two-five-one) is the most important progression in jazz. Nearly 
 The ii-V creates tension that resolves to the I. This is the heart of jazz harmony.
 
 **Classic recordings featuring ii-V-I:**
-- "Autumn Leaves" — the entire song is built on ii-V-I progressions
-- "All The Things You Are" — Jerome Kern's standard
-- "Satin Doll" — Duke Ellington
+- ["Autumn Leaves"](https://www.youtube.com/watch?v=r-Z8KuwI7Gc) — the entire song is built on ii-V-I progressions
+- ["All The Things You Are"](https://www.youtube.com/watch?v=2YY9YvZflzI) — Jerome Kern's standard
+- ["Satin Doll"](https://www.youtube.com/watch?v=J0my-tULW4s) — Duke Ellington
 
 ### ii-V-I in Different Keys
 
@@ -692,7 +692,7 @@ Brazilian jazz features flowing rhythm and minor 7th cycles:
   x => x.rootNotes(2).struct("x ~ ~ x ~ x ~ ~").note()
 ).room(.4).cpm(35)`} punchcard punchcardLabels={false} />
 
-**"Girl From Ipanema" style:**
+**["Girl From Ipanema"](https://www.youtube.com/watch?v=c5QfXjsoNe4) style:**
 
 <MiniRepl client:idle tune={`chord("<F^7 F^7 G7 G7 Gm7 Gb7 F^7 Gb7>").layer(
   x => x.struct("x ~ [x ~] ~").voicing(),
@@ -703,9 +703,9 @@ Brazilian jazz features flowing rhythm and minor 7th cycles:
 
 ## Modal Jazz
 
-Modal jazz, pioneered by Miles Davis on "Kind of Blue," uses fewer chord changes and focuses on scales/modes:
+Modal jazz, pioneered by Miles Davis on ["Kind of Blue"](https://www.youtube.com/watch?v=ylXk1LBvIqU), uses fewer chord changes and focuses on scales/modes:
 
-**So What / Impressions style (Dm7 for 8 bars, Ebm7 for 8 bars):**
+**[So What](https://www.youtube.com/watch?v=ylXk1LBvIqU) / [Impressions](https://www.youtube.com/watch?v=hFyv3wRH9Zg) style (Dm7 for 8 bars, Ebm7 for 8 bars):**
 
 <MiniRepl client:idle tune={`chord("<Dm7!4 Ebm7!4>")
   .dict('lefthand')

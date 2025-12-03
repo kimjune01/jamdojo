@@ -1,0 +1,764 @@
+---
+title: Sound Design & Timbre
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+Timbre is the "color" or "texture" of sound—what makes a piano sound different from a guitar playing the same note. This guide teaches you to sculpt timbre using Strudel's synthesis tools: oscillators, filters, envelopes, and effects.
+
+## What Shapes Timbre?
+
+Four main elements determine how a sound feels:
+
+1. **Waveform** — The raw shape of vibration (sine, saw, square)
+2. **Harmonics** — The overtones present above the fundamental note
+3. **Envelope** — How the sound evolves over time (attack, decay, sustain, release)
+4. **Filtering** — Which frequencies are emphasized or removed
+
+Let's explore each one.
+
+---
+
+## Building Blocks: Waveforms
+
+Strudel's built-in oscillators give you different starting materials:
+
+### Sine Wave
+Pure tone, no harmonics. Soft and flute-like:
+
+<MiniRepl client:idle tune={`s("sine").note("c4").room(.3)._scope()`} />
+
+### Sawtooth Wave
+All harmonics present. Bright and buzzy—the foundation of most synth sounds:
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4").room(.3)._scope()`} />
+
+### Square Wave
+Only odd harmonics. Hollow and reedy, like a clarinet:
+
+<MiniRepl client:idle tune={`s("square").note("c4").room(.3)._scope()`} />
+
+### Triangle Wave
+Softer odd harmonics. Somewhere between sine and square:
+
+<MiniRepl client:idle tune={`s("triangle").note("c4").room(.3)._scope()`} />
+
+**Compare all four:**
+
+<MiniRepl client:idle tune={`s("<sine sawtooth square triangle>")
+  .note("c4")
+  .room(.3)._scope()`} />
+
+### Quick Reference: Waveforms
+
+| Waveform | Harmonics | Character | Good For |
+|----------|-----------|-----------|----------|
+| sine | None (pure) | Soft, clean | Sub bass, flutes, pure tones |
+| sawtooth | All | Bright, buzzy | Leads, pads, brass |
+| square | Odd only | Hollow, reedy | Clarinets, retro games |
+| triangle | Soft odd | Mellow | Soft leads, mellow bass |
+
+---
+
+## Harmonics & Partials
+
+Timbre comes from **harmonics**—additional frequencies above the fundamental note. You can design custom waveforms using `partials`:
+
+**Just the fundamental (like a sine):**
+
+<MiniRepl client:idle tune={`s("user").partials([1]).note("c4").room(.3)._scope()`} />
+
+**Add the second harmonic (octave above):**
+
+<MiniRepl client:idle tune={`s("user").partials([1, 0.5]).note("c4").room(.3)._scope()`} />
+
+**More harmonics = brighter sound:**
+
+<MiniRepl client:idle tune={`s("user").partials([1, 0.5, 0.3, 0.2, 0.1]).note("c4").room(.3)._scope()`} />
+
+**Odd harmonics only (square-like):**
+
+<MiniRepl client:idle tune={`s("user").partials([1, 0, 0.3, 0, 0.2, 0, 0.1]).note("c4").room(.3)._scope()`} />
+
+---
+
+## Noise
+
+Noise adds texture, breath, and percussive character:
+
+### White Noise
+Equal energy across all frequencies. Bright and hissy:
+
+<MiniRepl client:idle tune={`s("white").room(.3)._scope()`} />
+
+### Pink Noise
+Less high frequencies. Warmer, like wind or rain:
+
+<MiniRepl client:idle tune={`s("pink").room(.3)._scope()`} />
+
+### Brown Noise
+Even fewer highs. Deep rumble:
+
+<MiniRepl client:idle tune={`s("brown").room(.3)._scope()`} />
+
+**Mix noise with an oscillator for texture:**
+
+<MiniRepl client:visible tune={`const noiseAmt = slider(0.1, 0, 0.5)
+s("sawtooth").note("c4").noise(noiseAmt).room(.3)._scope()`} />
+
+---
+
+## Shaping Sound with Envelopes
+
+An **envelope** controls how a parameter changes over time. The most common is **ADSR** for amplitude:
+
+- **Attack** — Time to reach full volume
+- **Decay** — Time to fall to sustain level
+- **Sustain** — Level held while note plays (0-1)
+- **Release** — Time to fade after note ends
+
+### Attack: Slow vs Fast
+
+Use the slider to hear how attack changes the feel from percussive to pad-like:
+
+<MiniRepl client:visible tune={`const att = slider(0.001, 0.001, 1)
+s("sawtooth").note("c4")
+  .attack(att).decay(.3).sustain(.5).release(.3)
+  .room(.3)._scope()`} />
+
+### Decay & Sustain
+
+Adjust decay and sustain to shape the body of the sound:
+
+<MiniRepl client:visible tune={`const dec = slider(0.15, 0.05, 1)
+const sus = slider(0, 0, 1)
+s("sawtooth").note("c4")
+  .attack(.001).decay(dec).sustain(sus).release(.3)
+  .room(.3)._scope()`} />
+
+### Release
+
+Control how long the sound lingers after the note ends:
+
+<MiniRepl client:visible tune={`const rel = slider(0.05, 0.01, 2)
+s("sawtooth").note("c4")
+  .attack(.01).decay(.2).sustain(.5).release(rel)
+  .room(.3)._scope()`} />
+
+---
+
+## Filter Envelopes
+
+Filters can also have envelopes, making sounds "open up" or "close down" over time:
+
+<MiniRepl client:visible tune={`const envAmt = slider(4, 0, 10)
+const lpAtt = slider(0.001, 0.001, 0.5)
+const lpDec = slider(0.3, 0.05, 1)
+s("sawtooth").note("c3")
+  .lpf(200).lpenv(envAmt)
+  .lpattack(lpAtt).lpdecay(lpDec).lpsustain(0)
+  .room(.3)._scope()`} />
+
+---
+
+## Pitch Envelopes
+
+**Pitch envelope** bends the note up or down at the start—essential for kicks and zaps:
+
+**Kick drum pitch drop:**
+
+<MiniRepl client:visible tune={`const pitchAmt = slider(24, 0, 48)
+const pitchDec = slider(0.05, 0.01, 0.2)
+const ampDec = slider(0.3, 0.1, 1)
+s("sine").note("c1")
+  .penv(pitchAmt).pdecay(pitchDec)
+  .decay(ampDec).sustain(0)
+  .room(.2)._scope()`} />
+
+**Laser zap:**
+
+<MiniRepl client:visible tune={`const pitchAmt = slider(-36, -48, 0)
+const pitchDec = slider(0.1, 0.02, 0.3)
+s("sawtooth").note("c4")
+  .penv(pitchAmt).pdecay(pitchDec)
+  .decay(.2).sustain(0)
+  .lpf(2000)
+  .room(.3)._scope()`} />
+
+---
+
+## Filters & Frequency Control
+
+Filters remove frequencies, sculpting the tone:
+
+### Low-Pass Filter (lpf)
+
+Removes high frequencies. Lower cutoff = darker sound:
+
+<MiniRepl client:visible tune={`const cutoff = slider(2000, 100, 8000)
+s("sawtooth").note("c4").lpf(cutoff).room(.3)._scope()`} />
+
+### High-Pass Filter (hpf)
+
+Removes low frequencies. Thins out the sound:
+
+<MiniRepl client:visible tune={`const cutoff = slider(500, 100, 4000)
+s("sawtooth").note("c4").hpf(cutoff).room(.3)._scope()`} />
+
+### Resonance (lpq)
+
+Boosts frequencies around the cutoff. High resonance creates a "wah" peak:
+
+<MiniRepl client:visible tune={`const cutoff = slider(600, 200, 2000)
+const res = slider(5, 0, 20)
+s("sawtooth").note("c3").lpf(cutoff).lpq(res).room(.3)._scope()`} />
+
+### Vowel Filter
+
+Shapes sound like vocal formants:
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4").vowel("<a e i o u>").room(.3)._scope()`} />
+
+### Quick Reference: Filters
+
+| Filter | Function | Use Case |
+|--------|----------|----------|
+| lpf(hz) | Remove highs | Warmth, darkness |
+| hpf(hz) | Remove lows | Thinning, clarity |
+| lpq(n) | Resonance peak | Wah, acid sounds |
+| vowel(v) | Formant shaping | Vocal textures |
+
+---
+
+## Classic Synth Sounds
+
+Now let's build some iconic sounds step by step.
+
+### 808 Bass (Detailed Walkthrough)
+
+The Roland TR-808 bass is a sine wave with a pitch envelope dropping from high to low:
+
+**Step 1: Start with a sine wave**
+
+<MiniRepl client:idle tune={`s("sine").note("c1").decay(.5).sustain(0).room(.2)._scope()`} />
+
+**Step 2: Add pitch envelope (the characteristic "boom")**
+
+<MiniRepl client:idle tune={`s("sine").note("c1")
+  .penv(12).pdecay(.08)
+  .decay(.5).sustain(0)
+  .room(.2)._scope()`} />
+
+**Step 3: Shape your 808**
+
+<MiniRepl client:visible tune={`const pitchAmt = slider(12, 0, 36)
+const pitchDec = slider(0.08, 0.02, 0.2)
+const ampDec = slider(0.5, 0.1, 1.5)
+s("sine").note("c1")
+  .penv(pitchAmt).pdecay(pitchDec)
+  .decay(ampDec).sustain(0)
+  .room(.2)._scope()`} />
+
+### Acid Squelch (Detailed Walkthrough)
+
+The TB-303 acid sound uses a sawtooth with resonant filter envelope:
+
+**Step 1: Sawtooth bass**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c2").decay(.2).sustain(0).room(.2)._scope()`} />
+
+**Step 2: Add low-pass filter**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c2").lpf(400).decay(.2).sustain(0).room(.2)._scope()`} />
+
+**Step 3: Add resonance (the squelch)**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c2").lpf(400).lpq(12).decay(.2).sustain(0).room(.2)._scope()`} />
+
+**Step 4: Add filter envelope (the wah)**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c2")
+  .lpf(200).lpq(15).lpenv(6)
+  .lpattack(.001).lpdecay(.15).lpsustain(0)
+  .decay(.2).sustain(0)
+  .room(.2)._scope()`} />
+
+**Full acid line — shape the squelch:**
+
+<MiniRepl client:visible tune={`const res = slider(15, 0, 25)
+const envAmt = slider(6, 0, 12)
+const envDec = slider(0.1, 0.02, 0.3)
+note("c2 c2 c3 c2 eb2 c2 f2 c2")
+  .s("sawtooth")
+  .lpf(200).lpq(res).lpenv(envAmt)
+  .lpattack(.001).lpdecay(envDec).lpsustain(0)
+  .decay(.15).sustain(0)
+  .room(.2)._scope()`} />
+
+### Supersaw Lead
+
+The supersaw uses multiple detuned oscillators for a thick, moving sound:
+
+<MiniRepl client:idle tune={`s("supersaw").note("c4 e4 g4 c5")
+  .room(.3)._scope()`} />
+
+**Control thickness with unison and spread:**
+
+<MiniRepl client:visible tune={`const voices = slider(5, 1, 9)
+const detune = slider(0.5, 0, 1)
+const cutoff = slider(3000, 500, 8000)
+s("supersaw").note("c4")
+  .unison(voices).spread(detune)
+  .lpf(cutoff)
+  .room(.3)._scope()`} />
+
+### Pluck
+
+Short decay + filter envelope:
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4 e4 g4 c5")
+  .lpf(500).lpenv(4)
+  .lpattack(.001).lpdecay(.1).lpsustain(0)
+  .decay(.2).sustain(0)
+  .room(.3)._scope()`} />
+
+### Sub Bass
+
+Pure low-end, minimal harmonics:
+
+<MiniRepl client:idle tune={`s("sine").note("c1")
+  .decay(.3).sustain(.5).release(.1)
+  .room(.1)._scope()`} />
+
+### Quick Reference: Classic Synth Sounds
+
+| Sound | Base | Key Settings |
+|-------|------|--------------|
+| 808 Bass | sine | penv(12), pdecay(.08), note(c1) |
+| Acid | sawtooth | lpf(200), lpq(15), lpenv(6) |
+| Supersaw | supersaw | unison(5), spread(.5) |
+| Pluck | sawtooth | short decay, lpenv |
+| Sub Bass | sine | low note, minimal processing |
+
+---
+
+## Imitating Acoustic Instruments
+
+### Strings (Detailed Walkthrough)
+
+Strings have a slow attack and vibrato:
+
+**Step 1: Sawtooth base (rich harmonics like bowed strings)**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4").room(.3)._scope()`} />
+
+**Step 2: Slow attack (bowing in)**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4")
+  .attack(.3).decay(.1).sustain(.8).release(.5)
+  .room(.3)._scope()`} />
+
+**Step 3: Add low-pass filter (mellower tone)**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4")
+  .attack(.3).decay(.1).sustain(.8).release(.5)
+  .lpf(2000)
+  .room(.3)._scope()`} />
+
+**Step 4: Add vibrato**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4")
+  .attack(.3).decay(.1).sustain(.8).release(.5)
+  .lpf(2000)
+  .vib(5).vibmod(.2)
+  .room(.3)._scope()`} />
+
+**String pad chord — shape the warmth:**
+
+<MiniRepl client:visible tune={`const att = slider(0.4, 0.1, 1)
+const cutoff = slider(1800, 500, 4000)
+const vibSpeed = slider(4, 2, 8)
+const vibDepth = slider(0.15, 0, 0.4)
+chord("<C Am F G>").voicing()
+  .s("sawtooth")
+  .attack(att).decay(.1).sustain(.7).release(.6)
+  .lpf(cutoff).vib(vibSpeed).vibmod(vibDepth)
+  .room(.4)._scope()`} />
+
+### Brass (Detailed Walkthrough)
+
+Brass has a filter envelope that opens with the attack:
+
+**Step 1: Sawtooth base**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4").room(.3)._scope()`} />
+
+**Step 2: Add attack time**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4")
+  .attack(.08).decay(.1).sustain(.7).release(.2)
+  .room(.3)._scope()`} />
+
+**Step 3: Filter opens with note (the "blat")**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4")
+  .attack(.05).decay(.1).sustain(.7).release(.15)
+  .lpf(400).lpenv(5)
+  .lpattack(.05).lpdecay(.15).lpsustain(.6)
+  .room(.3)._scope()`} />
+
+**Brass stab:**
+
+<MiniRepl client:idle tune={`chord("<C7 F7>").voicing()
+  .s("sawtooth")
+  .attack(.03).decay(.15).sustain(.5).release(.1)
+  .lpf(600).lpenv(4).lpattack(.02).lpdecay(.1).lpsustain(.5)
+  .room(.3)._scope()`} />
+
+### Piano-like
+
+Piano has fast attack, medium decay, and filter movement:
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c4 e4 g4 c5")
+  .attack(.001).decay(.6).sustain(.2).release(.3)
+  .lpf(1500).lpenv(3).lpdecay(.4).lpsustain(.3)
+  .room(.3)._scope()`} />
+
+### Flute / Woodwind
+
+Sine or triangle with breath noise and vibrato:
+
+<MiniRepl client:visible tune={`const breath = slider(0.03, 0, 0.1)
+const vibSpeed = slider(5, 3, 8)
+const vibDepth = slider(0.3, 0, 0.5)
+s("triangle").note("c5")
+  .attack(.1).decay(.1).sustain(.7).release(.2)
+  .noise(breath)
+  .vib(vibSpeed).vibmod(vibDepth)
+  .room(.4)._scope()`} />
+
+### Percussion (Snare-like)
+
+Noise with pitch envelope and short decay:
+
+<MiniRepl client:idle tune={`s("white")
+  .note("c4")
+  .penv(-12).pdecay(.05)
+  .decay(.15).sustain(0)
+  .hpf(200)
+  .room(.2)._scope()`} />
+
+### Quick Reference: Acoustic Imitations
+
+| Instrument | Base | Key Settings |
+|------------|------|--------------|
+| Strings | sawtooth | attack(.3), lpf(2000), vib(5) |
+| Brass | sawtooth | lpf(400), lpenv(5), fast lpattack |
+| Piano | sawtooth | fast attack, decay(.6), lpenv |
+| Flute | triangle/sine | noise(.03), vib(5), vibmod(.3) |
+| Percussion | white noise | penv, short decay, hpf |
+
+---
+
+## Genre-Specific Textures
+
+### Dubstep Wobble (Detailed Walkthrough)
+
+The wobble is an LFO controlling the filter cutoff:
+
+**Step 1: Bass tone**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c1").lpf(400).room(.2)._scope()`} />
+
+**Step 2: Use a signal to modulate filter**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c1")
+  .lpf(sine.range(200, 2000).slow(2))
+  .lpq(5)
+  .room(.2)._scope()`} />
+
+**Step 3: Speed up the wobble**
+
+<MiniRepl client:idle tune={`s("sawtooth").note("c1")
+  .lpf(sine.range(200, 2000).fast(2))
+  .lpq(8)
+  .room(.2)._scope()`} />
+
+**Step 4: Shape the wobble**
+
+<MiniRepl client:visible tune={`const speed = slider(2, 0.5, 8)
+const res = slider(10, 0, 20)
+const dist = slider(0.3, 0, 1)
+s("sawtooth").note("c1")
+  .lpf(sine.range(200, 2000).fast(speed))
+  .lpq(res)
+  .distort(dist)
+  .room(.2)._scope()`} />
+
+### Lo-fi Textures
+
+Bit crushing and sample rate reduction add grit:
+
+<MiniRepl client:visible tune={`const cutoff = slider(1200, 400, 3000)
+const bits = slider(8, 2, 16)
+const coarseAmt = slider(1, 1, 16)
+s("sawtooth").note("c4 e4 g4 e4")
+  .lpf(cutoff)
+  .crush(bits)
+  .coarse(coarseAmt)
+  .room(.3)._scope()`} />
+
+### Ambient Pad (Detailed Walkthrough)
+
+Slow attack, long release, lots of reverb:
+
+**Step 1: Supersaw for thickness**
+
+<MiniRepl client:idle tune={`s("supersaw").note("c4").room(.3)._scope()`} />
+
+**Step 2: Slow envelope**
+
+<MiniRepl client:idle tune={`s("supersaw").note("c4")
+  .attack(.8).decay(.3).sustain(.7).release(1.5)
+  .room(.3)._scope()`} />
+
+**Step 3: Filter and reverb**
+
+<MiniRepl client:idle tune={`s("supersaw").note("c4")
+  .attack(.8).decay(.3).sustain(.6).release(2)
+  .lpf(1500)
+  .room(.6)._scope()`} />
+
+**Ambient chord pad — shape the atmosphere:**
+
+<MiniRepl client:visible tune={`const att = slider(1, 0.2, 2)
+const rel = slider(2, 0.5, 4)
+const cutoff = slider(1200, 400, 3000)
+const reverb = slider(0.7, 0.2, 1)
+chord("<C^7 Am7 F^7 G7>").voicing()
+  .s("supersaw")
+  .attack(att).decay(.3).sustain(.5).release(rel)
+  .lpf(cutoff)
+  .room(reverb)
+  .slow(2)._scope()`} />
+
+### Risers & FX
+
+Pitch sweep + filter sweep + noise = tension builder:
+
+<MiniRepl client:idle tune={`s("sawtooth")
+  .note("c2")
+  .lpf(sine.range(200, 4000).slow(4))
+  .penv(-24).pdecay(4)
+  .decay(4).sustain(0)
+  .room(.4)._scope()`} />
+
+**White noise riser:**
+
+<MiniRepl client:idle tune={`s("white")
+  .lpf(sine.range(500, 8000).slow(4))
+  .decay(4).sustain(0)
+  .room(.4)._scope()`} />
+
+### Quick Reference: Genre Textures
+
+| Texture | Base | Key Settings |
+|---------|------|--------------|
+| Dubstep Wobble | sawtooth | lpf(sine.range(...)), lpq(10), distort |
+| Lo-fi | any | crush(8), coarse(4), lpf |
+| Ambient Pad | supersaw | attack(.8), release(2), room(.6) |
+| Riser | saw/noise | slow filter sweep, penv |
+
+---
+
+## FM Synthesis
+
+**FM (Frequency Modulation)** creates complex, often metallic timbres by using one oscillator to modulate another:
+
+### Basic FM
+
+`fm` controls modulation amount, `fmh` sets the harmonic ratio:
+
+<MiniRepl client:visible tune={`const fmAmt = slider(2, 0, 12)
+const fmRatio = slider(2, 1, 8)
+s("sine").note("c4").fm(fmAmt).fmh(fmRatio).room(.3)._scope()`} />
+
+### Bell Tones
+
+Bells use non-integer harmonic ratios:
+
+<MiniRepl client:visible tune={`const fmAmt = slider(4, 1, 8)
+const fmRatio = slider(2.4, 1.5, 4)
+const dec = slider(0.8, 0.3, 2)
+s("sine").note("c5")
+  .fm(fmAmt).fmh(fmRatio)
+  .decay(dec).sustain(0)
+  .room(.4)._scope()`} />
+
+### Electric Piano
+
+Classic e-piano uses FM with envelope on the modulation:
+
+<MiniRepl client:visible tune={`const fmAmt = slider(2, 0, 5)
+const fmDec = slider(0.3, 0.05, 0.8)
+s("sine").note("c4 e4 g4 c5")
+  .fm(fmAmt).fmh(2)
+  .fmdecay(fmDec)
+  .decay(.5).sustain(.2).release(.3)
+  .room(.3)._scope()`} />
+
+### Metallic & Industrial
+
+High FM amounts create harsh, industrial tones:
+
+<MiniRepl client:idle tune={`s("sine").note("c2")
+  .fm(6).fmh(7)
+  .decay(.3).sustain(0)
+  .room(.2)._scope()`} />
+
+### Quick Reference: FM Synthesis
+
+| Sound | fm | fmh | Notes |
+|-------|-----|-----|-------|
+| Clean | 0 | - | Pure sine |
+| Subtle harmonics | 1-2 | 2 | Slight color |
+| Bell | 3-5 | 2.4+ | Non-integer ratio |
+| E-piano | 2 | 2 | Add fmdecay |
+| Metallic | 6+ | 3+ | Harsh, industrial |
+
+---
+
+## Wavetables
+
+Wavetables let you morph between different waveforms. Strudel includes the **AKWF** library with 1000+ waveforms:
+
+### Using Wavetables
+
+Prefix with `wt_` to load wavetables:
+
+<MiniRepl client:idle tune={`s("wt_piano").note("c4 e4 g4 c5").room(.3)._scope()`} />
+
+<MiniRepl client:idle tune={`s("wt_saw").note("c4").room(.3)._scope()`} />
+
+<MiniRepl client:idle tune={`s("wt_eguitar").note("c4 e4 g4 e4").room(.3)._scope()`} />
+
+### Wavetable Position
+
+Some wavetables have multiple waves you can sweep through with `wt`:
+
+<MiniRepl client:visible tune={`const pos = slider(0.5, 0, 1)
+s("wt_dbass").note("c2")
+  .wt(pos)
+  .room(.3)._scope()`} />
+
+### Warp Modes
+
+Transform wavetables with different warp algorithms:
+
+<MiniRepl client:visible tune={`const warpAmt = slider(0.5, 0, 1)
+s("wt_saw").note("c4")
+  .warpmode("FOLD")
+  .warp(warpAmt)
+  .room(.3)._scope()`} />
+
+<MiniRepl client:visible tune={`const warpAmt = slider(0.5, 0, 1)
+s("wt_saw").note("c4")
+  .warpmode("SYNC")
+  .warp(warpAmt)
+  .room(.3)._scope()`} />
+
+### Quick Reference: Wavetable Warp Modes
+
+| Mode | Effect |
+|------|--------|
+| FOLD | Wave folding distortion |
+| SYNC | Oscillator sync effect |
+| PWM | Pulse width modulation |
+| MIRROR | Symmetric reflection |
+| QUANT | Quantization/bit reduction |
+
+---
+
+## Effects for Timbre
+
+### Distortion
+
+Adds harmonics and grit:
+
+<MiniRepl client:visible tune={`const dist = slider(0.5, 0, 3)
+const cutoff = slider(2000, 500, 8000)
+s("sine").note("c3")
+  .distort(dist)
+  .lpf(cutoff)
+  .room(.2)._scope()`} />
+
+### Shape (Waveshaping)
+
+Subtler distortion:
+
+<MiniRepl client:visible tune={`const shapeAmt = slider(0.5, 0, 1)
+s("sine").note("c3")
+  .shape(shapeAmt)
+  .room(.2)._scope()`} />
+
+### Phaser
+
+Sweeping notch filter for movement:
+
+<MiniRepl client:visible tune={`const speed = slider(2, 0.5, 8)
+const depth = slider(0.8, 0, 1)
+s("sawtooth").note("c4")
+  .lpf(2000)
+  .phaser(speed).phaserdepth(depth)
+  .room(.3)._scope()`} />
+
+### Combining Everything
+
+Here's a complex sound using multiple techniques:
+
+<MiniRepl client:visible tune={`const cutoff = slider(800, 200, 2000)
+const res = slider(5, 0, 15)
+const dist = slider(0.2, 0, 1)
+const vibSpeed = slider(4, 2, 8)
+s("sawtooth").note("c3")
+  .attack(.05).decay(.2).sustain(.6).release(.3)
+  .lpf(cutoff).lpq(res).lpenv(4)
+  .lpattack(.01).lpdecay(.2).lpsustain(.4)
+  .vib(vibSpeed).vibmod(.1)
+  .distort(dist)
+  .room(.4)._scope()`} />
+
+---
+
+## Sound Design Recipes
+
+### Quick Reference Table
+
+| Sound | Recipe |
+|-------|--------|
+| 808 Kick | `s("sine").note("c1").penv(12).pdecay(.08).decay(.5).sustain(0)` |
+| Acid Bass | `s("sawtooth").note("c2").lpf(200).lpq(15).lpenv(6).lpdecay(.15)` |
+| Strings | `s("sawtooth").attack(.3).lpf(2000).vib(5).vibmod(.2)` |
+| Brass | `s("sawtooth").lpf(400).lpenv(5).lpattack(.05)` |
+| Pluck | `s("sawtooth").decay(.2).sustain(0).lpf(500).lpenv(4)` |
+| Bell | `s("sine").fm(4).fmh(2.4).decay(.8).sustain(0)` |
+| Wobble | `s("sawtooth").lpf(sine.range(200, 2000).fast(2)).lpq(10)` |
+| Pad | `s("supersaw").attack(.8).release(2).lpf(1200).room(.6)` |
+| Lo-fi | `s("sawtooth").lpf(900).crush(6).coarse(4)` |
+| Sub | `s("sine").note("c1").decay(.3).sustain(.5)` |
+
+---
+
+## What You Learned
+
+- **Waveforms** determine the basic harmonic content: sine (pure), saw (bright), square (hollow), triangle (mellow)
+- **Partials** let you design custom waveforms with additive synthesis
+- **ADSR envelopes** shape how sounds evolve over time
+- **Filter envelopes** create dynamic timbral movement (wah, plucks, brass)
+- **Pitch envelopes** are essential for kicks, zaps, and basses
+- **Filters** (lpf, hpf) sculpt frequency content; resonance (lpq) adds character
+- **FM synthesis** creates metallic, bell-like, and complex tones
+- **Wavetables** provide ready-made complex waveforms with morphing
+- **Effects** (distort, crush, phaser) add further timbral options
+- Combine these tools to recreate classic synth sounds and acoustic instruments
