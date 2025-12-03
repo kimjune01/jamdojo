@@ -1,0 +1,980 @@
+---
+title: Strudel Programming
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+
+This guide teaches you how to think like a programmer in Strudel. The key insight: **everything can be stored in variables and reused**. Notes, rhythms, envelopes, effects, even modulation—all can be assigned, combined, and applied across your composition.
+
+**Prerequisites:** Basic familiarity with code (what a function is, what `=` does). No Strudel experience required.
+
+---
+
+## Part 1: The Power of Variables
+
+### Everything Is Assignable
+
+In Strudel, anything you can write can be stored in a variable:
+
+<MiniRepl client:visible tune={`// Store a note pattern
+const melody = note("c4 e4 g4 b4")
+
+// Store a sound
+const synth = s("sawtooth")
+
+// Store an effect chain
+const fx = x => x.lpf(800).room(0.3)
+
+// Combine them
+melody.s("sawtooth").lpf(800).room(0.3)`} />
+
+But that last line is verbose. Watch what happens when we make things reusable:
+
+<MiniRepl client:visible tune={`const melody = note("c4 e4 g4 b4")
+const withBass = x => x.s("sawtooth").lpf(600)
+
+withBass(melody)`} />
+
+The function `withBass` can now be applied to **any** melody.
+
+### Why Variables Matter
+
+Without variables, you repeat yourself constantly:
+
+```javascript
+// Repetitive - same settings everywhere
+note("c2 eb2 g2").s("sawtooth").lpf(600).attack(0.01).decay(0.15).sustain(0)
+note("g2 bb2 d3").s("sawtooth").lpf(600).attack(0.01).decay(0.15).sustain(0)
+note("f2 ab2 c3").s("sawtooth").lpf(600).attack(0.01).decay(0.15).sustain(0)
+```
+
+With variables, you define once and apply everywhere:
+
+<MiniRepl client:visible tune={`// Define the sound once
+const acidBass = x => x
+  .s("sawtooth")
+  .lpf(600)
+  .attack(0.01)
+  .decay(0.15)
+  .sustain(0)
+
+// Apply to any notes
+cat(
+  acidBass(note("c2 eb2 g2")),
+  acidBass(note("g2 bb2 d3")),
+  acidBass(note("f2 ab2 c3"))
+)`} />
+
+Change `acidBass` once, and every pattern using it updates.
+
+---
+
+## Part 2: Storing Sound Designs
+
+### ADSR Envelopes as Variables
+
+Envelopes shape how sounds evolve over time. Instead of typing `.attack().decay().sustain().release()` repeatedly, store envelope shapes:
+
+<MiniRepl client:visible tune={`// Define envelope shapes
+const pluck = x => x.attack(0.001).decay(0.12).sustain(0).release(0.1)
+const pad = x => x.attack(0.8).decay(0.3).sustain(0.7).release(1.5)
+const stab = x => x.attack(0.02).decay(0.1).sustain(0.5).release(0.3)
+
+// Apply to any sound - watch the sharp attack in the scope
+pluck(note("c2 eb2 g2 bb2").s("sawtooth").lpf(1200))._scope()`} />
+
+Now try changing `pluck` to `pad`:
+
+<MiniRepl client:visible tune={`const pluck = x => x.attack(0.001).decay(0.12).sustain(0).release(0.1)
+const pad = x => x.attack(0.8).decay(0.3).sustain(0.7).release(1.5)
+const stab = x => x.attack(0.02).decay(0.1).sustain(0.5).release(0.3)
+
+// Same notes, different character - watch the slow fade-in
+pad(note("[c3,eb3,g3]").s("sawtooth").lpf(1500).room(0.5))._scope()`} />
+
+**Genre connection:** The `pluck` envelope is classic TB-303 acid bass. The `pad` is ambient/chillout. The `stab` is disco brass.
+
+### Complete Sound Presets
+
+Combine envelope + effects into full presets:
+
+<MiniRepl client:visible tune={`// Full sound presets
+const acidBass = x => x
+  .s("sawtooth")
+  .attack(0.001)
+  .decay(0.15)
+  .sustain(0)
+  .lpf(1200)
+  .lpq(10)
+
+const warmPad = x => x
+  .s("sawtooth")
+  .attack(1)
+  .decay(0.5)
+  .sustain(0.7)
+  .release(2)
+  .lpf(1500)
+  .room(0.5)
+
+const brightLead = x => x
+  .s("square")
+  .attack(0.01)
+  .decay(0.2)
+  .sustain(0.6)
+  .lpf(3000)
+  .delay(0.25)
+
+// Use them
+stack(
+  acidBass(note("c2 c2 eb2 g2")),
+  warmPad(note("[c4,eb4,g4]")).gain(0.4),
+  brightLead(note("c5 ~ eb5 ~")).gain(0.3)
+)`} />
+
+Your sound palette is now a library of reusable presets.
+
+---
+
+## Part 3: Signals and Modulation
+
+Signals are continuous value generators—they produce numbers that change over time. This is the foundation of all modulation in electronic music: filter sweeps, tremolo, vibrato, auto-pan, and more.
+
+### Signal Types
+
+Each signal has a distinct character. The `._scope()` visualization shows you the waveform in real-time:
+
+<MiniRepl client:visible tune={`// Compare signal shapes on filter
+// Try changing 'sine' to: saw, tri, square, perlin
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(sine.range(300, 2000).slow(2))
+  .lpq(8)
+  ._scope()`} />
+
+| Signal | Shape | Musical Use |
+|--------|-------|-------------|
+| `sine` | Smooth wave | Filter sweeps, tremolo, vibrato |
+| `saw` | Ramp up, reset | Buildups, risers |
+| `tri` | Triangle | Smooth modulation (like sine but more linear) |
+| `square` | On/off | Gating, rhythmic chops |
+| `rand` | Random per event | Humanization, chaos |
+| `perlin` | Smooth random | Organic drift, natural variation |
+| `brand` | Binary random (0 or 1) | Coin-flip effects, random panning |
+| `brandBy(p)` | Binary with probability | Sparse triggers, probabilistic gating |
+
+**Saw — Perfect for buildups:**
+
+<MiniRepl client:visible tune={`note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(saw.range(200, 4000).slow(8))
+  .lpq(6)
+  ._scope()`} />
+
+The filter ramps up over 8 cycles, then resets. Watch the waveform get brighter as the filter opens. Classic EDM riser.
+
+**Square — Rhythmic gating:**
+
+<MiniRepl client:visible tune={`note("[c3,eb3,g3]")
+  .s("sawtooth")
+  .gain(square.range(0, 0.8).fast(4))
+  ._scope()`} />
+
+The sound cuts in and out rhythmically—trance gate effect. The scope shows the sharp on/off pattern.
+
+**Perlin — Organic drift:**
+
+<MiniRepl client:visible tune={`note("c4 e4 g4 b4")
+  .s("piano")
+  .pan(perlin.range(0.3, 0.7).slow(2))
+  .gain(perlin.range(0.6, 1).slow(3))
+  ._scope()`} />
+
+Smooth, natural-feeling variation—no two cycles sound exactly the same.
+
+### Boolean Signals
+
+Boolean signals output binary values (0 or 1), useful for probabilistic effects and binary control.
+
+**brand — 50/50 random:**
+
+<MiniRepl client:visible tune={`// Random panning left or right
+s("hh*8").pan(brand)._scope()`} />
+
+Each hit randomly pans fully left (0) or fully right (1).
+
+**brandBy — custom probability:**
+
+<MiniRepl client:visible tune={`// 20% chance of being 1 (right)
+s("hh*8").pan(brandBy(0.2))._scope()`} />
+
+<MiniRepl client:visible tune={`// Probability can be a pattern too
+s("hh*8").pan(brandBy(sine.range(0, 1).slow(4)))._scope()`} />
+
+The probability sweeps from 0% to 100% over 4 cycles.
+
+**Use cases for boolean signals:**
+
+| Signal | Behavior | Use Case |
+|--------|----------|----------|
+| `brand` | 50/50 random 0 or 1 | Random panning, coin-flip effects |
+| `brandBy(0.2)` | 20% chance of 1 | Sparse random triggers |
+| `brandBy(0.8)` | 80% chance of 1 | Mostly-on with random drops |
+
+**Combining with other signals:**
+
+<MiniRepl client:visible tune={`// Use boolean to gate another signal
+const gated = brand.mul(sine.range(0.3, 1).fast(4))
+
+s("hh*8").gain(gated)._scope()`} />
+
+The gain oscillates, but randomly cuts to zero—creating unpredictable rhythmic gating.
+
+### Manipulating Signals
+
+Signals can be transformed with methods. Understanding these is key to expressive modulation.
+
+#### Speed: `.slow()` and `.fast()`
+
+Control how quickly the signal oscillates:
+
+<MiniRepl client:visible tune={`// Slow = long sweeps (ambient, builds)
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(sine.range(300, 2000).slow(8))
+  ._scope()`} />
+
+<MiniRepl client:visible tune={`// Fast = wobbles, vibrato, tremolo
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(sine.range(300, 2000).fast(4))
+  ._scope()`} />
+
+| Speed | Cycles | Effect |
+|-------|--------|--------|
+| `.slow(16)` | One oscillation per 16 cycles | Glacial evolution |
+| `.slow(4)` | One per 4 cycles | Slow sweep |
+| `.slow(1)` | One per cycle | Standard LFO |
+| `.fast(2)` | 2 per cycle | Wobble |
+| `.fast(8)` | 8 per cycle | Vibrato/tremolo |
+| `.fast(32)` | 32 per cycle | Audio rate (creates new timbres) |
+
+#### Range: `.range(min, max)`
+
+Map the signal (normally 0–1) to useful values:
+
+<MiniRepl client:visible tune={`// Filter frequency range
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(sine.range(200, 3000).slow(4))`} />
+
+<MiniRepl client:visible tune={`// Pan range (center-weighted)
+note("c4 e4 g4 b4")
+  .s("piano")
+  .pan(sine.range(0.3, 0.7).slow(2))`} />
+
+<MiniRepl client:visible tune={`// Subtle detune for vibrato
+note("c4")
+  .s("sawtooth")
+  .sustain(1)
+  .detune(sine.range(-12, 12).fast(6))`} />
+
+#### Math Operations: `.add()`, `.mul()`, `.sub()`, `.div()`
+
+Combine and transform signals mathematically:
+
+**Adding signals (offset):**
+
+<MiniRepl client:visible tune={`// Add a base value to a signal
+const baseFilter = 800
+const modulation = sine.range(0, 600).fast(2)
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(modulation.add(baseFilter))
+  .lpq(8)`} />
+
+**Multiplying signals (scaling):**
+
+<MiniRepl client:visible tune={`// Multiply to scale the range
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(sine.mul(2000).add(500).slow(4))`} />
+
+**Combining multiple signals:**
+
+<MiniRepl client:visible tune={`// Fast wobble + slow sweep
+const slowSweep = sine.range(400, 1200).slow(8)
+const fastWobble = sine.range(0, 400).fast(4)
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(slowSweep.add(fastWobble))
+  .lpq(10)`} />
+
+The filter slowly sweeps while also wobbling rapidly—layered modulation.
+
+#### Segment: `.segment(n)`
+
+Sample a continuous signal at discrete points:
+
+<MiniRepl client:visible tune={`// Continuous sine (smooth)
+note("c4*8").s("piano").gain(sine.range(0.3, 1))._scope()`} />
+
+<MiniRepl client:visible tune={`// Segmented sine (stepped)
+note("c4*8").s("piano").gain(sine.segment(8).range(0.3, 1))._scope()`} />
+
+The segmented version creates discrete steps instead of smooth curves—sample-and-hold effect. Watch the scope to see the difference.
+
+### Storing Signals as Variables
+
+Store signals for reuse and consistency:
+
+<MiniRepl client:visible tune={`// Define modulation sources
+const slowSweep = sine.range(400, 2000).slow(8)
+const fastWobble = sine.range(0, 800).fast(4)
+const drift = perlin.range(-0.3, 0.3).slow(4)
+
+// Apply the same modulation to different sounds
+stack(
+  note("c2 eb2 g2 bb2").s("sawtooth").lpf(slowSweep),
+  note("c4 eb4").s("sine").pan(drift.add(0.5))
+)`} />
+
+Both sounds share the same modulation character.
+
+### Modulation Library Pattern
+
+Create a reusable library of modulation behaviors:
+
+<MiniRepl client:visible tune={`// Modulation library
+const lfo = {
+  // Speed variants
+  glacial: sine.slow(16),
+  slow: sine.slow(4),
+  medium: sine,
+  fast: sine.fast(4),
+  veryFast: sine.fast(8),
+
+  // Shape variants
+  ramp: saw.slow(8),
+  drift: perlin.slow(4),
+  gate: square.fast(4),
+
+  // Pre-configured effects
+  filterSweep: sine.range(400, 2000).slow(4),
+  wobble: sine.range(0, 1).fast(4),
+  vibrato: sine.range(-10, 10).fast(6),
+  tremolo: sine.range(0.4, 1).fast(8),
+  autoPan: sine.range(0.2, 0.8).slow(2)
+}
+
+// Use from library
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(lfo.filterSweep)
+  .lpq(8)`} />
+
+Now `lfo.filterSweep` means the same thing everywhere in your code.
+
+### Applying Signals to Different Parameters
+
+Signals can modulate almost any parameter:
+
+**Filter cutoff (wah/sweep):**
+
+<MiniRepl client:visible tune={`note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(sine.range(300, 2500).slow(2))
+  .lpq(10)`} />
+
+**Gain (tremolo):**
+
+<MiniRepl client:visible tune={`note("[c3,eb3,g3]")
+  .s("sawtooth")
+  .gain(sine.range(0.2, 0.8).fast(8))
+  ._scope()`} />
+
+**Pan (auto-pan):**
+
+<MiniRepl client:visible tune={`note("c4 e4 g4 b4")
+  .s("piano")
+  .pan(sine.range(0, 1).slow(2))
+  ._scope()`} />
+
+**Detune (vibrato):**
+
+<MiniRepl client:visible tune={`note("c4")
+  .s("sawtooth")
+  .sustain(1)
+  .detune(sine.range(-15, 15).fast(5))
+  ._scope()`} />
+
+**Speed (tempo modulation):**
+
+<MiniRepl client:visible tune={`note("c4 e4 g4 b4")
+  .s("piano")
+  .fast(sine.range(0.5, 2).slow(4))`} />
+
+**Room/delay (spatial movement):**
+
+<MiniRepl client:visible tune={`note("c4 e4 g4 b4")
+  .s("piano")
+  .room(sine.range(0.1, 0.6).slow(4))
+  .delay(sine.range(0, 0.4).slow(8))`} />
+
+### Filter Presets with Modulation
+
+Store complete filter configurations:
+
+<MiniRepl client:visible tune={`// Filter presets with built-in modulation
+const filter = {
+  // Static filters
+  dark: x => x.lpf(600).lpq(2),
+  bright: x => x.lpf(3000).lpq(4),
+
+  // Modulated filters
+  slowSweep: x => x.lpf(sine.range(300, 2000).slow(8)).lpq(6),
+  fastSweep: x => x.lpf(sine.range(300, 2000).slow(2)).lpq(6),
+  acid: x => x.lpf(sine.range(300, 3000).slow(2)).lpq(15),
+  wobble: x => x.lpf(sine.range(200, 1500).fast(4)).lpq(8),
+
+  // Buildups
+  riser: x => x.lpf(saw.range(200, 4000).slow(16)).lpq(4),
+
+  // Random/organic
+  drift: x => x.lpf(perlin.range(400, 1600).slow(4)).lpq(4)
+}
+
+// Apply to bass
+filter.acid(note("c2 c2 eb2 g2").s("sawtooth"))`} />
+
+**Genre connection:** `filter.acid` is classic TB-303. `filter.wobble` is dubstep/brostep. `filter.riser` is EDM buildups.
+
+### Advanced: Multi-Signal Modulation
+
+Layer multiple signals for complex, evolving textures:
+
+<MiniRepl client:visible tune={`// Slow evolution + fast detail
+const macro = sine.range(400, 1200).slow(16)   // overall arc
+const micro = sine.range(0, 300).fast(4)        // wobble detail
+const chaos = perlin.range(-100, 100).slow(2)   // organic variation
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(macro.add(micro).add(chaos))
+  .lpq(8)
+  ._scope()`} />
+
+The filter has three layers of movement:
+- Slow 16-cycle sweep (macro structure)
+- Fast 4x wobble (rhythmic detail)
+- Perlin drift (organic unpredictability)
+
+Watch the scope—you can see the complex, layered modulation in the waveform.
+
+---
+
+## Part 4: Storing Rhythms
+
+### Rhythm Patterns as Variables
+
+Rhythms are patterns too—store them and apply with `.struct()`:
+
+<MiniRepl client:visible tune={`// Rhythm library
+const fourFloor = "x ~ x ~"
+const offbeat = "~ x ~ x"
+const syncopated = "x ~ x [~ x]"
+const breakbeat = "x ~ [x ~] x ~ [~ x] x ~"
+
+// Apply rhythm to any sound
+note("c2 eb2 g2 bb2")
+  .struct(syncopated)
+  .s("sawtooth")
+  .lpf(800)`} />
+
+Now try `breakbeat` instead of `syncopated`:
+
+<MiniRepl client:visible tune={`const breakbeat = "x ~ [x ~] x ~ [~ x] x ~"
+
+note("c2 eb2 g2 bb2")
+  .struct(breakbeat)
+  .s("sawtooth")
+  .lpf(800)`} />
+
+### Drum Kits as Variables
+
+Store your drum sounds, then apply different rhythms:
+
+<MiniRepl client:visible tune={`// Drum kit
+const kit = {
+  kick: s("bd").bank("RolandTR909"),
+  snare: s("sd").bank("RolandTR909"),
+  hat: s("hh").bank("RolandTR909"),
+  clap: s("cp").bank("RolandTR909")
+}
+
+// Rhythm patterns
+const house = {
+  kick: "x ~ x ~",
+  snare: "~ x ~ x",
+  hat: "x x x x x x x x"
+}
+
+// Combine
+stack(
+  kit.kick.struct(house.kick),
+  kit.snare.struct(house.snare),
+  kit.hat.struct(house.hat).gain(0.5)
+)`} />
+
+Switch from house to breakbeat by changing only the rhythm object:
+
+<MiniRepl client:visible tune={`const kit = {
+  kick: s("bd").bank("RolandTR909"),
+  snare: s("sd").bank("RolandTR909"),
+  hat: s("hh").bank("RolandTR909")
+}
+
+// Different genre = different rhythms
+const breakbeat = {
+  kick: "x ~ [~ x] ~ x ~ [x ~] ~",
+  snare: "~ ~ x ~ ~ [~ x] ~ x",
+  hat: "[x x] x [x x] x [x x] x [x x] x"
+}
+
+stack(
+  kit.kick.struct(breakbeat.kick),
+  kit.snare.struct(breakbeat.snare),
+  kit.hat.struct(breakbeat.hat).gain(0.5)
+)`} />
+
+Same kit, completely different genre.
+
+---
+
+## Part 5: Building a Sound Library
+
+### The Complete Pattern
+
+Here's how professionals organize their code—a reusable library:
+
+<MiniRepl client:visible tune={`// === ENVELOPES ===
+const env = {
+  pluck: x => x.attack(0.001).decay(0.12).sustain(0).release(0.1),
+  pad: x => x.attack(0.8).decay(0.3).sustain(0.7).release(1.5),
+  stab: x => x.attack(0.02).decay(0.1).sustain(0.5).release(0.3)
+}
+
+// === FILTERS ===
+const filter = {
+  dark: x => x.lpf(600).lpq(2),
+  bright: x => x.lpf(3000).lpq(4),
+  sweep: x => x.lpf(sine.range(300, 2000).slow(4)).lpq(8)
+}
+
+// === FULL SOUNDS ===
+const sound = {
+  acidBass: x => filter.sweep(env.pluck(x.s("sawtooth"))),
+  warmPad: x => filter.dark(env.pad(x.s("sawtooth"))).room(0.5),
+  lead: x => filter.bright(env.stab(x.s("square"))).delay(0.2)
+}
+
+// === USE THE LIBRARY ===
+stack(
+  sound.acidBass(note("c2 c2 eb2 g2")),
+  sound.warmPad(note("[c4,eb4,g4]")).gain(0.3)
+)`} />
+
+### Composing Sound Functions
+
+Notice how `sound.acidBass` is built from `filter.sweep` + `env.pluck` + `s("sawtooth")`. You can compose functions:
+
+<MiniRepl client:visible tune={`// Building blocks
+const env = {
+  pluck: x => x.attack(0.001).decay(0.15).sustain(0)
+}
+
+const filter = {
+  acid: x => x.lpf(sine.range(300, 2500).slow(2)).lpq(12)
+}
+
+// Compose them: filter(envelope(sound))
+const acidBass = x => filter.acid(env.pluck(x.s("sawtooth")))
+
+// Or use a pipe helper
+const pipe = (...fns) => x => fns.reduce((v, f) => f(v), x)
+
+const acidBass2 = pipe(
+  x => x.s("sawtooth"),
+  env.pluck,
+  filter.acid
+)
+
+// Both work the same
+acidBass(note("c2 eb2 g2 bb2"))`} />
+
+---
+
+## Part 6: Sliders as Variables
+
+### Storing Control Parameters
+
+Sliders give you real-time control. Store them in variables to use the same control in multiple places:
+
+<MiniRepl client:visible tune={`// Shared controls
+const filterCutoff = slider(800, 100, 4000)
+const filterRes = slider(4, 0, 20)
+const wetness = slider(0.2, 0, 0.8)
+
+// Both bass and lead share the same filter control
+stack(
+  note("c2 eb2 g2 bb2").s("sawtooth").lpf(filterCutoff).lpq(filterRes),
+  note("c4 ~ eb4 ~").s("square").lpf(filterCutoff.mul(2)).lpq(filterRes)
+).room(wetness)`} />
+
+Move one slider, both sounds respond.
+
+### Control Objects
+
+Organize controls into objects:
+
+<MiniRepl client:visible tune={`// Control surface
+const ctrl = {
+  filter: slider(800, 100, 4000),
+  res: slider(4, 0, 20),
+  decay: slider(0.15, 0.05, 0.5),
+  room: slider(0.2, 0, 0.6)
+}
+
+// Use throughout
+note("c2 c2 eb2 g2")
+  .s("sawtooth")
+  .attack(0.01)
+  .decay(ctrl.decay)
+  .sustain(0)
+  .lpf(ctrl.filter)
+  .lpq(ctrl.res)
+  .room(ctrl.room)`} />
+
+### Mixing Sliders with Signals
+
+Slider as base, signal as modulation:
+
+<MiniRepl client:visible tune={`const baseFilter = slider(600, 100, 2000)
+const wobbleDepth = slider(400, 0, 1000)
+const wobbleSpeed = slider(4, 1, 16)
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(baseFilter.add(sine.range(0, wobbleDepth).fast(wobbleSpeed)))
+  .lpq(10)
+  ._scope()`} />
+
+Three sliders control: base frequency, wobble amount, and wobble speed.
+
+### Sliders as Signal Parameters
+
+Sliders can control signal behavior—use them inside `.range()`, `.slow()`, `.fast()`:
+
+<MiniRepl client:visible tune={`// Slider controls the modulation speed
+const speed = slider(2, 0.25, 8)
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(sine.range(300, 2000).slow(speed))
+  .lpq(8)
+  ._scope()`} />
+
+<MiniRepl client:visible tune={`// Slider controls the range maximum
+const maxFreq = slider(2000, 500, 5000)
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(sine.range(200, maxFreq).slow(4))
+  .lpq(8)
+  ._scope()`} />
+
+### Sliders as Master Controls
+
+One slider can control multiple parameters simultaneously—perfect for performance macros:
+
+**Intensity control** — one slider affects filter, resonance, reverb, and volume:
+
+<MiniRepl client:visible tune={`const intensity = slider(0.5, 0, 1)
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(intensity.mul(3000).add(200))
+  .lpq(intensity.mul(15))
+  .room(intensity.mul(0.5))
+  .gain(intensity.range(0.3, 1))
+  ._scope()`} />
+
+Move one slider—everything responds together.
+
+**Speed master** — control multiple LFO speeds in sync:
+
+<MiniRepl client:visible tune={`const speed = slider(2, 0.25, 8)
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(sine.range(300, 2000).slow(speed))
+  .pan(sine.range(0.3, 0.7).slow(speed.mul(2)))
+  .gain(sine.range(0.6, 1).slow(speed.div(2)))
+  ._scope()`} />
+
+The filter, pan, and gain all modulate together but at related speeds (1x, 2x, 0.5x).
+
+**Wet/dry mix** — one slider for all effects:
+
+<MiniRepl client:visible tune={`const wet = slider(0.3, 0, 1)
+
+note("c4 e4 g4 b4")
+  .s("piano")
+  .room(wet)
+  .delay(wet.mul(0.5))
+  .lpf(wet.range(4000, 1000))`} />
+
+As `wet` increases: more reverb, more delay, darker filter.
+
+**Chaos control** — add randomness progressively:
+
+<MiniRepl client:visible tune={`const chaos = slider(0, 0, 1)
+
+note("c4 e4 g4 b4")
+  .s("piano")
+  .gain(perlin.range(0, chaos.mul(0.5)).add(0.7))
+  .pan(perlin.range(0, chaos).slow(2).add(0.5))
+  .detune(perlin.range(0, chaos.mul(30)))
+  ._scope()`} />
+
+At 0: clean and stable. At 1: wild variation in volume, pan, and pitch.
+
+### Math with Sliders
+
+Sliders support math operations just like signals:
+
+| Operation | Example | Result |
+|-----------|---------|--------|
+| `.add(n)` | `slider(100).add(50)` | slider + 50 |
+| `.mul(n)` | `slider(0.5).mul(2000)` | slider × 2000 |
+| `.div(n)` | `slider(8).div(2)` | slider ÷ 2 |
+| `.range(a,b)` | `slider(0.5).range(200, 2000)` | map 0-1 to 200-2000 |
+
+Combine them for complex mappings:
+
+<MiniRepl client:visible tune={`const macro = slider(0.5, 0, 1)
+
+// Map one slider to multiple ranges
+const filterFreq = macro.range(200, 3000)    // 0→200Hz, 1→3000Hz
+const filterRes = macro.range(2, 15)         // 0→2, 1→15
+const reverbAmt = macro.mul(0.6)             // 0→0, 1→0.6
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(filterFreq)
+  .lpq(filterRes)
+  .room(reverbAmt)
+  ._scope()`} />
+
+One "macro" slider, but each parameter responds with its own range.
+
+---
+
+## Part 7: Pattern Variables for Live Performance
+
+### The `.p()` System
+
+Name your patterns so they can run independently:
+
+<MiniRepl client:visible tune={`// Each pattern runs independently
+$: s("bd ~ bd ~").bank("RolandTR909").p("kick")
+$: s("~ sd ~ sd").bank("RolandTR909").p("snare")
+$: s("hh*8").bank("RolandTR909").gain(0.5).p("hats")
+$: note("c2 c2 eb2 g2").s("sawtooth").lpf(700).p("bass")`} />
+
+### Variables + Pattern Names
+
+Combine your library with live pattern naming:
+
+<MiniRepl client:visible tune={`// Sound library
+const env = {
+  pluck: x => x.attack(0.001).decay(0.12).sustain(0)
+}
+const acidBass = x => env.pluck(x.s("sawtooth").lpf(800).lpq(8))
+
+// Drum kit
+const kit = {
+  kick: s("bd").bank("RolandTR909"),
+  snare: s("sd").bank("RolandTR909"),
+  hat: s("hh").bank("RolandTR909")
+}
+
+// Live performance with named patterns
+$: kit.kick.struct("x ~ x ~").p("kick")
+$: kit.snare.struct("~ x ~ x").p("snare")
+$: kit.hat.struct("x*8").gain(0.5).p("hats")
+$: acidBass(note("c2 c2 eb2 g2")).p("bass")`} />
+
+Your library becomes your instrument. Change definitions, re-evaluate, hear the difference.
+
+### Muting and Global Effects
+
+<MiniRepl client:visible tune={`$: s("bd ~ bd ~").bank("RolandTR909").p("kick")
+$: s("~ sd ~ sd").bank("RolandTR909").p("snare")
+// Prefix with _ to mute:
+_$: s("hh*8").bank("RolandTR909").gain(0.5).p("hats")
+$: note("c2 c2 eb2 g2").s("sawtooth").lpf(700).p("bass")
+
+// Apply to all patterns
+all(x => x.room(0.2))`} />
+
+---
+
+## Part 8: Full Example — Library in Action
+
+<MiniRepl client:visible tune={`// === ENVELOPE LIBRARY ===
+const env = {
+  pluck: x => x.attack(0.001).decay(0.12).sustain(0),
+  pad: x => x.attack(0.5).decay(0.3).sustain(0.7).release(1)
+}
+
+// === FILTER LIBRARY ===
+const filter = {
+  acid: x => x.lpf(sine.range(300, 1500).slow(2)).lpq(10),
+  warm: x => x.lpf(1200).lpq(2)
+}
+
+// === SOUND LIBRARY ===
+const sound = {
+  bass: x => filter.acid(env.pluck(x.s("sawtooth"))),
+  chords: x => filter.warm(env.pad(x.s("sawtooth"))).room(0.4)
+}
+
+// === DRUM KIT ===
+const kit = {
+  kick: s("bd").bank("RolandTR909"),
+  snare: s("sd").bank("RolandTR909"),
+  hat: s("hh").bank("RolandTR909")
+}
+
+// === RHYTHMS ===
+const rhythm = {
+  kick: "x ~ [~ x] ~",
+  snare: "~ x ~ x",
+  hat: "x*8"
+}
+
+// === CONTROLS ===
+const ctrl = {
+  room: slider(0.15, 0, 0.5)
+}
+
+// === COMPOSITION ===
+stack(
+  kit.kick.struct(rhythm.kick),
+  kit.snare.struct(rhythm.snare),
+  kit.hat.struct(rhythm.hat).gain(0.5),
+  sound.bass(note("c2 c2 eb2 c2 g1 g1 bb1 g1")),
+  sound.chords(note("[c4,eb4,g4]")).slow(2).gain(0.35)
+).room(ctrl.room)`} />
+
+Everything is modular. Change any piece, the rest adapts.
+
+---
+
+## Quick Reference
+
+### Variable Assignment Patterns
+
+| What to Store | Syntax | Usage |
+|---------------|--------|-------|
+| Notes | `const mel = note("c4 e4")` | `mel.s("piano")` |
+| Sounds | `const kick = s("bd")` | `kick.gain(0.8)` |
+| Envelopes | `const pluck = x => x.attack(0.01).decay(0.1)` | `pluck(note("c3"))` |
+| Filters | `const dark = x => x.lpf(600)` | `dark(note("c2"))` |
+| Signals | `const sweep = sine.range(200, 2000).slow(4)` | `.lpf(sweep)` |
+| Rhythms | `const groove = "x ~ x [~ x]"` | `.struct(groove)` |
+| Controls | `const cutoff = slider(800, 100, 4000)` | `.lpf(cutoff)` |
+| Full sounds | `const acid = x => x.s("saw").lpf(800)` | `acid(note("c2"))` |
+
+### Common Envelope Presets
+
+```javascript
+const env = {
+  pluck: x => x.attack(0.001).decay(0.12).sustain(0).release(0.1),
+  pad: x => x.attack(0.8).decay(0.3).sustain(0.7).release(1.5),
+  stab: x => x.attack(0.02).decay(0.1).sustain(0.5).release(0.3),
+  organ: x => x.attack(0.01).decay(0.1).sustain(0.9).release(0.1)
+}
+```
+
+### Common Filter Presets
+
+```javascript
+const filter = {
+  dark: x => x.lpf(600).lpq(2),
+  bright: x => x.lpf(3000).lpq(4),
+  acid: x => x.lpf(sine.range(300, 2000).slow(2)).lpq(12),
+  wobble: x => x.lpf(sine.range(200, 1500).fast(4)).lpq(8)
+}
+```
+
+### Signal Types
+
+| Signal | Behavior | Use Case |
+|--------|----------|----------|
+| `sine` | Smooth oscillation | Filter sweeps, tremolo, vibrato |
+| `saw` | Ramp up, reset | Buildups, risers |
+| `tri` | Triangle wave | Smooth linear modulation |
+| `square` | On/off | Gating, rhythmic chops |
+| `rand` | Random per event | Humanization |
+| `perlin` | Smooth random | Organic drift |
+| `brand` | Binary random (0/1) | Coin-flip effects |
+| `brandBy(p)` | Binary with probability p | Sparse triggers, probabilistic gating |
+
+### Signal Manipulation
+
+| Method | Effect | Example |
+|--------|--------|---------|
+| `.slow(n)` | Oscillate over n cycles | `sine.slow(8)` |
+| `.fast(n)` | Oscillate n times per cycle | `sine.fast(4)` |
+| `.range(a, b)` | Map to value range | `sine.range(200, 2000)` |
+| `.add(n)` | Add offset | `sine.add(500)` |
+| `.mul(n)` | Multiply (scale) | `sine.mul(1000)` |
+| `.segment(n)` | Sample to n steps | `sine.segment(8)` |
+
+### Common Signal Presets
+
+```javascript
+const lfo = {
+  // Speed variants
+  glacial: sine.slow(16),
+  slow: sine.slow(4),
+  fast: sine.fast(4),
+
+  // Ready-to-use
+  filterSweep: sine.range(400, 2000).slow(4),
+  wobble: sine.range(0, 1).fast(4),
+  vibrato: sine.range(-10, 10).fast(6),
+  tremolo: sine.range(0.4, 1).fast(8),
+  autoPan: sine.range(0.2, 0.8).slow(2),
+  riser: saw.range(200, 4000).slow(16),
+
+  // Boolean signals
+  coinFlip: brand,                    // 50/50 random
+  sparse: brandBy(0.2),               // 20% chance
+  mostly: brandBy(0.8)                // 80% chance
+}
+```
+
+---
+
+## Where to Go Next
+
+- **[Arranging](/learn/theory/arranging/)** — Combine patterns with `stack`, `cat`, `struct`
+- **[Harmony](/learn/harmony/)** — Chord theory and progressions
+- **[Euclidean Rhythms](/learn/theory/euclidean-rhythms/)** — Algorithmic rhythm patterns
+- **[Auditory Space](/learn/theory/auditory-space/)** — Spatial effects and mixing
