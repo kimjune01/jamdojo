@@ -189,6 +189,166 @@ Here's how the symbols nest:
 
 ---
 
+## Rhythmic Structure: struct
+
+While `stack` layers complete patterns, `struct` applies a rhythmic template to any pattern. It's one of Strudel's most powerful tools for creating rhythmic variations.
+
+### What is struct?
+
+`struct` takes a boolean pattern (using `x` for on and `~` for off) and applies it as a rhythmic mask to another pattern:
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 b3")
+  .struct("x ~ x ~")
+  .s("piano")`} />
+
+The notes `c3 e3 g3 b3` are filtered through the rhythm `x ~ x ~`, so only notes on beats 1 and 3 play.
+
+### struct vs Other Approaches
+
+There are multiple ways to create rhythmic patterns in Strudel. Here's when to use each:
+
+**Direct mini-notation** — When you know exactly what plays when:
+
+<MiniRepl client:idle tune={`note("c3 ~ e3 ~").s("piano")`} />
+
+**struct** — When you want to apply a rhythm to an existing pattern:
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 b3")
+  .struct("x ~ x ~")
+  .s("piano")`} />
+
+Both produce the same result, but `struct` separates **what** (the notes) from **when** (the rhythm).
+
+### The Equivalence Table
+
+| What you want | Using struct | Direct equivalent |
+|---------------|--------------|-------------------|
+| Play on beats 1 & 3 | `.struct("x ~ x ~")` | `"c3 ~ e3 ~"` |
+| Every other beat | `.struct("x ~")` | `"c3 ~"` (repeats) |
+| Syncopated | `.struct("~ x ~ x")` | `"~ c3 ~ e3"` |
+| Euclidean 3 of 8 | `.struct("x ~ ~ x ~ ~ x ~")` | `.euclid(3,8)` |
+| Complex rhythm | `.struct("x ~ [x x] ~")` | `"c3 ~ [e3 g3] ~"` |
+
+### Why Use struct?
+
+**1. Separate melody from rhythm:**
+
+<MiniRepl client:idle tune={`// Define notes and rhythm separately
+let melody = note("c4 d4 e4 f4 g4 a4 b4 c5")
+let rhythm = "x ~ x ~ x ~ x x"
+
+melody.struct(rhythm).s("piano")`} />
+
+Now you can change the rhythm without touching the melody:
+
+<MiniRepl client:idle tune={`let melody = note("c4 d4 e4 f4 g4 a4 b4 c5")
+let rhythm = "x x ~ x ~ x x ~"  // different rhythm
+
+melody.struct(rhythm).s("piano")`} />
+
+**2. Apply the same rhythm to multiple parts:**
+
+<MiniRepl client:idle tune={`let groove = "x ~ [x ~] x ~ x [~ x] ~"
+
+stack(
+  note("c2 c2 c2 c2 g1 g1 a1 b1").struct(groove).s("sawtooth").lpf(400),
+  note("c4 e4 g4 c5 e4 g4 c5 e5").struct(groove).s("piano").gain(0.6)
+).room(0.3)`} />
+
+Both bass and piano share the same rhythmic feel.
+
+**3. Create variations by changing only the structure:**
+
+<MiniRepl client:idle tune={`let bassNotes = note("c2 eb2 g2 bb2")
+
+cat(
+  bassNotes.struct("x x x x"),      // straight
+  bassNotes.struct("x ~ x ~"),      // half time
+  bassNotes.struct("x ~ x [~ x]"),  // syncopated
+  bassNotes.struct("x x ~ x")       // displaced
+).s("sawtooth").lpf(600)`} />
+
+Same notes, four different rhythmic feels.
+
+### struct with Samples
+
+`struct` works with any pattern, including samples:
+
+<MiniRepl client:idle tune={`s("bd sd hh cp")
+  .struct("x ~ x ~ x ~ x x")`} />
+
+The samples cycle through in order, but only play when the struct pattern has `x`.
+
+**Genre connection:** This is how many house and techno producers think—a kit of sounds rotating through a rhythmic grid.
+
+### struct vs euclid
+
+Both create rhythmic patterns, but work differently:
+
+**euclid** — Generates mathematically even distributions:
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 b3")
+  .euclid(3, 8)
+  .s("piano")`} />
+
+**struct** — You define the exact rhythm:
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 b3")
+  .struct("x ~ ~ x ~ ~ x ~")
+  .s("piano")`} />
+
+Use `euclid` when you want mathematically distributed rhythms. Use `struct` when you have a specific rhythm in mind.
+
+### struct with Alternating Patterns
+
+The structure pattern can alternate using `< >`:
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 b3")
+  .struct("<[x x x x] [x ~ x ~] [x ~ ~ x]>")
+  .s("piano")`} />
+
+Each cycle uses a different rhythm from the pattern.
+
+### struct for Drum Programming
+
+`struct` is particularly powerful for drums—define your kit, then program different patterns:
+
+<MiniRepl client:idle tune={`let kit = s("bd sd hh cp")
+
+cat(
+  kit.struct("x ~ ~ ~ x ~ ~ ~"),  // sparse intro
+  kit.struct("x ~ x ~ x ~ x ~"),  // building
+  kit.struct("x x x x x x x x"),  // full
+  kit.struct("x ~ x ~ ~ ~ x ~")   // breakdown
+).bank("RolandTR909")`} />
+
+**Think of struct as a step sequencer** — your sounds are loaded in slots, and the struct pattern determines which steps trigger.
+
+### Combining struct with Other Functions
+
+**struct + fast/slow:**
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 b3")
+  .struct("x ~ x ~")
+  .fast(2)
+  .s("piano")`} />
+
+**struct + stack:**
+
+<MiniRepl client:idle tune={`stack(
+  s("bd").struct("x ~ x ~"),
+  s("sd").struct("~ x ~ x"),
+  s("hh").struct("x x x x")
+).bank("RolandTR909")`} />
+
+**struct + cat:**
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 b3")
+  .struct(cat("x x x x", "x ~ x ~", "x ~ ~ x"))
+  .s("piano")`} />
+
+---
+
 ## Timed Arrangements: timeCat and arrange
 
 Sometimes you need more control over how long each section plays.
@@ -506,9 +666,11 @@ This creates a complete song structure:
 | `cat(x,y)` | `"<x y>"` | One pattern per cycle, sequential |
 | `seq(x,y)` / `fastcat` | `"x y"` | All patterns in one cycle |
 | `stack(x,y)` | `"x,y"` | Patterns play simultaneously |
+| `.struct("x ~ x ~")` | — | Apply rhythmic template to pattern |
 | `timeCat([3,x],[1,y])` | `"x@3 y"` | Proportional timing within cycle |
 | `arrange([4,x],[8,y])` | — | Multi-cycle song sections |
 | `polymeter([a,b,c],[x,y])` | `"{a b c, x y}"` | Polyrhythmic layering |
+| `.euclid(3,8)` | `"x(3,8)"` | Euclidean rhythm distribution |
 
 ---
 

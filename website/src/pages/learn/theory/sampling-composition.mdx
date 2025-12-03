@@ -1,0 +1,595 @@
+---
+title: Sampling Composition
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+Sampling is the art of taking existing sounds and transforming them into new music. From hip-hop producers chopping breakbeats to electronic artists manipulating field recordings, sampling has been central to modern music production since the 1980s. This guide covers how to compose with samples in Strudel using publicly available sound libraries.
+
+---
+
+## Where to Find Samples
+
+| Source | Best For | How to Use |
+|--------|----------|------------|
+| **Built-in drums** | Drum machines (808, 909, LinnDrum) | `s("bd sd").bank("RolandTR808")` |
+| **[Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples)** | Breaks, bass, vocals, pads | `samples('github:tidalcycles/dirt-samples')` |
+| **[Clean-Breaks](https://github.com/yaxu/clean-breaks)** | Classic breakbeats (Amen, etc.) | `samples('github:yaxu/clean-breaks')` |
+| **[Freesound](https://freesound.org/)** via Shabda | Field recordings, textures, FX | `samples('shabda:keyword:count')` |
+| **[VCSL](https://github.com/sgossner/VCSL)** | Orchestral instruments | Built-in: `s("piano")`, `s("flute")` |
+| **Your own files** | Custom samples | Use "Import sounds" in REPL |
+
+**Dirt-Samples highlights:** `speechless`, `rave` (vocals), `pad`, `padlong` (pads), `wind`, `birds` (ambience)
+
+Browse all available sounds in the [REPL](https://strudel.cc/) **sounds** tab.
+
+---
+
+## Loading Samples
+
+### GitHub Sample Libraries
+
+Load samples from public GitHub repositories with `samples('github:user/repo')`:
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+s("bd sd bd sd, hh*8, ~ cp ~ cp")`} punchcard punchcardLabels={false} />
+
+The **clean-breaks** library contains famous breakbeats like the Amen:
+
+<MiniRepl client:idle tune={`samples('github:yaxu/clean-breaks')
+
+s("amen").loopAt(2)`} punchcard punchcardLabels={false} />
+
+### Built-in Drum Machines
+
+Use `.bank()` to access classic drum machines. Strudel includes dozens from the [tidal-drum-machines](https://github.com/ritchse/tidal-drum-machines) library:
+
+<MiniRepl client:idle tune={`stack(
+  s("bd").n("<0 1 2 3>").bank("RolandTR808"),
+  s("sd").euclidRot(2, 4, 2).bank("RolandTR808"),
+  s("hh*8").n("0 1 2 3").bank("RolandTR808").gain(0.6)
+)`} punchcard punchcardLabels={false} />
+
+Popular banks: `RolandTR808`, `RolandTR909`, `RolandCR78`, `LinnDrum`, `AkaiLinn`, `RhythmAce`. Browse all in the [REPL](https://strudel.cc/) **sounds** → **drum-machines** tab.
+
+---
+
+## Sample Playback Basics
+
+### Selecting Samples with `n()`
+
+Most sample packs contain multiple variations. Use `n()` to select them (zero-indexed):
+
+<MiniRepl client:idle tune={`s("bd*4").n("0 1 2 3").bank("RolandTR808")`} punchcard punchcardLabels={false} />
+
+Or use the colon syntax in mini-notation:
+
+<MiniRepl client:idle tune={`s("bd:0 bd:1 bd:2 bd:3").bank("RolandTR909")`} punchcard punchcardLabels={false} />
+
+### Playback Speed
+
+The `speed` function changes both pitch and tempo together:
+
+<MiniRepl client:idle tune={`s("bd sd bd sd")
+  .speed("<1 2 0.5 -1>")`} punchcard punchcardLabels={false} />
+
+Negative values play the sample in reverse!
+
+---
+
+## Trimming Samples
+
+### Begin and End
+
+Use `begin` and `end` to play just a portion of a sample (0 = start, 1 = end):
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .begin(0)
+  .end(0.25)
+  .loopAt(1)`} punchcard punchcardLabels={false} />
+
+Pattern the values for variation:
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .begin("<0 0.25 0.5 0.75>")
+  .end("<0.25 0.5 0.75 1>")
+  .loopAt(1)`} punchcard punchcardLabels={false} />
+
+### Fitting Samples to Time
+
+Use `loopAt` to fit a sample to a number of cycles:
+
+<MiniRepl client:idle tune={`s("breaks165").loopAt(2)`} punchcard punchcardLabels={false} />
+
+Use `clip` to cut the sample to the pattern duration:
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 c4")
+  .s("piano")
+  .clip(1)`} punchcard punchcardLabels={false} />
+
+---
+
+## Chopping & Slicing
+
+Chopping samples into pieces is the foundation of breakbeat and hip-hop production. When affordable samplers like the **E-mu SP-1200** and **Akai MPC** arrived in the mid-1980s, hip-hop producers transformed sampling into an art form. **DJ Premier**, **Pete Rock**, **J Dilla**, and **RZA** built entire productions from chopped soul, funk, and jazz records—turning a few seconds of someone else's music into something entirely new.
+
+### Chop: Divide into Equal Parts
+
+`chop(n)` divides a sample into n equal pieces and plays them in sequence:
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .loopAt(2)
+  .chop(8)`} punchcard punchcardLabels={false} />
+
+Combine with other functions for variation:
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .loopAt(2)
+  .chop(16)
+  .sometimes(x => x.speed(-1))
+  .sometimes(x => x.ply(2))`} punchcard punchcardLabels={false} />
+
+### Slice: Reorder the Pieces
+
+`slice(n, pattern)` lets you rearrange the sliced pieces:
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .loopAt(2)
+  .slice(8, "0 1 2 3 4 5 6 7")`} punchcard punchcardLabels={false} />
+
+Rearrange for a new rhythm:
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .loopAt(2)
+  .slice(8, "0 0 3 2 4 6 5 7")`} punchcard punchcardLabels={false} />
+
+Add repetition and variation:
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .loopAt(2)
+  .slice(8, "<0 0*2 3 2 [4 4] 6 5 7>")`} punchcard punchcardLabels={false} />
+
+### Splice: Slicing with Duration Fitting
+
+`splice` is like `slice` but automatically fits each slice to its duration in the pattern:
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .loopAt(2)
+  .splice(8, "0 1 [2 3] 4 5 6 [6 7]")`} punchcard punchcardLabels={false} />
+
+---
+
+## Classic Breakbeat Chopping
+
+### The Amen Break: Most Sampled Loop in History
+
+The "Amen break" is a 6-second drum solo from The Winstons' "Amen, Brother" (1969), performed by Gregory Coleman. This single loop became the rhythmic foundation for entire genres:
+
+- **Jungle/Drum & Bass** (1990s) - producers like Goldie and Roni Size sped it up and chopped it into frenetic patterns
+- **Hip-Hop** - NWA's "Straight Outta Compton" and countless others
+- **Big Beat** - The Prodigy, Fatboy Slim, The Chemical Brothers
+- **Breakcore** - extreme chopping and time-stretching by Venetian Snares, Aphex Twin
+
+Let's chop the legendary Amen break:
+
+<MiniRepl client:idle tune={`samples('github:yaxu/clean-breaks')
+
+s("amen")
+  .loopAt(2)
+  .slice(8, "0 1 2 3 4 5 6 7")`} punchcard punchcardLabels={false} />
+
+Now rearrange it into a new pattern:
+
+<MiniRepl client:idle tune={`samples('github:yaxu/clean-breaks')
+
+s("amen")
+  .loopAt(2)
+  .slice(8, "0 0 [3 2] 1 4 6 [5 5] 7")`} punchcard punchcardLabels={false} />
+
+Add effects and variation:
+
+<MiniRepl client:idle tune={`samples('github:yaxu/clean-breaks')
+
+s("amen")
+  .loopAt(2)
+  .slice(16, "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15")
+  .sometimes(x => x.speed(-1))
+  .sometimesBy(0.3, x => x.ply(2))
+  .room(0.2)
+  .cpm(44)`} punchcard punchcardLabels={false} />
+
+### Jungle/Drum & Bass Style
+
+Speed up the break and add heavy bass for that 90s jungle feel:
+
+<MiniRepl client:idle tune={`samples('github:yaxu/clean-breaks')
+
+stack(
+  // Sped-up chopped amen
+  s("amen")
+    .loopAt(1)
+    .slice(16, "0 1 [2 3] 4 [5 6] 7 8 [9 10] 11 12 13 [14 14] 15")
+    .speed(1.5)
+    .gain(0.7),
+
+  // Sub bass
+  note("<c1 ~ ~ c1 ~ ~ c1 ~> <~ eb1 ~ ~ f1 ~ ~ ~>")
+    .s("sine")
+    .lpf(200)
+    .gain(0.8)
+).cpm(44)`} punchcard punchcardLabels={false} />
+
+### Breakcore Madness
+
+Extreme chopping in the style of Venetian Snares or Aphex Twin's drill tracks:
+
+<MiniRepl client:idle tune={`samples('github:yaxu/clean-breaks')
+
+s("amen")
+  .loopAt(1)
+  .slice(32, run(32).shuffle())
+  .sometimes(x => x.speed("<-1 -2 2>"))
+  .sometimes(x => x.ply("<2 3 4>"))
+  .sometimesBy(0.2, x => x.hpf(2000))
+  .room(0.1)
+  .cpm(50)`} punchcard punchcardLabels={false} />
+
+---
+
+## Granular Techniques
+
+Granular synthesis traces back to experimental composers like Iannis Xenakis in the 1960s, but became accessible to electronic musicians in the 1990s. Artists like **Aphex Twin**, **Autechre**, and later **Burial** used granular processing to create otherworldly textures from ordinary sounds.
+
+### Striate: Granular Playback
+
+`striate` divides the sample into granules and interleaves them:
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .loopAt(2)
+  .striate(16)`} punchcard punchcardLabels={false} />
+
+Higher values create more granular textures:
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .loopAt(2)
+  .striate(64)
+  .slow(2)`} punchcard punchcardLabels={false} />
+
+---
+
+## Pitched Samples
+
+**Kanye West** pioneered "chipmunk soul" in the early 2000s by pitching up vocal samples to create new melodies—tracks like "Through the Wire" and "Jesus Walks" defined this technique. Pitching samples up makes them sound higher and faster; pitching down creates deeper, slowed textures (a technique **DJ Screw** pioneered in Houston's "chopped and screwed" scene).
+
+Play samples at different pitches using `note`:
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 c4")
+  .s("piano")
+  .clip(1)`} punchcard punchcardLabels={false} />
+
+This works with any sample:
+
+<MiniRepl client:idle tune={`note("c3 eb3 g3 bb3")
+  .s("bd")
+  .clip(1)
+  .lpf(2000)`} punchcard punchcardLabels={false} />
+
+Create melodies from drum hits:
+
+<MiniRepl client:idle tune={`note("<c3 e3 g3 a3> <e3 g3 a3 c4>")
+  .s("sd")
+  .clip(1)
+  .speed(2)
+  .room(0.3)
+  .gain(0.7)`} punchcard punchcardLabels={false} />
+
+---
+
+## Speech & Vocal Samples
+
+### Text-to-Speech with Shabda
+
+Shabda can generate speech samples from text:
+
+<MiniRepl client:idle tune={`samples('shabda/speech:hello,world,strudel,music')
+
+s("hello world strudel music").slow(2)`} punchcard punchcardLabels={false} />
+
+Chop speech for rhythmic effects:
+
+<MiniRepl client:idle tune={`samples('shabda/speech:rhythm,pattern,beat,sound')
+
+s("rhythm pattern beat sound")
+  .chop(4)
+  .speed("<1 1.5 0.75 2>")`} punchcard punchcardLabels={false} />
+
+### Multi-Language Speech
+
+Specify language and gender (format: `shabda/speech/LANG/GENDER:words`):
+
+<MiniRepl client:idle tune={`samples('shabda/speech/fr-FR/m:bonjour,musique')
+samples('shabda/speech/de-DE/f:hallo,musik')
+
+s("<bonjour musique hallo musik>").slow(2)`} punchcard punchcardLabels={false} />
+
+---
+
+## Filter House: The Daft Punk Technique
+
+**Daft Punk** became synonymous with creative sampling in electronic music. Their 2001 album *Discovery* is a masterclass in sample-based production—"One More Time" built its euphoric hook around Eddie Johns' "More Spell on You," while "Digital Love" transformed George Duke's "I Love You More" into a disco-house anthem. Each track reimagines funk and soul sources through filters, vocoders, and meticulous arrangement.
+
+Their signature technique: take disco/funk samples and process them through sweeping filters and compression. The key elements:
+
+1. **Loop a funky sample** - often from 70s disco or funk
+2. **Apply a low-pass filter** that sweeps open and closed
+3. **Add compression** (simulated with gain/distortion)
+4. **Layer with four-on-the-floor drums**
+
+### Basic Filter Sweep
+
+<MiniRepl client:idle tune={`s("breaks165")
+  .loopAt(2)
+  .lpf(sine.range(400, 4000).slow(4))
+  .lpq(5)`} punchcard punchcardLabels={false} />
+
+### Daft Punk Style: Filtered Disco Loop
+
+<MiniRepl client:idle tune={`stack(
+  // Filtered sample loop
+  s("breaks165")
+    .loopAt(2)
+    .lpf(sine.range(500, 5000).slow(8))
+    .lpq(8)
+    .gain(0.7),
+
+  // Four-on-the-floor kick
+  s("bd").euclid(4, 4),
+
+  // Offbeat hi-hats (classic house)
+  s("~ hh").fast(2).gain(0.5),
+
+  // Clap on 2 and 4
+  s("~ cp ~ cp").gain(0.6)
+).cpm(30)`} punchcard punchcardLabels={false} />
+
+### Discovery-Era Vocoder Effect
+
+Simulate the robotic vocal effect by pitch-shifting and stacking vocal samples:
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+stack(
+  s("rave:3").loopAt(2),
+  s("rave:3").loopAt(2).speed(0.5).gain(0.4),
+  s("rave:3").loopAt(2).speed(2).gain(0.3)
+).lpf(sine.range(800, 3000).slow(4))
+  .room(0.3)`} punchcard punchcardLabels={false} />
+
+---
+
+## Layering Samples
+
+Combine multiple samples with `stack`:
+
+<MiniRepl client:idle tune={`stack(
+  s("bd sd bd sd"),
+  s("hh*8").gain(0.5),
+  s("~ cp ~ cp").gain(0.7)
+)`} punchcard punchcardLabels={false} />
+
+Layer chopped breaks with a beat:
+
+<MiniRepl client:idle tune={`samples('github:yaxu/clean-breaks')
+
+stack(
+  s("bd ~ bd ~, ~ sd ~ sd"),
+  s("amen")
+    .loopAt(2)
+    .slice(8, "~ 1 ~ 3 ~ 5 ~ 7")
+    .gain(0.6),
+  s("hh*8").gain(0.4)
+)`} punchcard punchcardLabels={false} />
+
+---
+
+## Complete Compositions
+
+Now let's put these techniques together, drawing inspiration from the masters of sample-based production.
+
+### J Dilla Style: Loose Drums & Soul
+
+J Dilla revolutionized hip-hop with his "drunk" drum programming—slightly off-grid timing that gives tracks a human, swinging feel. His work on *Donuts* and with Slum Village defined a generation.
+
+<MiniRepl client:idle tune={`samples('github:yaxu/clean-breaks')
+
+stack(
+  // Chopped break with swing
+  s("amen")
+    .loopAt(2)
+    .slice(8, "0 0 3 2 4 6 5 7")
+    .gain(0.8),
+
+  // Boom bap drums
+  s("bd ~ ~ bd ~ ~ bd ~"),
+  s("~ ~ sd ~ ~ ~ sd ~"),
+
+  // Hi-hats
+  s("hh*8").gain(0.4)
+).cpm(22)`} punchcard punchcardLabels={false} />
+
+### Fatboy Slim Style: Big Beat
+
+Big Beat combined breakbeats with rock energy and catchy hooks. Fatboy Slim's "The Rockafeller Skank" and The Chemical Brothers' "Block Rockin' Beats" defined the late 90s.
+
+<MiniRepl client:idle tune={`samples('github:yaxu/clean-breaks')
+
+stack(
+  // Driving break
+  s("amen")
+    .loopAt(2)
+    .chop(8)
+    .gain(0.8),
+
+  // Punchy kick pattern
+  s("bd bd ~ bd bd ~ bd ~"),
+
+  // Acid-style bassline
+  note("c2 c2 c3 c2 eb2 eb2 f2 g2")
+    .s("sawtooth")
+    .lpf(sine.range(300, 1500).slow(2))
+    .lpq(10)
+    .distort(1.5)
+    .gain(0.5)
+).cpm(32)`} punchcard punchcardLabels={false} />
+
+### The Avalanches Style: Sample Collage
+
+**DJ Shadow**'s *Endtroducing.....* (1996) was the first album made entirely from samples, proving that crate-digging and careful arrangement could create something wholly original. **The Avalanches** took this further—*Since I Left You* (2000) contains over 3,500 samples woven into a seamless journey, pioneering the "plunderphonics" approach where each element is a fragment of something else.
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+stack(
+  s("pad")
+    .loopAt(4)
+    .striate(16)
+    .lpf(2000)
+    .room(0.4)
+    .gain(0.4),
+
+  s("speechless")
+    .loopAt(2)
+    .chop(8)
+    .slice(8, "0 ~ 2 ~ 4 ~ [6 7] ~")
+    .speed("<1 1.2 0.8>")
+    .gain(0.5),
+
+  s("bd ~ sd ~, hh*4")
+    .bank("RolandTR808")
+    .gain(0.6)
+).slow(2)`} punchcard punchcardLabels={false} />
+
+### Madlib/MF DOOM Style: Dusty Crates
+
+Madlib's production for *Madvillainy* is defined by obscure samples, lo-fi textures, and unconventional chops.
+
+<MiniRepl client:idle tune={`stack(
+  s("breaks165")
+    .loopAt(2)
+    .slice(8, "0 [1 1] 2 3 [4 5] 6 7 ~")
+    .lpf(3000)
+    .hpf(200)
+    .gain(0.7),
+
+  s("bd ~ [~ bd] ~ bd ~ bd ~"),
+  s("~ ~ sd ~ ~ [~ sd] sd ~").gain(0.8),
+
+  note("c2 ~ ~ c2 ~ eb2 ~ f2")
+    .s("sawtooth")
+    .lpf(500)
+    .gain(0.5)
+).room(0.15).cpm(22)`} punchcard punchcardLabels={false} />
+
+### Flying Lotus Style: Glitchy Jazz
+
+Flying Lotus blends jazz samples with glitchy production, cosmic synths, and complex rhythms. His work on *Cosmogramma* and *You're Dead!* pushed sample-based music into new dimensions.
+
+<MiniRepl client:idle tune={`stack(
+  s("breaks165")
+    .loopAt(2)
+    .chop(32)
+    .sometimes(x => x.speed(-1))
+    .sometimes(x => x.ply(2))
+    .sometimesBy(0.2, x => x.speed(0.5)),
+
+  note("c2 ~ eb2 ~")
+    .s("sawtooth")
+    .lpf(400)
+    .gain(0.5),
+
+  note("<c4 eb4 g4 bb4> <~ d4 f4 ab4>")
+    .s("sine")
+    .room(0.5)
+    .gain(0.3)
+    .delay(0.3)
+    .delaytime(0.166)
+).room(0.3).cpm(35)`} punchcard punchcardLabels={false} />
+
+### Burial Style: UK Garage Ghost
+
+Burial's *Untrue* defined a haunted, melancholic sound built from pitched-down R&B vocals and crackling textures.
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+stack(
+  // Ghostly pitched-down vocal
+  s("speechless")
+    .loopAt(4)
+    .speed(0.7)
+    .room(0.6)
+    .lpf(2000)
+    .gain(0.5),
+
+  // 2-step garage rhythm
+  s("bd ~ [~ bd] ~, ~ sd ~ sd"),
+  s("hh*8").gain(0.3),
+
+  // Atmospheric pad
+  s("padlong").loopAt(8).gain(0.2),
+
+  // Sub bass
+  note("c1 ~ ~ c1 ~ ~ eb1 ~")
+    .s("sine")
+    .lpf(150)
+    .gain(0.7)
+).cpm(35)`} punchcard punchcardLabels={false} />
+
+### Layered Ambient Texture
+
+<MiniRepl client:idle tune={`samples('github:tidalcycles/dirt-samples')
+
+stack(
+  s("pad")
+    .loopAt(4)
+    .striate(32)
+    .gain(0.4),
+
+  s("wind")
+    .loopAt(8)
+    .speed(0.5)
+    .room(0.5)
+    .gain(0.3),
+
+  note("c3 ~ e3 ~ g3 ~ e3 ~")
+    .s("sine")
+    .attack(0.1)
+    .decay(0.3)
+    .sustain(0.2)
+    .gain(0.4)
+).slow(2)`} punchcard punchcardLabels={false} />
+
+---
+
+## What You Learned
+
+### Techniques
+- **Finding samples**: Shabda/freesound (`shabda:keyword:count`), GitHub repos (`github:user/repo`)
+- **Basic playback**: `s()`, `n()`, `speed()`
+- **Trimming**: `begin`, `end`, `loopAt`, `clip`
+- **Chopping**: `chop(n)` divides into equal parts (DJ Premier, Pete Rock, J Dilla style)
+- **Slicing**: `slice(n, pattern)` reorders pieces, `splice()` fits to duration
+- **Filter sweeps**: `lpf(sine.range(low, high).slow(n))` for Daft Punk-style movement
+- **Granular**: `striate()` for Aphex Twin/Burial-style textures
+- **Pitched samples**: `note()` with any sample (Kanye's chipmunk soul, DJ Screw's chopped & screwed)
+- **Speech**: `shabda/speech:words` for text-to-speech
+- **Layering**: `stack()` to combine multiple sample sources
+
+### Artists to Study
+- **Daft Punk** - filter house, disco sampling, vocoder effects
+- **J Dilla** - loose timing, soulful chops, swing
+- **DJ Shadow / The Avalanches** - sample collage, plunderphonics
+- **Madlib / MF DOOM** - obscure crate-digging, lo-fi textures
+- **Fatboy Slim / Chemical Brothers** - big beat, breakbeat energy
+- **Flying Lotus** - glitchy jazz, cosmic textures
+- **Burial** - UK garage, ghostly vocals, rain textures

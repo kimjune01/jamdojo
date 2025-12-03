@@ -297,7 +297,7 @@ Country music often uses the I-IV-V progression:
 
 <MiniRepl client:idle tune={`stack(
   chord("<G G C D>").voicing().struct("x ~ x ~").gain(0.5),
-  chord("<G G C D>").rootNotes(2).note().s('sawtooth').lpf(500),
+  note("<g2 g2 c2 d2>").s('sawtooth').lpf(500),
   sound("bd ~ bd ~"),
   sound("~ sd ~ sd"),
   sound("hh").euclid(8,8).gain(0.4)

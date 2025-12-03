@@ -5,320 +5,1397 @@ layout: ../../../layouts/JamDojoLayout.astro
 
 import { MiniRepl } from '../../../docs/MiniRepl';
 
-The demoscene emerged from computer hobbyists who pushed hardware to its limits—creating music and visuals that fit in kilobytes, not megabytes. This guide covers chiptune, tracker music, and keygen styles.
+The demoscene emerged from computer hobbyists who pushed hardware to its limits—creating music and visuals that fit in kilobytes, not megabytes. This comprehensive guide takes you from basic chip sounds all the way to creating your own complete audio-visual demos.
 
-## The Sound of Limitations
+---
+
+# Part 1: Demoscene Foundations
+
+## The Demoscene Spirit
 
 ### What is Demoscene Music?
 
 Born in the 1980s, the demoscene grew from cracking groups who added custom intros to pirated software. These "cracktros" evolved into an art form—demos that showcased programming and audio skills within severe constraints: 3-4 audio channels, limited memory, and primitive sound chips.
 
-Famous groups like Future Crew, Fairlight, and TRSI created iconic soundtracks. The constraints bred creativity—if you only have 3 channels, you learn tricks to make them sound like more.
+The constraints bred creativity—if you only have 3 channels, you learn tricks to make them sound like more. This "constraint-driven creativity" mindset is at the heart of the scene. In 2020, UNESCO recognized demoscene culture as intangible cultural heritage in Finland and Germany.
+
+Today, competitions like Revision (Germany) and Assembly (Finland) continue the tradition. Artists create 4K intros (entire demos in 4 kilobytes), 64K productions, and size-unlimited demos that push modern hardware.
 
 ### The Classic Waveforms
 
-Chip music uses simple waveforms. Each has a distinct character:
+Chip music uses simple waveforms. Each has a distinct character. Let's see them with oscilloscope visualization:
 
-**Square wave** - Bright and hollow, the NES and Game Boy sound:
+**Square wave** - Bright and hollow, the NES and Game Boy signature:
 
 <MiniRepl client:idle tune={`note("c4 e4 g4 c5").s("square")
-  .decay(0.1).sustain(0.3)`} punchcard punchcardLabels={false} />
+  .decay(0.1).sustain(0.3)
+  .color('lime')._scope({ smear: 0.8 })`} />
 
 **Triangle wave** - Softer and rounder, used for bass on NES:
 
 <MiniRepl client:idle tune={`note("c3 c3 g3 c3").s("triangle")
-  .decay(0.2).sustain(0.5)`} punchcard punchcardLabels={false} />
+  .decay(0.2).sustain(0.5)
+  .color('cyan')._scope({ smear: 0.8 })`} />
 
 **Sawtooth wave** - Harsh and rich, the aggressive C64 lead:
 
 <MiniRepl client:idle tune={`note("c4 eb4 g4 c5").s("sawtooth")
-  .decay(0.1).sustain(0.4).lpf(2000)`} punchcard punchcardLabels={false} />
+  .decay(0.1).sustain(0.4).lpf(2000)
+  .color('orange')._scope({ smear: 0.8 })`} />
 
-## Chiptune Fundamentals
+Compare all three on the same melody:
 
-### Arpeggios - The Demoscene Signature
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .s("<square triangle sawtooth>/4")
+  .decay(0.1).sustain(0.3)
+  .lpf(2500)
+  ._scope({ smear: 0.8 })`} />
 
-With only 3-4 channels, you can't play full chords. The solution? Arpeggios—cycling through chord notes so fast they blend together. This is THE defining technique of chip music:
+## Chip Drums Deep Dive
+
+No drum samples? No problem. Use noise and pitched oscillators to build an entire drum kit from scratch.
+
+### Hi-Hat
+
+Short noise burst with high-pass filtering. The shorter the decay, the tighter the hat:
+
+<MiniRepl client:idle tune={`sound("white").decay(0.02)
+  .hpf(8000).gain(0.4)
+  .struct("x*8")`} punchcard />
+
+Open hi-hat with longer decay:
+
+<MiniRepl client:idle tune={`sound("white").decay(0.08)
+  .hpf(6000).gain(0.3)
+  .struct("~ ~ x ~")`} punchcard />
+
+### Snare
+
+Combine noise with a pitched component for more punch:
+
+<MiniRepl client:idle tune={`sound("white").decay(0.08)
+  .lpf(4000).gain(0.6)
+  .struct("~ x")`} punchcard />
+
+More aggressive snare with pitch sweep:
+
+<MiniRepl client:idle tune={`stack(
+  sound("white").decay(0.1).lpf(5000),
+  note("c3").s("sine").decay(0.05)
+).gain(0.6).struct("~ x")`} punchcard />
+
+### Kick Drum
+
+The secret to chip kicks: rapid pitch sweep from high to low. The `penv` (pitch envelope) parameter is perfect for this:
+
+<MiniRepl client:idle tune={`note("c1").s("sine")
+  .decay(0.15).gain(1)
+  .penv(24).pdec(0.03)
+  .struct("x ~ x ~")`} punchcard />
+
+Different kick characters—try adjusting `penv` and `pdec`:
+
+<MiniRepl client:idle tune={`note("c1").s("sine")
+  .decay("<0.1 0.15 0.2>")
+  .penv("<12 24 36>")
+  .pdec("<0.02 0.03 0.05>")
+  .gain(1)
+  .struct("x*4")`} punchcard />
+
+### Tom Drums
+
+Toms use the same pitch envelope trick at higher frequencies:
+
+<MiniRepl client:idle tune={`note("<g2 d2 a1>").s("sine")
+  .decay(0.12).penv(12).pdec(0.04)
+  .struct("~ ~ ~ x")`} punchcard />
+
+### Milestone 1: "8-Bit Beat Box"
+
+Let's build a complete chip drum kit. This is your first milestone—a drum loop using only synthesized sounds:
+
+<MiniRepl client:idle tune={`stack(
+  // Kick with pitch envelope
+  note("c1").s("sine").decay(0.12).penv(24).pdec(0.03)
+    .gain(1).struct("x ~ [~ x] ~"),
+  // Snare - noise + pitched body
+  stack(
+    sound("white").decay(0.1).lpf(4500),
+    note("c3").s("sine").decay(0.04)
+  ).gain(0.5).struct("~ x ~ x"),
+  // Closed hi-hat
+  sound("white").decay(0.02).hpf(8000)
+    .gain(0.3).struct("x*8"),
+  // Open hi-hat
+  sound("white").decay(0.08).hpf(6000)
+    .gain(0.25).struct("~ ~ ~ ~ ~ ~ x ~"),
+  // Tom fill
+  note("g2").s("sine").decay(0.1).penv(10).pdec(0.03)
+    .gain(0.4).struct("~ ~ ~ ~ ~ ~ ~ x")
+).cpm(65)`} punchcard />
+
+## The Magic of Arpeggios
+
+With only 3-4 channels, you can't play full chords. The solution? Arpeggios—cycling through chord notes so fast they blend together. This is THE defining technique of chip music.
+
+### Basic Arpeggio Patterns
+
+Major chord arpeggio—bright and happy:
 
 <MiniRepl client:idle tune={`note("c4 e4 g4 c5 g4 e4").fast(4)
-  .s("square").decay(0.05)`} punchcard punchcardLabels={false} />
+  .s("square").decay(0.05)`} punchcard />
 
-Minor arpeggio for darker moods:
+Minor arpeggio—darker moods:
 
 <MiniRepl client:idle tune={`note("a3 c4 e4 a4 e4 c4").fast(4)
-  .s("square").decay(0.05)`} punchcard punchcardLabels={false} />
+  .s("square").decay(0.05)`} punchcard />
 
-Seventh chord arpeggio for that jazzy chip feel:
+Seventh chord arpeggio—jazzy chip:
 
 <MiniRepl client:idle tune={`note("c4 e4 g4 b4 g4 e4").fast(4)
-  .s("triangle").decay(0.04)`} punchcard punchcardLabels={false} />
+  .s("triangle").decay(0.04)`} punchcard />
 
-### The SID Sound (Commodore 64)
+Diminished arpeggio—tense and unsettling:
+
+<MiniRepl client:idle tune={`note("c4 eb4 gb4 a4 gb4 eb4").fast(4)
+  .s("square").decay(0.05)`} punchcard />
+
+### Arpeggio Speed
+
+Speed dramatically changes the character. Slow arpeggios are distinct notes, fast ones blur into chords:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5 g4 e4")
+  .fast("<1 2 4 8>")
+  .s("square").decay(0.05)`} punchcard />
+
+### Arpeggio Patterns
+
+**Up** - Rising energy:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").fast(4)
+  .s("square").decay(0.05)`} punchcard />
+
+**Down** - Falling, relaxed:
+
+<MiniRepl client:idle tune={`note("c5 g4 e4 c4").fast(4)
+  .s("square").decay(0.05)`} punchcard />
+
+**Up-Down** - Classic bouncing feel:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5 g4 e4").fast(4)
+  .s("square").decay(0.05)`} punchcard />
+
+**Alternating** - More complex movement:
+
+<MiniRepl client:idle tune={`note("c4 g4 e4 c5").fast(4)
+  .s("square").decay(0.05)`} punchcard />
+
+### Chord Progressions with Arpeggios
+
+The real power comes from changing the arpeggio's root chord:
+
+<MiniRepl client:idle tune={`note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
+  .fast(4).s("square").decay(0.05)
+  .cpm(70)`} punchcard />
+
+### Using `chord` and `arp`
+
+Strudel has built-in support for arpeggios from chords:
+
+<MiniRepl client:idle tune={`chord("<C Am F G>")
+  .arp("0 1 2 3 2 1").fast(2)
+  .note().s("square").decay(0.05)
+  .cpm(70)`} punchcard />
+
+## Milestone 2: Your First Chip Track
+
+Time to combine everything! Let's build a complete chip track step by step:
+
+**Step 1: Arpeggio Chords**
+
+<MiniRepl client:idle tune={`note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
+  .fast(4).s("square").decay(0.05).gain(0.5)
+  .cpm(65)`} punchcard />
+
+**Step 2: Add Triangle Bass**
+
+<MiniRepl client:idle tune={`stack(
+  note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
+    .fast(4).s("square").decay(0.05).gain(0.5),
+  note("<c2 a1 f2 g2>")
+    .s("triangle").decay(0.2).gain(0.7)
+).cpm(65)`} punchcard />
+
+**Step 3: Add Chip Drums**
+
+<MiniRepl client:idle tune={`stack(
+  // Arpeggio
+  note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
+    .fast(4).s("square").decay(0.05).gain(0.5),
+  // Bass
+  note("<c2 a1 f2 g2>")
+    .s("triangle").decay(0.2).gain(0.7),
+  // Kick
+  note("c1").s("sine").decay(0.12).penv(24).pdec(0.03)
+    .gain(0.9).struct("x ~ x ~"),
+  // Snare
+  sound("white").decay(0.08).lpf(4000)
+    .gain(0.5).struct("~ x"),
+  // Hi-hat
+  sound("white").decay(0.02).hpf(8000)
+    .gain(0.25).struct("x*8")
+).cpm(65)`} punchcard />
+
+**Complete "Chip Loop" with melody:**
+
+<MiniRepl client:idle tune={`stack(
+  // Lead melody (sparse)
+  note("~ ~ g5 ~ c5 ~ e5 ~ ~ ~ g5 ~ ~ e5 ~ ~")
+    .s("square").decay(0.12).sustain(0.2).gain(0.5),
+  // Arpeggio chords
+  note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
+    .fast(4).s("triangle").decay(0.04).gain(0.4),
+  // Bass
+  note("<c2 a1 f2 g2>")
+    .s("sawtooth").lpf(600).decay(0.15).gain(0.7),
+  // Drums
+  stack(
+    note("c1").s("sine").decay(0.12).penv(24).pdec(0.03)
+      .gain(0.9).struct("x ~ x ~"),
+    sound("white").decay(0.08).lpf(4000)
+      .gain(0.5).struct("~ x"),
+    sound("white").decay(0.02).hpf(8000)
+      .gain(0.25).struct("x*8")
+  )
+).room(0.1).cpm(65)`} punchcard />
+
+---
+
+# Part 2: Sound Design Techniques
+
+## The SID Sound (Commodore 64)
 
 The C64's SID chip had 3 voices, a resonant filter, and ring modulation. It became legendary for its warm, aggressive sound.
 
-Recreate the SID with filter sweeps:
+### Filter Sweeps
+
+The SID's resonant filter is its most distinctive feature. High resonance (`lpq`) creates that singing, aggressive sound:
 
 <MiniRepl client:idle tune={`note("c3 eb3 g3 c4 g3 eb3").fast(4)
   .s("sawtooth")
   .lpf(sine.range(400, 3000).fast(2))
   .lpq(8)
-  .decay(0.08)`} punchcard punchcardLabels={false} />
+  .decay(0.08)`} punchcard />
 
-Classic SID bass with portamento:
+Try different resonance levels:
+
+<MiniRepl client:idle tune={`note("c3 eb3 g3 c4").fast(4)
+  .s("sawtooth")
+  .lpf(sine.range(400, 2500).fast(2))
+  .lpq("<2 5 10 15>")
+  .decay(0.06)`} punchcard />
+
+### PWM (Pulse Width Modulation) Simulation
+
+The SID could modulate pulse width for an animated, moving sound. We simulate this with detuning and filter modulation:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").s("square")
+  .lpf(sine.range(1000, 3000).fast(4))
+  .lpq(4)
+  .decay(0.15)
+  .superimpose(x => x.detune(sine.range(-15, 15).fast(3)))`} punchcard />
+
+### Classic SID Bass Patches
+
+**Punchy SID bass:**
 
 <MiniRepl client:idle tune={`note("c2 c2 eb2 g2")
   .s("sawtooth")
   .lpf(800).lpq(5)
   .decay(0.15).sustain(0.3)
-  .slide(1)`} punchcard punchcardLabels={false} />
+  .slide(1)`} punchcard />
 
-### Chiptune Drums
+**Filtered bass with envelope:**
 
-No drum samples? No problem. Use noise and pitched oscillators:
-
-**Hi-hat** - Short noise burst with high-pass:
-
-<MiniRepl client:idle tune={`sound("white").decay(0.02)
-  .hpf(8000).gain(0.4)
-  .struct("x*8")`} punchcard punchcardLabels={false} />
-
-**Snare** - Noise with lowpass:
-
-<MiniRepl client:idle tune={`sound("white").decay(0.08)
-  .lpf(4000).gain(0.6)
-  .struct("~ x")`} punchcard punchcardLabels={false} />
-
-**Kick** - Pitched sine wave sweep:
-
-<MiniRepl client:idle tune={`note("c1").s("sine")
-  .decay(0.1).gain(1.2)
-  .struct("x ~ x ~")`} punchcard punchcardLabels={false} />
-
-All together—minimal chip drums:
-
-<MiniRepl client:idle tune={`stack(
-  note("c1").s("sine").decay(0.1).gain(1),
-  sound("white").decay(0.07).struct("~ x").lpf(3500).gain(0.6),
-  sound("white").decay(0.02).struct("x*8").gain(0.3).hpf(7000)
-).cpm(65)`} punchcard punchcardLabels={false} />
-
-## Tracker Music (Amiga Era)
-
-### The MOD Format Legacy
-
-The Amiga's 4-channel sample playback launched tracker music. ProTracker, FastTracker II, and Scream Tracker let artists compose using samples arranged in vertical "patterns." Musicians like Purple Motion and Jogeir Liljedahl created MOD masterpieces.
-
-Trackers used short samples creatively—pitch-shifting sounds across octaves:
-
-<MiniRepl client:idle tune={`note("c4 e4 g4 c5 g4 e4 c4 e4")
-  .s("piano")
-  .decay(0.1).sustain(0.2)`} punchcard punchcardLabels={false} />
-
-### Tracker Effects
-
-**Vibrato** - Essential for expressive leads:
-
-<MiniRepl client:idle tune={`note("c4 ~ e4 ~ g4 ~ e4 ~")
+<MiniRepl client:idle tune={`note("c2 c2 g2 eb2")
   .s("sawtooth")
-  .vib(4).vibmod(0.2)
-  .lpf(2500)
-  .decay(0.2).sustain(0.4)`} punchcard punchcardLabels={false} />
+  .lpf(400).lpenv(4).lpdecay(0.1)
+  .decay(0.2).sustain(0.2)`} punchcard />
 
-**Portamento** - Sliding between notes:
+**Aggressive SID bass:**
 
-<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+<MiniRepl client:idle tune={`note("c2 c2 c2 c2 eb2 eb2 g2 f2")
   .s("sawtooth")
-  .slide(2)
-  .lpf(2000)
-  .decay(0.15)`} punchcard punchcardLabels={false} />
-
-## Keygen & Cracktro Music
-
-### The Keygen Sound
-
-Keygen music is pure nostalgia—uplifting melodies at 150-180 BPM with bright synths and relentless arpeggios. It's designed to play in tiny executables while you wait for a serial number.
-
-Fast arpeggio chord progression:
-
-<MiniRepl client:idle tune={`note("<c4 e4 g4 c5> <f4 a4 c5 f5> <g4 b4 d5 g5> <e4 g4 b4 e5>")
-  .fast(4).s("square")
-  .decay(0.05).gain(0.5)
-  .cpm(75)`} punchcard punchcardLabels={false} />
-
-### Building a Keygen Track
-
-Layer the elements: arpeggio, bass, simple drums:
-
-<MiniRepl client:idle tune={`stack(
-  // Fast arpeggio chords
-  note("<c4 e4 g4 c5> <f4 a4 c5 f5> <g4 b4 d5 g5> <e4 g4 b4 e5>")
-    .fast(4).s("square").decay(0.05).gain(0.5),
-  // Punchy bass
-  note("<c2 f2 g2 e2>").s("sawtooth").lpf(800).decay(0.15),
-  // Simple drums
-  sound("bd").struct("x x x x"),
-  sound("white").decay(0.02).struct("x*8").gain(0.25).hpf(7000)
-).cpm(75)`} punchcard punchcardLabels={false} />
-
-### Cracktro Intro
-
-Classic cracktro sound—dramatic filter sweep:
-
-<MiniRepl client:idle tune={`note("c3 c3 c3 c3 eb3 eb3 g3 g3")
-  .s("sawtooth")
-  .lpf(sine.range(300, 4000).slow(4))
+  .lpf(sine.range(300, 1500).fast(4))
   .lpq(10)
-  .distort(0.3)
-  .cpm(70)`} punchcard punchcardLabels={false} />
+  .decay(0.1)
+  .cpm(70)`} punchcard />
 
-## Sound Design Techniques
+### Acid-Style Filter Patterns
 
-### ZZFX Chip Sounds
-
-Strudel's ZZFX synth creates authentic retro sounds. The `z_` prefix gives you chip-style synthesis:
-
-<MiniRepl client:idle tune={`note("c4 e4 g4 c5").s("z_square")
-  .decay(0.1)`} punchcard punchcardLabels={false} />
-
-<MiniRepl client:idle tune={`note("c3 eb3 g3 c4").s("z_sawtooth")
-  .decay(0.12)`} punchcard punchcardLabels={false} />
-
-### Bit Crushing
-
-Reduce bit depth for that crunchy lo-fi sound:
-
-<MiniRepl client:idle tune={`note("c4 e4 g4 c5").s("z_sawtooth")
-  .zcrush(0.4)
-  .decay(0.1)`} punchcard punchcardLabels={false} />
-
-Extreme crush for harsh 8-bit grit:
-
-<MiniRepl client:idle tune={`note("c3 c3 eb3 g3").s("z_square")
-  .zcrush(0.7)
-  .decay(0.08)`} punchcard punchcardLabels={false} />
-
-### Filter Techniques
-
-Sweeping filters add movement and life:
-
-**Rising filter for buildups:**
-
-<MiniRepl client:idle tune={`note("c3 c3 eb3 g3").fast(2)
-  .s("sawtooth")
-  .lpf(saw.range(400, 4000).slow(4))
-  .lpq(6)
-  .cpm(65)`} punchcard punchcardLabels={false} />
-
-**Resonant acid filter:**
+Acid basslines (TB-303 style) use heavy filter resonance and slides:
 
 <MiniRepl client:idle tune={`note("c3 c3 eb3 c3 c3 g3 c3 eb3")
   .s("sawtooth")
   .lpf(sine.range(300, 2000).fast(2))
   .lpq(15)
-  .cpm(70)`} punchcard punchcardLabels={false} />
+  .slide(0.5)
+  .cpm(70)`} punchcard />
 
-### Detuning for Width
+## Tracker Effects
+
+### Vibrato
+
+Essential for expressive leads. `.vib()` controls speed, `.vibmod()` controls depth:
+
+<MiniRepl client:idle tune={`note("c4 ~ e4 ~ g4 ~ e4 ~")
+  .s("sawtooth")
+  .vib(4).vibmod(0.2)
+  .lpf(2500)
+  .decay(0.2).sustain(0.4)`} punchcard />
+
+Varying vibrato intensity:
+
+<MiniRepl client:idle tune={`note("c5 e5 g5 c6")
+  .s("sawtooth")
+  .vib("<2 4 6 8>")
+  .vibmod("<0.1 0.2 0.3 0.4>")
+  .lpf(3000).decay(0.3)`} punchcard />
+
+### Portamento (Slides)
+
+Sliding between notes. Higher `.slide()` values = slower slides:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .s("sawtooth")
+  .slide(2)
+  .lpf(2000)
+  .decay(0.15)`} punchcard />
+
+<MiniRepl client:idle tune={`note("c4 g4 e4 c5")
+  .s("sawtooth")
+  .slide("<0 1 2 4>")
+  .lpf(2500).decay(0.2)`} punchcard />
+
+### Retrigger Effects
+
+Rapid retriggering creates stuttering, glitchy effects:
+
+<MiniRepl client:idle tune={`note("c4").s("sawtooth")
+  .ply("<1 2 4 8>")
+  .decay(0.05).lpf(2000)
+  .cpm(60)`} punchcard />
+
+### Volume Patterns
+
+Dynamic `.gain()` sequences add groove and movement:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").fast(4)
+  .s("square").decay(0.05)
+  .gain("1 0.5 0.7 0.3 0.9 0.4 0.8 0.5")`} punchcard />
+
+## ZZFX Synthesis Deep Dive
+
+Strudel's ZZFX synth (the "Zuper Zmall Zound Zynth") creates authentic retro sounds. It was originally designed for size-coded games—perfect for demoscene aesthetics.
+
+### Basic ZZFX Waveforms
+
+The `z_` prefix gives you chip-style synthesis with more parameters:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .s("<z_square z_sawtooth z_triangle z_sine>/4")
+  .decay(0.1)`} punchcard />
+
+### Bit Crushing
+
+`.zcrush()` reduces bit depth for crunchy lo-fi sound. Values from 0 (clean) to 1 (extreme):
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").s("z_sawtooth")
+  .zcrush("<0 0.2 0.5 0.8>")
+  .decay(0.1)`} punchcard />
+
+Extreme crush for ZX Spectrum-style harshness:
+
+<MiniRepl client:idle tune={`note("c3 c3 eb3 g3").s("z_square")
+  .zcrush(0.8)
+  .decay(0.08)`} punchcard />
+
+### FM Modulation with ZZFX
+
+`.zmod()` adds FM-style modulation for metallic, bell-like tones:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").s("z_sine")
+  .zmod("<0 2 5 10>")
+  .decay(0.15)`} punchcard />
+
+### Pitch Effects
+
+`.pitchJump()` and `.pitchJumpTime()` create chip-style sound effects:
+
+<MiniRepl client:idle tune={`note("c4").s("z_square")
+  .pitchJump("<0 5 12 -12>")
+  .pitchJumpTime(0.05)
+  .decay(0.2)`} punchcard />
+
+### Waveshaping
+
+`.curve()` changes the waveform shape (1-3):
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").s("z_square")
+  .curve("<1 1.5 2 2.5>")
+  .decay(0.1)`} punchcard />
+
+### Complete ZZFX Sound Design
+
+Combine parameters for unique chip instruments:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .s("z_sawtooth")
+  .zcrush(0.3)
+  .zmod(3)
+  .slide(0.5)
+  .decay(0.12)
+  .lpf(2000)`} punchcard />
+
+## FM Synthesis for Chip Sounds
+
+FM (Frequency Modulation) synthesis can create metallic, bell-like tones reminiscent of DOS/AdLib music.
+
+### Basic FM
+
+`.fm()` controls modulation depth, `.fmh()` controls the harmonic ratio:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .fm("<0 1 2 4>")
+  .decay(0.2)`} punchcard />
+
+### FM Ratios for Different Timbres
+
+Different `.fmh()` ratios create different characters:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .fm(3)
+  .fmh("<1 2 3 4>")
+  .decay(0.2)`} punchcard />
+
+### FM with Envelope
+
+`.fmenv()` applies an envelope to the FM depth—great for percussive sounds:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .fm(5).fmh(2)
+  .fmenv("<0 2 4 -2>")
+  .fmdecay(0.1)
+  .decay(0.3)`} punchcard />
+
+### FM Bass
+
+<MiniRepl client:idle tune={`note("c2 c2 g2 c2")
+  .fm(2).fmh(1)
+  .fmenv(3).fmdecay(0.05)
+  .decay(0.15)
+  .lpf(800)`} punchcard />
+
+### FM Bell Tones
+
+<MiniRepl client:idle tune={`note("c5 e5 g5 c6")
+  .fm(4).fmh(3.5)
+  .fmenv(2).fmdecay(0.2)
+  .decay(0.5).sustain(0.1)
+  .room(0.3)`} punchcard />
+
+## Layering and Width
+
+### Detuning
 
 Layer slightly detuned oscillators for a fatter sound:
 
 <MiniRepl client:idle tune={`stack(
   note("c4 e4 g4 c5").s("sawtooth").detune(-10),
   note("c4 e4 g4 c5").s("sawtooth").detune(10)
-).decay(0.15).lpf(3000).gain(0.5)`} punchcard punchcardLabels={false} />
+).decay(0.15).lpf(3000).gain(0.5)`} punchcard />
 
-## Complete Tracks
+### Superimpose
 
-### C64 SID Style
+`.superimpose()` creates layered variations of the same pattern:
 
-Three voices: lead melody, arpeggio, and bass with filter sweep:
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .s("sawtooth")
+  .decay(0.15)
+  .lpf(2500)
+  .superimpose(
+    x => x.detune(12),
+    x => x.detune(-12)
+  ).gain(0.4)`} punchcard />
 
-<MiniRepl client:idle tune={`stack(
-  // Lead melody
-  note("c5 ~ eb5 ~ g5 ~ eb5 c5")
-    .s("sawtooth")
-    .decay(0.1).sustain(0.3)
-    .lpf(2500),
-  // Arpeggio pad
-  note("c4 eb4 g4 c5 g4 eb4").fast(4)
-    .s("triangle")
-    .decay(0.04).gain(0.4),
-  // Bass with filter
-  note("c2 c2 eb2 g2")
-    .s("sawtooth")
-    .lpf(sine.range(400, 1200).fast(2))
-    .decay(0.15)
-).room(0.15).cpm(65)`} punchcard punchcardLabels={false} />
+### Octave Stacking
 
-### Amiga MOD Style
+Layer octaves for massive leads:
 
-Four-channel arrangement with sampled feel:
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .s("sawtooth")
+  .decay(0.2)
+  .lpf(3000)
+  .superimpose(x => x.add(note(12)))
+  .gain(0.4)`} punchcard />
 
-<MiniRepl client:idle tune={`stack(
-  // Ch1: Bass
-  note("c2 c2 ~ c2 f2 f2 ~ f2")
-    .s("sawtooth").lpf(600).decay(0.12),
-  // Ch2: Chords/arps
-  note("<c4 e4 g4> <f4 a4 c5>").fast(4)
-    .s("triangle").decay(0.06).gain(0.5),
-  // Ch3: Lead
-  note("g4 ~ c5 ~ eb5 ~ c5 g4")
-    .s("square").decay(0.15).sustain(0.2),
-  // Ch4: Drums
-  stack(
-    sound("bd").struct("x ~ x ~"),
-    sound("white").decay(0.06).struct("~ x").lpf(3000).gain(0.5)
+### Stereo with Jux
+
+`.jux()` applies a function to the right channel only—great for stereo width:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .s("sawtooth")
+  .decay(0.15)
+  .lpf(2500)
+  .jux(x => x.detune(15))
+  .gain(0.5)`} punchcard />
+
+### Milestone 3: "Layered Lead"
+
+Build a thick, modern chip lead combining techniques:
+
+<MiniRepl client:idle tune={`note("c5 ~ eb5 ~ g5 ~ eb5 c5")
+  .s("sawtooth")
+  .decay(0.15).sustain(0.2)
+  .lpf(3000).lpq(3)
+  .superimpose(
+    x => x.detune(8),
+    x => x.detune(-8).add(note(-12)).gain(0.5)
   )
-).cpm(60)`} punchcard punchcardLabels={false} />
+  .jux(x => x.detune(4))
+  .vib(4).vibmod(0.1)
+  .room(0.15)
+  .gain(0.4)
+  .cpm(65)`} punchcard />
 
-### Modern Keygen Banger
+---
 
-Full production keygen track:
+# Part 3: Modern & Procedural Techniques
+
+## Procedural/Generative Music
+
+Modern demoscene productions often use procedural techniques—generating music algorithmically to save space or create endless variation.
+
+### Controlled Randomness
+
+Use `rand` for random values that change each cycle:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5")
+  .fast(4).s("square")
+  .decay(rand.range(0.02, 0.1))
+  .lpf(rand.range(800, 3000))
+  .gain(rand.range(0.3, 0.8))`} punchcard />
+
+### Probability Triggers
+
+`.sometimes()`, `.often()`, `.rarely()` add controlled chaos:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").fast(4)
+  .s("square").decay(0.05)
+  .sometimes(x => x.add(note(12)))
+  .rarely(x => x.lpf(500))`} punchcard />
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").fast(4)
+  .s("square").decay(0.05)
+  .someCycles(x => x.fast(2))
+  .gain(0.6)`} punchcard />
+
+### Perlin Noise
+
+`perlin` creates smooth, organic randomness—great for filter sweeps:
+
+<MiniRepl client:idle tune={`note("c3 eb3 g3 c4").fast(4)
+  .s("sawtooth")
+  .lpf(perlin.range(400, 3000).slow(4))
+  .lpq(8)
+  .decay(0.08)`} punchcard />
+
+### Euclidean Rhythms
+
+Euclidean rhythms distribute hits evenly—mathematically perfect grooves:
+
+<MiniRepl client:idle tune={`stack(
+  note("c1").s("sine").decay(0.12).penv(24).pdec(0.03)
+    .euclid(4, 16).gain(0.9),
+  sound("white").decay(0.08).lpf(4000)
+    .euclid(3, 8).gain(0.5),
+  sound("white").decay(0.02).hpf(8000)
+    .euclid(7, 16).gain(0.25)
+).cpm(65)`} punchcard />
+
+Try different patterns:
+
+<MiniRepl client:idle tune={`note("c3").s("sawtooth").lpf(1000)
+  .decay(0.1)
+  .euclid("<3 5 7 9>", 16)
+  .cpm(70)`} punchcard />
+
+### Algorithmic Melodies
+
+Generate melodies from scales and patterns:
+
+<MiniRepl client:idle tune={`n([0, 2, 4, 5, 7, 9, 11, 12].sort(() => Math.random() - 0.5).slice(0, 4))
+  .scale("C:minor")
+  .s("square").decay(0.1)
+  .fast(2)`} punchcard />
+
+Or use `irand` for random scale degrees:
+
+<MiniRepl client:idle tune={`n(irand(8)).segment(8)
+  .scale("C:minor:pentatonic")
+  .s("square").decay(0.08)
+  .lpf(2000)
+  .cpm(65)`} punchcard />
+
+## Live Coding Techniques
+
+### Pattern Registration with $:
+
+The `$:` prefix registers patterns for live modification. Each named pattern can be changed without stopping:
+
+<MiniRepl client:idle tune={`$: kick = note("c1").s("sine").decay(0.12).penv(24).pdec(0.03)
+  .struct("x ~ x ~").gain(0.9)
+
+$: bass = note("c2 c2 eb2 g2")
+  .s("sawtooth").lpf(800).decay(0.15)
+
+$: hats = sound("white").decay(0.02).hpf(8000)
+  .struct("x*8").gain(0.25)
+
+stack(kick, bass, hats).cpm(65)`} punchcard />
+
+### Building Up Arrangements
+
+Start minimal and add layers progressively:
+
+<MiniRepl client:idle tune={`// Uncomment layers one by one to build up
+stack(
+  // Layer 1: Kick
+  note("c1").s("sine").decay(0.12).penv(24).pdec(0.03)
+    .struct("x ~ x ~").gain(0.9),
+  // Layer 2: Hi-hats
+  sound("white").decay(0.02).hpf(8000)
+    .struct("x*8").gain(0.25),
+  // Layer 3: Bass
+  note("<c2 eb2 f2 g2>")
+    .s("sawtooth").lpf(700).decay(0.15),
+  // Layer 4: Arpeggio
+  note("<c4 e4 g4 c5> <eb4 g4 bb4 eb5>").fast(4)
+    .s("square").decay(0.05).gain(0.4)
+).cpm(65)`} punchcard />
+
+### Controlled Variations
+
+Use modifiers for evolving patterns:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").fast(4)
+  .s("square").decay(0.05)
+  .iter(4)
+  .sometimes(x => x.fast(2))
+  .cpm(70)`} punchcard />
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5 g4 e4").fast(4)
+  .s("triangle").decay(0.04)
+  .every(4, x => x.rev())
+  .every(3, x => x.fast(2))
+  .cpm(70)`} punchcard />
+
+## Size-Optimized Synthesis
+
+### Minimal Code, Maximum Impact
+
+In 4K/64K intros, every byte counts. Write compact patterns:
+
+<MiniRepl client:idle tune={`// Compact: one-liner beat
+stack(n("c1").s("sine").decay(.1).penv(24).pdec(.03).struct("x~x~"),s("white").decay(.02).hpf(8e3).struct("x*8").gain(.3)).cpm(65)`} punchcard />
+
+### Efficient Pattern Reuse
+
+Define once, use multiple ways:
+
+<MiniRepl client:idle tune={`// Base pattern used multiple ways
+let p = "c4 e4 g4 c5"
+stack(
+  note(p).fast(4).s("square").decay(0.05).gain(0.5),
+  note(p).slow(4).s("triangle").decay(0.3).add(note(-12)).gain(0.4),
+  note(p).fast(4).s("triangle").decay(0.03).add(note(12)).gain(0.3)
+).cpm(70)`} punchcard />
+
+### Procedural Melodies from Math
+
+Generate melodies using mathematical formulas:
+
+<MiniRepl client:idle tune={`n("[0 2 4 5]".add(sine.range(0, 7).segment(8)))
+  .scale("C:minor")
+  .s("square").decay(0.1)
+  .lpf(2000).cpm(65)`} punchcard />
+
+### Milestone 4: "Procedural Chip"
+
+A generative arrangement that evolves over time:
+
+<MiniRepl client:idle tune={`stack(
+  // Evolving arpeggio with filter movement
+  note("c4 e4 g4 c5 g4 e4").fast(4)
+    .s("square").decay(0.05)
+    .lpf(perlin.range(800, 3000).slow(8))
+    .sometimes(x => x.add(note(12)))
+    .gain(0.4),
+  // Euclidean bass
+  note("c2 eb2 g2 c2")
+    .s("sawtooth").lpf(600)
+    .decay(0.15)
+    .euclid(5, 8)
+    .gain(0.6),
+  // Procedural drums
+  stack(
+    note("c1").s("sine").decay(0.1).penv(24).pdec(0.03)
+      .euclid(4, 16).gain(0.9),
+    sound("white").decay(0.06).lpf(4000)
+      .euclid(3, 8).gain(0.5),
+    sound("white").decay(0.02).hpf(8000)
+      .euclid(7, 16).gain(0.25)
+  ),
+  // Occasional melodic hits
+  n(irand(5)).segment(4)
+    .scale("C:minor:pentatonic")
+    .add(note(24))
+    .s("triangle").decay(0.2)
+    .struct("~ ~ ~ x")
+    .rarely(x => x.s("square"))
+    .gain(0.3)
+).room(0.15).cpm(70)`} punchcard />
+
+---
+
+# Part 4: Visual Integration
+
+Demoscenes aren't just about audio—they're about synchronized audio-visual experiences. Strudel has powerful built-in visualizations and integrates with Hydra for shader-based effects.
+
+## Built-in Visualizations
+
+### Punchcard/Pianoroll
+
+Show your patterns as note bars. Use `_punchcard` (inline) or `punchcard()` (background):
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").fast(4)
+  .s("square").decay(0.05)
+  .color("cyan")
+  ._punchcard()`} />
+
+### Scope (Oscilloscope)
+
+See your waveforms in real-time:
+
+<MiniRepl client:idle tune={`note("c3").s("sawtooth")
+  .lpf(1000).decay(0.3)
+  .color('lime')._scope({ smear: 0.9 })`} />
+
+Compare waveforms visually:
+
+<MiniRepl client:idle tune={`note("c3").s("<square triangle sawtooth>/2")
+  .decay(0.3)
+  ._scope({ smear: 0.8 })`} />
+
+### Frequency Scope
+
+See the frequency content of your sounds:
+
+<MiniRepl client:idle tune={`note("c3 e3 g3 c4").fast(2)
+  .s("sawtooth")
+  .lpf(sine.range(400, 2000).slow(4))
+  .decay(0.15)
+  ._fscope({ smear: 0.95 })`} />
+
+### Spectrum Analyzer
+
+Scrolling spectrum display:
+
+<MiniRepl client:idle tune={`stack(
+  note("c4 e4 g4 c5").fast(4).s("square").decay(0.05),
+  note("c2").s("sawtooth").lpf(600).decay(0.2)
+)._spectrum({ speed: 2 })`} />
+
+### Spiral Visualization
+
+Circular time display—great for cyclic patterns:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5 g4 e4").fast(4)
+  .s("square").decay(0.05)
+  .color("<cyan magenta yellow>")
+  ._spiral({ steady: 0.96, thickness: 10 })`} />
+
+### Color Patterns
+
+Color your visualizations to match the music:
+
+<MiniRepl client:idle tune={`note("c4 e4 g4 c5").fast(4)
+  .s("square").decay(0.05)
+  .color("<cyan magenta yellow lime>")
+  ._punchcard()`} />
+
+## Introduction to Hydra
+
+Hydra is a live-codable video synthesizer. Initialize it with `await initHydra()`:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+
+osc(10, 0.1, 1.5)
+  .color(0, 1, 1)
+  .rotate(0.1)
+  .out()
+
+note("c4 e4 g4 c5").fast(4)
+  .s("square").decay(0.05)`}
+/>
+
+### Basic Hydra Functions
+
+**osc()** - Oscillator patterns:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 1).out()
+
+note("c3 eb3 g3 c4").fast(4)
+  .s("sawtooth").lpf(1500).decay(0.08)`}
+/>
+
+**shape()** - Geometric shapes:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(4).color(1, 0.5, 0).out()
+
+note("c4 e4 g4 c5").fast(4)
+  .s("triangle").decay(0.05)`}
+/>
+
+**noise()** - Random patterns:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+noise(10, 0.1).out()
+
+sound("white").decay(0.02).struct("x*8").hpf(8000).gain(0.3)`}
+/>
+
+### Transformations
+
+**kaleid()** - Kaleidoscope:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 1)
+  .kaleid(6)
+  .out()
+
+note("c4 e4 g4 c5").fast(4).s("square").decay(0.05)`}
+/>
+
+**pixelate()** - Retro pixel look:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(5, 0.2, 0.8)
+  .pixelate(64, 48)
+  .out()
+
+note("c4 e4 g4 c5").fast(4).s("z_square").decay(0.05)`}
+/>
+
+**rotate()** - Spinning effects:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(8, 0.1, 1)
+  .rotate(() => time * 0.1)
+  .out()
+
+note("c4 e4 g4 c5").fast(4).s("triangle").decay(0.04)`}
+/>
+
+### Color Effects
+
+**colorama()** - Color shifting:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 1)
+  .colorama(0.3)
+  .out()
+
+note("c3 eb3 g3 c4").fast(4).s("sawtooth")
+  .lpf(sine.range(400, 2000).fast(2)).decay(0.08)`}
+/>
+
+## Classic Demoscene Effects
+
+### Plasma Effect
+
+The classic demoscene plasma:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+osc(10, 0.1, 1.5)
+  .color(1, 0.5, 0.2)
+  .rotate(0.1)
+  .modulate(osc(20, 0.05, 0.5), 0.1)
+  .out()
+
+note("c3 eb3 g3 c4 g3 eb3").fast(4)
+  .s("sawtooth")
+  .lpf(sine.range(400, 2000).fast(2))
+  .lpq(6).decay(0.08)`}
+/>
+
+### Tunnel Effect
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+shape(4)
+  .scale(() => 0.5 + Math.sin(time) * 0.3)
+  .repeat(3, 3)
+  .modulate(osc(8, 0.1), 0.05)
+  .out()
+
+note("c3 c3 eb3 g3").fast(2)
+  .s("sawtooth").lpf(1000).decay(0.1).cpm(70)`}
+/>
+
+### Copper Bars (Amiga-style)
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+gradient(1)
+  .scrollY(0, () => Math.sin(time) * 0.1)
+  .pixelate(1, 20)
+  .colorama(0.2)
+  .out()
+
+note("c4 e4 g4 c5").fast(4).s("triangle").decay(0.04)`}
+/>
+
+### Starfield
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+noise(500, 0.1)
+  .thresh(0.95)
+  .scale(() => 0.5 + time * 0.2)
+  .out()
+
+note("c4 e4 g4 c5").fast(4).s("square").decay(0.05).lpf(2000)`}
+/>
+
+## Pattern-Driven Visuals with H()
+
+The `H()` function connects Strudel patterns to Hydra parameters:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+let pat = "3 4 5 [6 7]*2"
+shape(H(pat)).color(1, 0.5, 0).out()
+
+n(pat).scale("C:minor").s("square").decay(0.1).room(0.2)`}
+/>
+
+Beat-synced kaleidoscope:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+let segs = "<4 6 8 12>"
+osc(10, 0.1, 1)
+  .kaleid(H(segs))
+  .colorama(0.2)
+  .out()
+
+note("c4 e4 g4 c5").fast(4).s("triangle").decay(0.05)`}
+/>
+
+## Audio-Reactive Visuals
+
+Use `detectAudio: true` to access FFT data:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({ detectAudio: true })
+osc(10, 0.1, 1)
+  .scale(() => 1 + a.fft[0] * 2)
+  .colorama(() => a.fft[1] * 0.5)
+  .out()
+
+stack(
+  note("c2 c2 eb2 g2").s("sawtooth").lpf(600).decay(0.15),
+  note("c4 e4 g4 c5").fast(4).s("square").decay(0.05).gain(0.4)
+).cpm(70)`}
+/>
+
+## Feeding Strudel to Hydra
+
+Process Strudel's visualizations through Hydra shaders:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({ feedStrudel: 1 })
+src(s0)
+  .kaleid(H("<4 5 6>"))
+  .diff(osc(1, 0.5, 5))
+  .out()
+
+$: note("c4 e4 g4 c5").fast(4).s("square").decay(0.05)
+  .color("<cyan magenta yellow>")
+  ._punchcard()
+
+$: note("c2").s("sawtooth").lpf(600).decay(0.2)
+
+all(x => x.fft(4).scope({ pos: 0, smear: 0.95 }))`}
+/>
+
+### Milestone 5: "Audio-Visual Chip Demo"
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({ detectAudio: true })
+
+// Reactive plasma
+osc(10, 0.1, () => 1 + a.fft[0])
+  .color(1, 0.5, 0.2)
+  .modulate(osc(20, 0.05, 0.5), 0.1)
+  .pixelate(80, 60)
+  .colorama(() => a.fft[1] * 0.3)
+  .out()
+
+// Music
+stack(
+  // Arpeggio
+  note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
+    .fast(4).s("square").decay(0.05).gain(0.5),
+  // Bass
+  note("<c2 a1 f2 g2>").s("sawtooth")
+    .lpf(700).decay(0.15).gain(0.7),
+  // Drums
+  stack(
+    note("c1").s("sine").decay(0.12).penv(24).pdec(0.03)
+      .struct("x ~ x ~").gain(0.9),
+    sound("white").decay(0.08).lpf(4000)
+      .struct("~ x").gain(0.5),
+    sound("white").decay(0.02).hpf(8000)
+      .struct("x*8").gain(0.25)
+  )
+).cpm(75)`}
+/>
+
+---
+
+# Part 5: Demoscene Styles
+
+## Keygen Music Mastery
+
+Keygen music is pure nostalgia—uplifting melodies at 150-180 BPM with bright synths and relentless arpeggios.
+
+### The Keygen Formula
+
+1. Fast arpeggios (major/minor progressions)
+2. Punchy bass following chord roots
+3. 4-on-the-floor kick
+4. Bright hi-hats
+5. Optional: lead melody hook
+
+### Chord Progressions That Work
+
+**Classic I-vi-IV-V:**
+
+<MiniRepl client:idle tune={`note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
+  .fast(4).s("square").decay(0.05).gain(0.5)
+  .cpm(80)`} punchcard />
+
+**Minor i-VI-III-VII:**
+
+<MiniRepl client:idle tune={`note("<a3 c4 e4 a4> <f4 a4 c5 f5> <c4 e4 g4 c5> <g4 b4 d5 g5>")
+  .fast(4).s("square").decay(0.05).gain(0.5)
+  .cpm(80)`} punchcard />
+
+### Counter-Melody Arpeggios
+
+Add a second arpeggio at a different octave or rhythm:
+
+<MiniRepl client:idle tune={`stack(
+  note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
+    .fast(4).s("square").decay(0.05).gain(0.5),
+  note("<g4 c5 e5 g5> <e4 a4 c5 e5> <c5 f5 a5 c6> <d5 g5 b5 d6>")
+    .fast(4).s("triangle").decay(0.03).gain(0.35)
+).cpm(80)`} punchcard />
+
+### Milestone 6: "Your Keygen Banger"
 
 <MiniRepl client:idle tune={`stack(
   // Main arpeggio
   note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
-    .fast(4).s("square").decay(0.04).gain(0.4),
-  // Counter arpeggio
+    .fast(4).s("square").decay(0.04).gain(0.45),
+  // Counter arpeggio (higher, quieter)
   note("<g4 c5 e5 g5> <e4 a4 c5 e5> <c5 f5 a5 c6> <d5 g5 b5 d6>")
     .fast(4).s("triangle").decay(0.03).gain(0.3),
-  // Bassline
+  // Punchy bass
   note("<c2 a1 f2 g2>").s("sawtooth")
-    .lpf(700).decay(0.12).gain(0.8),
+    .lpf(800).decay(0.12).gain(0.75),
+  // Lead melody (sparse, catchy)
+  note("~ ~ g5 ~ ~ c6 ~ g5 ~ ~ e5 ~ ~ ~ ~ ~")
+    .s("square").decay(0.1).sustain(0.2)
+    .vib(4).vibmod(0.1).gain(0.55),
   // Drums
   stack(
-    sound("bd").struct("x x x x"),
-    sound("white").decay(0.05).struct("~ x").lpf(4000).gain(0.5),
-    sound("white").decay(0.02).struct("x*8").gain(0.2).hpf(6000)
-  ),
-  // Lead melody
-  note("~ ~ g5 ~ ~ c6 ~ g5 ~ ~ e5 ~ ~ ~ ~ ~")
-    .s("square").decay(0.08).sustain(0.2).gain(0.6)
-).room(0.2).cpm(80)`} punchcard punchcardLabels={false} />
+    note("c1").s("sine").decay(0.1).penv(24).pdec(0.03)
+      .struct("x x x x").gain(0.85),
+    sound("white").decay(0.06).lpf(4000)
+      .struct("~ x").gain(0.5),
+    sound("white").decay(0.02).hpf(7000)
+      .struct("x*8").gain(0.25)
+  )
+).room(0.15).cpm(80)`} punchcard />
 
-### Chillout Chip
+## Cracktro Intros
 
-Slower, melancholic chip tune:
+Short, dramatic intros with bold filter sweeps.
+
+### Dramatic Filter Sweep
+
+<MiniRepl client:idle tune={`note("c3 c3 c3 c3 eb3 eb3 g3 g3")
+  .s("sawtooth")
+  .lpf(sine.range(300, 4000).slow(4))
+  .lpq(12)
+  .distort(0.2)
+  .cpm(70)`} punchcard />
+
+### Logo Reveal Style
+
+Build tension then release:
+
+<MiniRepl client:idle tune={`note("c3 c3 c3 c3 c3 c3 c3 c3 c3 c3 c3 c3 eb3 g3 c4 c4")
+  .s("sawtooth")
+  .lpf(saw.range(200, 3500).slow(2))
+  .lpq(10)
+  .gain(saw.range(0.3, 1).slow(2))
+  .cpm(70)`} punchcard />
+
+## Demo Soundtracks
+
+Longer compositions with multiple sections.
+
+### Epic Build Structure
 
 <MiniRepl client:idle tune={`stack(
-  // Slow arpeggio
-  note("a3 c4 e4 a4 e4 c4").fast(4)
-    .s("triangle").decay(0.08).gain(0.5),
-  // Sparse melody
-  note("e5 ~ ~ c5 ~ ~ a4 ~ ~ ~ ~ ~ ~ ~ ~ ~")
-    .s("square").decay(0.2).sustain(0.4)
-    .vib(3).vibmod(0.15),
-  // Soft bass
-  note("a1 ~ ~ ~ e2 ~ ~ ~")
-    .s("triangle").decay(0.3).gain(0.6),
-  // Minimal drums
+  // Pad swell
+  note("<c3,eb3,g3> <ab2,c3,eb3>")
+    .s("sawtooth")
+    .attack(0.5).decay(0.5).sustain(0.7)
+    .lpf(saw.range(400, 2000).slow(8))
+    .gain(0.4),
+  // Arpeggio enters
+  note("c4 eb4 g4 c5 g4 eb4").fast(4)
+    .s("triangle").decay(0.04)
+    .gain(saw.range(0, 0.5).slow(4)),
+  // Drums build
   stack(
-    sound("bd").struct("x ~ ~ ~"),
-    sound("white").decay(0.03).struct("~ ~ x ~").lpf(2000).gain(0.3)
+    note("c1").s("sine").decay(0.12).penv(24).pdec(0.03)
+      .struct("x ~ x ~").gain(0.8),
+    sound("white").decay(0.02).hpf(8000)
+      .struct("x*8").gain(saw.range(0, 0.3).slow(4))
   )
-).room(0.3).cpm(40)`} punchcard punchcardLabels={false} />
+).room(0.2).cpm(60)`} punchcard />
 
-## Quick Reference
+## Modern Demoscene
+
+### 4K Intro Style
+
+Minimal, efficient, procedural:
+
+<MiniRepl client:idle tune={`stack(
+  n(irand(5)).segment(8).scale("C:minor:pentatonic")
+    .s("z_square").decay(0.08).zcrush(0.3).gain(0.5),
+  note("c2").s("z_sawtooth").lpf(perlin.range(300, 800).slow(4))
+    .decay(0.15).euclid(5, 8).gain(0.6),
+  stack(
+    note("c1").s("sine").decay(0.1).penv(20).pdec(0.02)
+      .euclid(4, 16).gain(0.8),
+    sound("white").decay(0.02).hpf(8000)
+      .euclid(7, 16).gain(0.25)
+  )
+).cpm(70)`} punchcard />
+
+---
+
+# Part 6: Complete Demo Projects
+
+## "Chip Intro" - Classic Cracktro
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+
+// Pixelated plasma
+osc(8, 0.2, 1)
+  .pixelate(80, 60)
+  .colorama(0.2)
+  .out()
+
+stack(
+  // Filter sweep pad
+  note("c3 c3 eb3 g3")
+    .s("sawtooth")
+    .lpf(sine.range(300, 3000).slow(4))
+    .lpq(10)
+    .gain(0.6),
+  // Building arpeggio
+  note("c4 eb4 g4 c5 g4 eb4").fast(4)
+    .s("square").decay(0.05)
+    .gain(saw.range(0, 0.5).slow(4)),
+  // Drums
+  stack(
+    note("c1").s("sine").decay(0.12).penv(24).pdec(0.03)
+      .struct("x ~ x ~").gain(0.8),
+    sound("white").decay(0.02).hpf(8000)
+      .struct("x*8").gain(0.2)
+  )
+).room(0.15).cpm(70)`}
+/>
+
+## "Keygen Paradise" - Full Production
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({ detectAudio: true })
+
+// Bright kaleidoscope
+osc(8, 0.2, 1.2)
+  .kaleid(() => 4 + a.fft[0] * 4)
+  .pixelate(80, 60)
+  .colorama(0.3)
+  .out()
+
+stack(
+  // Main arpeggio
+  note("<c4 e4 g4 c5> <f4 a4 c5 f5> <g4 b4 d5 g5> <e4 g4 b4 e5>")
+    .fast(4).s("square").decay(0.04).gain(0.45),
+  // Counter arpeggio
+  note("<g4 c5 e5 g5> <c5 f5 a5 c6> <d5 g5 b5 d6> <b4 e5 g5 b5>")
+    .fast(4).s("triangle").decay(0.03).gain(0.3),
+  // Bass
+  note("<c2 f2 g2 e2>").s("sawtooth")
+    .lpf(800).decay(0.12).gain(0.7),
+  // Lead hook
+  note("~ g5 ~ c6 ~ ~ e5 ~ ~ g5 ~ c6 ~ g5 e5 ~")
+    .s("square").decay(0.08).sustain(0.15)
+    .vib(4).vibmod(0.1).gain(0.5),
+  // Full drums
+  stack(
+    note("c1").s("sine").decay(0.1).penv(24).pdec(0.03)
+      .struct("x x x x").gain(0.85),
+    sound("white").decay(0.06).lpf(4000)
+      .struct("~ x").gain(0.5),
+    sound("white").decay(0.02).hpf(7000)
+      .struct("[x*8]").gain(0.25),
+    sound("white").decay(0.08).hpf(5000)
+      .struct("~ ~ ~ ~ ~ ~ x ~").gain(0.2)
+  )
+).room(0.2).cpm(82)`}
+/>
+
+## "Digital Dreams" - Ambient Chip
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra()
+
+// Slow dreamy modulation
+osc(3, 0.05, 1)
+  .modulate(osc(5, 0.03), 0.1)
+  .colorama(0.1)
+  .out()
+
+stack(
+  // Slow arpeggio
+  note("a3 c4 e4 a4 e4 c4").fast(2)
+    .s("triangle").decay(0.12).gain(0.45),
+  // Sparse lead
+  note("e5 ~ ~ ~ c5 ~ ~ ~ a4 ~ ~ ~ ~ ~ ~ ~")
+    .s("square").decay(0.3).sustain(0.3)
+    .vib(3).vibmod(0.2).gain(0.4),
+  // Deep bass
+  note("a1 ~ ~ ~ ~ ~ e2 ~")
+    .s("triangle").decay(0.4).gain(0.55),
+  // Minimal rhythm
+  stack(
+    note("c1").s("sine").decay(0.15).penv(12).pdec(0.05)
+      .struct("x ~ ~ ~").gain(0.6),
+    sound("white").decay(0.04).hpf(6000)
+      .struct("~ ~ [x ~] ~").gain(0.15)
+  )
+).room(0.4).roomsize(4).cpm(35)`}
+/>
+
+## Milestone 7: "Your First Demo"
+
+A complete 2-minute demo structure. Modify and extend this template:
+
+<MiniRepl
+  client:only="react"
+  tune={`await initHydra({ detectAudio: true })
+
+// Evolving visual
+osc(10, 0.1, () => 1 + a.fft[0])
+  .kaleid(() => 4 + a.fft[1] * 4)
+  .pixelate(80, 60)
+  .colorama(() => a.fft[2] * 0.3)
+  .out()
+
+// Define patterns for live modification
+$: arp = note("<c4 e4 g4 c5> <a3 c4 e4 a4> <f4 a4 c5 f5> <g4 b4 d5 g5>")
+  .fast(4).s("square").decay(0.05)
+  .lpf(perlin.range(1000, 3000).slow(8))
+  .gain(0.45)
+
+$: bass = note("<c2 a1 f2 g2>")
+  .s("sawtooth").lpf(700).decay(0.15).gain(0.65)
+
+$: lead = note("~ ~ g5 ~ c5 ~ e5 ~ ~ ~ g5 ~ ~ e5 ~ ~")
+  .s("square").decay(0.1).sustain(0.2)
+  .vib(4).vibmod(0.1)
+  .sometimes(x => x.add(note(12)))
+  .gain(0.4)
+
+$: drums = stack(
+  note("c1").s("sine").decay(0.1).penv(24).pdec(0.03)
+    .struct("x ~ x ~").gain(0.85),
+  sound("white").decay(0.06).lpf(4000)
+    .struct("~ x").gain(0.5),
+  sound("white").decay(0.02).hpf(8000)
+    .struct("x*8").gain(0.25)
+)
+
+stack(arp, bass, lead, drums).room(0.15).cpm(75)`}
+/>
+
+---
+
+# Part 7: Reference & Appendices
+
+## Quick Reference Tables
 
 ### Waveform Guide
 
@@ -328,25 +1405,70 @@ Slower, melancholic chip tune:
 | triangle | Soft, round | Bass, pads |
 | sawtooth | Harsh, rich | Aggressive leads, SID |
 | z_square | Retro chip | Authentic 8-bit |
+| z_sawtooth | Chip saw | ZZFX leads |
 | white/noise | Unpitched | Drums, effects |
+
+### Key Functions
+
+| Function | Purpose | Example |
+|----------|---------|---------|
+| `.decay()` | Note length | `.decay(0.1)` |
+| `.lpf()` | Low-pass filter | `.lpf(1000)` |
+| `.lpq()` | Filter resonance | `.lpq(10)` |
+| `.slide()` | Portamento | `.slide(2)` |
+| `.vib()` | Vibrato speed | `.vib(4)` |
+| `.vibmod()` | Vibrato depth | `.vibmod(0.2)` |
+| `.penv()` | Pitch envelope | `.penv(24)` |
+| `.zcrush()` | Bit crush | `.zcrush(0.5)` |
+| `.fm()` | FM depth | `.fm(3)` |
+| `.fmh()` | FM ratio | `.fmh(2)` |
 
 ### BPM by Style
 
 | Style | BPM | cpm Value | Feel |
 |-------|-----|-----------|------|
-| Chiptune | 120-140 | 60-70 | Bouncy, playful |
-| Keygen | 150-180 | 75-90 | Uplifting, energetic |
-| Cracktro | 130-160 | 65-80 | Dramatic, bold |
 | Slow chip | 80-100 | 40-50 | Melancholic |
+| Chiptune | 120-140 | 60-70 | Bouncy, playful |
+| Cracktro | 130-160 | 65-80 | Dramatic, bold |
+| Keygen | 150-180 | 75-90 | Uplifting, energetic |
+
+### Hydra Quick Reference
+
+| Function | Effect | Example |
+|----------|--------|---------|
+| `osc(f,s,o)` | Oscillator | `osc(10,0.1,1)` |
+| `shape(n)` | Polygon | `shape(4)` |
+| `noise(s,o)` | Random | `noise(10,0.1)` |
+| `kaleid(n)` | Mirror | `.kaleid(6)` |
+| `pixelate(x,y)` | Pixels | `.pixelate(64,48)` |
+| `colorama(a)` | Color shift | `.colorama(0.3)` |
+| `rotate(a)` | Spin | `.rotate(0.1)` |
+| `modulate(s,a)` | Warp | `.modulate(osc(),0.1)` |
+| `H(pattern)` | Pattern link | `shape(H("3 4 5"))` |
+
+## Further Learning
+
+- **Pouet.net** - The demoscene archive with thousands of productions
+- **Revision** - Largest annual demoparty (Easter, Germany)
+- **Assembly** - Historic Finnish demoparty
+- **Scene.org** - Awards and resources
+- **Demozoo** - Database of productions and groups
+
+---
 
 ## What You Learned
 
-- Classic chip waveforms: square, triangle, sawtooth
-- Fast arpeggios simulate chords with one voice
-- Noise percussion replaces drum samples
-- Filter sweeps add movement and character
-- ZZFX (`z_square`, `z_sawtooth`) for authentic chip sounds
-- `.zcrush()` for bit-crushing lo-fi effect
-- Demoscene BPMs: chiptune ~130, keygen ~160
-- Layer and detune for wider sounds
-- 3-4 channel arrangements maximize limited resources
+- Classic chip waveforms and their characters
+- Synthesizing drums from noise and oscillators
+- Fast arpeggios to simulate chords
+- SID-style filter sweeps with resonance
+- ZZFX synthesis and bit crushing
+- FM synthesis for metallic tones
+- Layering and detuning for width
+- Procedural/generative techniques
+- Built-in visualizations (scope, spectrum, spiral)
+- Hydra shader integration
+- Pattern-driven audio-visual sync
+- Complete demo production from scratch
+
+Now go make some demos!

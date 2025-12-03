@@ -95,6 +95,103 @@ Starting on F (away from home) creates anticipation from the first chord.
 
 ---
 
+### Chord Notation Reference
+
+Before we go further, let's understand how to write any chord in Strudel. The format is: **Root + Quality + Extensions + /Bass**
+
+#### Root Notes
+
+Any note name with optional accidentals:
+- Natural: `C`, `D`, `E`, `F`, `G`, `A`, `B`
+- Sharp: `C#`, `F#`, `G#`
+- Flat: `Bb`, `Eb`, `Ab`
+
+#### Basic Triads
+
+| Symbol | Name | Example | Sound |
+|--------|------|---------|-------|
+| *(none)* | Major | `C` | Bright, stable |
+| `m` or `-` | Minor | `Cm`, `C-` | Dark, sad |
+| `o` | Diminished | `Co` | Tense, unstable |
+| `+` or `aug` | Augmented | `C+`, `Caug` | Dreamy, unresolved |
+| `sus` | Suspended 4th | `Csus` | Open, floating |
+| `5` | Power chord | `C5` | Neutral (no 3rd) |
+
+<MiniRepl client:idle tune={`chord("<C Cm Co C+ Csus C5>").voicing().s("piano").slow(1.5)`} punchcard punchcardLabels={false} />
+
+#### Seventh Chords
+
+| Symbol | Name | Example | Character |
+|--------|------|---------|-----------|
+| `^7` or `M7` | Major 7 | `C^7`, `CM7` | Smooth, jazzy |
+| `7` | Dominant 7 | `C7` | Bluesy, wants to resolve |
+| `m7` or `-7` | Minor 7 | `Cm7`, `C-7` | Mellow, cool |
+| `m7b5` or `h` | Half-diminished | `Cm7b5`, `Ch` | Jazz minor, tense |
+| `o7` | Diminished 7 | `Co7` | Very tense, symmetrical |
+| `mM7` or `-^7` | Minor-Major 7 | `CmM7` | Mysterious, Bond theme |
+
+<MiniRepl client:idle tune={`chord("<C^7 C7 Cm7 Cm7b5 Co7 CmM7>").voicing().s("piano").slow(1.5)`} punchcard punchcardLabels={false} />
+
+#### Extended Chords (9ths, 11ths, 13ths)
+
+| Symbol | Example | Notes |
+|--------|---------|-------|
+| `9` | `C9`, `Cm9` | Adds major 9th |
+| `^9` | `C^9` | Major 7 + 9 |
+| `add9` | `Cadd9` | Triad + 9 (no 7th) |
+| `11` | `C11` | Adds perfect 11th |
+| `^7#11` | `C^7#11` | Lydian sound |
+| `13` | `C13` | Full jazz chord |
+| `6` | `C6`, `Cm6` | Adds major 6th |
+| `69` | `C69` | 6th + 9th |
+
+<MiniRepl client:idle tune={`chord("<C9 C^9 Cadd9 C11 C^7#11 C13>").voicing().s("piano").slow(1.5)`} punchcard punchcardLabels={false} />
+
+#### Altered Dominants (Jazz)
+
+These add tension to dominant 7th chords:
+
+| Symbol | Example | Effect |
+|--------|---------|--------|
+| `7b9` | `C7b9` | Dark, tense |
+| `7#9` | `C7#9` | "Hendrix chord" |
+| `7b5` | `C7b5` | Tritone substitution |
+| `7#5` | `C7#5` | Augmented dominant |
+| `7alt` | `C7alt` | All alterations |
+| `7#11` | `C7#11` | Lydian dominant |
+
+<MiniRepl client:idle tune={`chord("<G7 G7b9 G7#9 G7alt>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+#### Slash Chords (Bass Notes)
+
+Add `/note` to specify a bass note different from the root:
+
+<MiniRepl client:idle tune={`chord("<C C/E C/G Am/E>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+- `C/E` — C major with E in the bass (first inversion)
+- `C/G` — C major with G in the bass (second inversion)
+- `Am/E` — A minor with E in the bass
+
+#### Quick Reference by Genre
+
+**Pop/Rock:** `C`, `Am`, `F`, `G`, `Dm`, `Em`
+
+<MiniRepl client:idle tune={`chord("<C Am F G>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Jazz:** `C^7`, `Dm7`, `G7`, `Cm7`, `F7`, `Bb^7`
+
+<MiniRepl client:idle tune={`chord("<Dm7 G7 C^7 A7>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Neo-Soul/R&B:** `C^9`, `Dm9`, `Em9`, `F^7#11`
+
+<MiniRepl client:idle tune={`chord("<C^9 Dm9 Em9 F^7#11>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+
+**Lo-fi/Chill:** `Cmaj7`, `Am7`, `Dm7`, `G7`
+
+<MiniRepl client:idle tune={`chord("<C^7 Am7 Dm7 G7>").voicing().s("piano").room(0.4)`} punchcard punchcardLabels={false} />
+
+---
+
 #### Adding Rhythm to Your Chords
 
 So far, every chord lasts one beat. Let's add rhythmic variety with `.struct()`:
@@ -426,6 +523,20 @@ Mode controls HOW voicings align to the anchor:
 <MiniRepl client:idle tune={`chord("<C^7 Dm7 G7>").anchor("c5").mode("root").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
 For most smooth voice leading, stick with "below" (the default).
+
+#### Visualizing Voice Leading with Pitchwheel
+
+The `_pitchwheel()` visualization displays pitches on a circular diagram, making it easy to see how notes move between chords:
+
+<MiniRepl client:idle tune={`chord("<C^7 Dm7 G7 C^7>").anchor("c5").voicing().s("piano")._pitchwheel()`} />
+
+Watch how the dots on the wheel move smoothly between chords—good voice leading creates minimal movement around the circle.
+
+**Compare jumpy vs smooth voice leading:**
+
+<MiniRepl client:idle tune={`chord("<C^7 Dm7 G7 C^7>").voicing().s("piano")._pitchwheel()`} />
+
+Without `.anchor()`, notes jump around the wheel more dramatically.
 
 ---
 
@@ -779,6 +890,12 @@ Works beautifully in minor.
 
 Rich, complex. For sophisticated contexts.
 
+**Visualize extension density with pitchwheel:**
+
+<MiniRepl client:idle tune={`chord("<C C^7 C^9 C13>").voicing().s("piano")._pitchwheel()`} />
+
+Watch the pitchwheel fill up as you add extensions—triads have 3 dots, 13th chords have 6+. This helps you understand how dense each chord voicing is.
+
 **Alterations (b9, #9, #11):**
 
 <MiniRepl client:idle tune={`chord("<G7alt>").voicing().s("piano")`} punchcard punchcardLabels={false} />
@@ -1064,9 +1181,9 @@ Harmonic rhythm accelerates toward resolution, then releases.
 
 **Suspensions (delay chord tones):**
 
-<MiniRepl client:idle tune={`chord("<Csus4 C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
+<MiniRepl client:idle tune={`chord("<Csus C>").voicing().s("piano")`} punchcard punchcardLabels={false} />
 
-Csus4 suspends the 3rd (E → F). Resolves when F moves to E.
+Csus suspends the 3rd (E → F). Resolves when F moves to E.
 
 **Pedal points (static bass, changing chords):**
 
@@ -1413,6 +1530,12 @@ Different patterns create different feels:
 **Alberti bass (classical accompaniment):**
 
 <MiniRepl client:idle tune={`n("0 2 1 2").chord("<C F G C>").voicing().note().s('piano')`} punchcard punchcardLabels={false} />
+
+**Visualize arpeggio patterns with pitchwheel:**
+
+<MiniRepl client:idle tune={`n("0 1 2 3 2 1").chord("<C^7 Am7>").voicing().note().s('piano')._pitchwheel()`} />
+
+The pitchwheel shows each arpeggio note lighting up in sequence around the circle—you can see the pattern traversing the chord tones.
 
 ---
 

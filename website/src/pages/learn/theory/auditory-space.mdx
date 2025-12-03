@@ -8,8 +8,6 @@ import { JsDoc } from '../../../docs/JsDoc';
 import Box from '@components/Box.astro';
 import QA from '@components/QA';
 
-# Auditory Space
-
 Put on headphones. Press play. Close your eyes.
 
 <MiniRepl client:visible tune={`sound("cp").pan(sine.slow(2)).room(0.3)`} />
@@ -52,6 +50,16 @@ $: note("c4 eb4 g4").s("sawtooth").lpf(1200).pan(0.3)`} />
 
 The sounds now occupy different positions in the stereo field. This is **panning** - placing sounds on the left-right axis.
 
+**Try it yourself** - use sliders to position each element:
+
+<MiniRepl client:visible tune={`const kickPan = slider(0.5, 0, 1)
+const hatPan = slider(0.7, 0, 1)
+const synthPan = slider(0.3, 0, 1)
+
+$: sound("bd sd bd sd").pan(kickPan)
+$: sound("hh*8").pan(hatPan).gain(0.5)
+$: note("c4 eb4 g4").s("sawtooth").lpf(1200).pan(synthPan)`} scope />
+
 <Box>
 
 **Pan values:**
@@ -67,9 +75,19 @@ The kick stays centered (`.pan(0.5)`) because low frequencies carry the most ene
 
 Static panning places sounds. Dynamic panning moves them through space.
 
-<MiniRepl client:visible tune={`sound("hh*16").pan(sine.range(0.2, 0.8).slow(2))`} />
+<MiniRepl client:visible tune={`sound("hh*16").pan(sine.range(0.2, 0.8).slow(2))`} scope />
 
-The hi-hats glide smoothly from left to right and back. This creates movement and interest - the ear follows the sound across the stereo field.
+The hi-hats glide smoothly from left to right and back. This creates movement and interest - the ear follows the sound across the stereo field. Watch the scope - you can see the amplitude shift between channels.
+
+**Control the movement range and speed:**
+
+<MiniRepl client:visible tune={`const leftLimit = slider(0.2, 0, 0.5)
+const rightLimit = slider(0.8, 0.5, 1)
+const speed = slider(2, 0.5, 8)
+
+sound("hh*16")
+  .pan(sine.range(leftLimit, rightLimit).slow(speed))
+  .gain(0.5)`} scope />
 
 <Box>
 
@@ -85,30 +103,18 @@ Try: `sound("hh*16").pan(perlin.range(0.2, 0.8))`
 
 ## Instant Width with jux
 
-Here's a mono pattern:
+Use the slider to control stereo width from mono to full spread:
 
-<MiniRepl client:visible tune={`n("0 2 4 7").scale("C:minor").s("sawtooth").lpf(800)`} />
+<MiniRepl client:visible tune={`const width = slider(0, 0, 1)
 
-Now add `.jux(rev)`:
+n("0 2 4 7").scale("C:minor").s("sawtooth").lpf(800)
+  .juxBy(width, rev)`} scope />
 
-<MiniRepl client:visible tune={`n("0 2 4 7").scale("C:minor").s("sawtooth").lpf(800).jux(rev)`} />
-
-The sound explodes into stereo. What happened?
+At 0, the pattern is mono. At 1, it explodes into full stereo.
 
 `jux` (short for "juxtapose") splits your pattern into two copies: one panned left, one panned right. It applies a function to the right channel only. Here, the right channel plays the pattern reversed while the left plays it forward.
 
 When your left and right ears hear slightly different versions of the same material, your brain perceives **width** - a sound that fills the space between your ears.
-
-<Box>
-
-**Control the width with juxBy:**
-
-<MiniRepl client:visible tune={`n("0 2 4 7").scale("C:minor").s("sawtooth").lpf(800)
-  .juxBy("<0 0.25 0.5 0.75 1>", rev)`} />
-
-`0` = mono (no stereo split), `1` = full width. Find your sweet spot.
-
-</Box>
 
 ## Width in Practice
 
@@ -137,17 +143,16 @@ Depth is the perception of distance - how close or far a sound feels. In the phy
 
 ## The Proximity Experience
 
-Play only the first line:
+Move the slider from 0 (dry, upfront) to 1 (wet, distant):
 
-<MiniRepl client:visible tune={`$: sound("bd sd bd sd").room(0.01)
-// $: sound("bd sd bd sd").room(0.8).roomsize(4).gain(0.5)`} />
+<MiniRepl client:visible tune={`const distance = slider(0, 0, 1)
 
-Now comment out the first line and uncomment the second:
+sound("bd sd bd sd")
+  .room(distance.mul(0.8))
+  .roomsize(distance.mul(6))
+  .gain(distance.range(1, 0.5))`} scope />
 
-<MiniRepl client:visible tune={`// $: sound("bd sd bd sd").room(0.01)
-$: sound("bd sd bd sd").room(0.8).roomsize(4).gain(0.5)`} />
-
-The same drums, but one feels like it's right in front of you while the other sounds like it's across a large hall. This is **reverb** - the collection of echoes that occur when sound bounces off surfaces in a space.
+At 0, the drums feel right in front of you. At 1, they sound like they're across a large hall. This is **reverb** - the collection of echoes that occur when sound bounces off surfaces in a space.
 
 <Box>
 
@@ -162,13 +167,20 @@ Combine these for convincing depth staging.
 
 ## Room Parameters
 
-<MiniRepl client:visible tune={`// Small room (tight, intimate - a bathroom or closet)
-note("c4 eb4 g4").s("gm_vibraphone")
-  .room(0.4).roomsize(0.5).roomlp(6000)`} />
+**Explore the room** - from tight bathroom to vast cathedral:
 
-<MiniRepl client:visible tune={`// Large hall (expansive, dramatic - a cathedral)
+<MiniRepl client:visible tune={`const amount = slider(0.4, 0, 1)
+const size = slider(0.5, 0.5, 20)
+const brightness = slider(6000, 500, 8000)
+
 note("c4 eb4 g4").s("gm_vibraphone")
-  .room(0.6).roomsize(8).roomlp(3000)`} />
+  .room(amount)
+  .roomsize(size)
+  .roomlp(brightness)`} scope />
+
+Try these presets:
+- **Small room** (bathroom): amount=0.4, size=0.5, brightness=6000
+- **Large hall** (cathedral): amount=0.6, size=8, brightness=3000
 
 <Box>
 
@@ -186,7 +198,18 @@ Try `roomsize` values from 0.5 to 20 and notice how the space expands.
 
 Delay creates echoes - distinct repetitions of the sound. Where reverb is diffuse (many blurred reflections), delay is discrete (clear, rhythmic repeats).
 
-<MiniRepl client:visible tune={`sound("rim").delay(0.5).delaytime(0.25).delayfeedback(0.4)`} />
+<MiniRepl client:visible tune={`sound("rim").delay(0.5).delaytime(0.25).delayfeedback(0.4)`} scope />
+
+**Shape your echoes:**
+
+<MiniRepl client:visible tune={`const amount = slider(0.5, 0, 1)
+const time = slider(0.25, 0.05, 0.5)
+const feedback = slider(0.4, 0, 0.85)
+
+sound("rim")
+  .delay(amount)
+  .delaytime(time)
+  .delayfeedback(feedback)`} scope />
 
 <Box>
 
@@ -216,21 +239,27 @@ The guitar stabs echo through space with a slowly modulating delay time - a clas
 
 ## Combining Depth Techniques
 
-<MiniRepl client:visible tune={`stack(
-  // Front: drums (dry, present)
-  sound("bd [~ bd] sd [bd sd]").room(0.05),
+Control the depth of each layer independently:
 
-  // Middle: bass (slightly back)
+<MiniRepl client:visible tune={`const drumDepth = slider(0.05, 0, 0.5)
+const bassDepth = slider(0.15, 0, 0.5)
+const padDepth = slider(0.6, 0, 1)
+
+stack(
+  // Front: drums
+  sound("bd [~ bd] sd [bd sd]").room(drumDepth),
+
+  // Middle: bass
   note("c2 ~ eb2 ~").s("sawtooth").lpf(500)
-    .room(0.15).roomsize(2),
+    .room(bassDepth).roomsize(bassDepth.mul(10)),
 
-  // Back: pad (distant, diffuse)
+  // Back: pad
   note("<c3,eb3,g3>").s("triangle").slow(2)
-    .room(0.6).roomsize(6).lpf(2000)
-    .delay(0.2).delaytime(0.333).gain(0.4)
-).cpm(30)`} />
+    .room(padDepth).roomsize(padDepth.mul(10)).lpf(2000)
+    .delay(padDepth.mul(0.3)).delaytime(0.333).gain(0.4)
+).cpm(30)`} scope />
 
-Notice the **depth staging**: drums upfront and dry, bass slightly back, pad far in the distance. Each element occupies a different front-to-back position.
+Try pushing all sliders to the same value - the depth staging collapses. Pull them apart - each layer finds its own space.
 
 ---
 
@@ -240,17 +269,19 @@ The frequency spectrum runs from low (bass, ~20Hz) to high (treble, ~20kHz). Thi
 
 ## Frequency Masking
 
-Listen to this:
+Use the slider to separate bass and chords in the frequency spectrum:
 
-<MiniRepl client:visible tune={`$: note("c2").s("sawtooth").lpf(800)
-$: note("c3 eb3 g3").s("sawtooth").lpf(800)`} />
+<MiniRepl client:visible tune={`const separation = slider(0, 0, 1)
 
-The bass and chords are fighting. They both occupy similar frequency ranges and blur together. Now listen:
+// Bass: lpf goes from 800 (masked) to 400 (separated)
+$: note("c2").s("sawtooth").lpf(separation.range(800, 400))
 
-<MiniRepl client:visible tune={`$: note("c2").s("sawtooth").lpf(400)
-$: note("c3 eb3 g3").s("sawtooth").hpf(300).lpf(2000)`} />
+// Chords: hpf goes from 0 (masked) to 300 (separated)
+$: note("c3 eb3 g3").s("sawtooth")
+  .hpf(separation.range(50, 300))
+  .lpf(separation.range(800, 2000))`} scope />
 
-By carving out separate frequency spaces - bass gets the lows (under 400Hz), chords get the mids (300Hz-2000Hz) - each element becomes distinct. This is **subtractive EQ** - removing frequencies to create space.
+At 0, bass and chords fight for the same frequencies. At 1, each has its own space - bass gets the lows (under 400Hz), chords get the mids (300Hz-2000Hz). This is **subtractive EQ** - removing frequencies to create space.
 
 <Box>
 
@@ -267,9 +298,20 @@ Filters can emphasize the cutoff frequency with **resonance** (Q-factor). Higher
 
 <MiniRepl client:visible tune={`note("c2*8").s("sawtooth")
   .lpf(sine.range(200, 2000).slow(2))
-  .lpq(12)`} />
+  .lpq(12)`} scope />
 
-This is the classic acid house sound - a resonant low-pass filter sweep. The high `.lpq(12)` value makes the filter "sing" at its cutoff point.
+This is the classic acid house sound - a resonant low-pass filter sweep. The high `.lpq(12)` value makes the filter "sing" at its cutoff point. Watch the scope to see how resonance affects the waveform.
+
+**Sculpt your acid line:**
+
+<MiniRepl client:visible tune={`const lowFreq = slider(200, 100, 800)
+const highFreq = slider(2000, 800, 4000)
+const speed = slider(2, 0.5, 8)
+const resonance = slider(12, 1, 20)
+
+note("c2*8").s("sawtooth")
+  .lpf(sine.range(lowFreq, highFreq).slow(speed))
+  .lpq(resonance)`} scope />
 
 <Box>
 
@@ -336,7 +378,7 @@ Now let's combine all three dimensions into a complete spatial arrangement.
     .hpf(600).pan(0.35)
     .room(0.4).delay(0.2).delayfeedback(0.3)
     .gain(0.5)
-).cpm(30)`} />
+).cpm(30)`} scope />
 
 <Box>
 
@@ -351,6 +393,35 @@ Now let's combine all three dimensions into a complete spatial arrangement.
 | Lead | Left of center | Room + delay | High-pass 600Hz |
 
 </Box>
+
+## Interactive Spatial Mixer
+
+Take control of all three dimensions with this mixer. Each slider controls a different spatial parameter:
+
+<MiniRepl client:visible tune={`// Width controls
+const kickPan = slider(0.5, 0, 1)
+const snarePan = slider(0.5, 0, 1)
+const hatPan = slider(0.6, 0, 1)
+const chordPan = slider(0.5, 0, 1)
+
+// Depth controls
+const snareRoom = slider(0.1, 0, 0.6)
+const chordRoom = slider(0.25, 0, 0.8)
+
+// Height controls
+const hatHpf = slider(6000, 2000, 10000)
+const bassLpf = slider(400, 100, 1000)
+const chordHpf = slider(300, 100, 800)
+const chordLpf = slider(2000, 800, 4000)
+
+stack(
+  sound("bd*4").pan(kickPan),
+  sound("~ sd ~ sd").pan(snarePan).room(snareRoom),
+  sound("hh*8").pan(hatPan).hpf(hatHpf).gain(0.5),
+  note("c2 c2 eb2 c2").s("sawtooth").lpf(bassLpf).pan(0.5),
+  note("<c3,eb3,g3>").s("sawtooth").slow(2)
+    .pan(chordPan).room(chordRoom).hpf(chordHpf).lpf(chordLpf).gain(0.4)
+).cpm(30)`} scope />
 
 ---
 

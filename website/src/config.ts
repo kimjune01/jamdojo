@@ -81,6 +81,7 @@ export const ACTIVITIES: SidebarSection[] = [
     title: 'Music Theory',
     icon: '🎵',
     items: [
+      { text: 'Strudel Programming', link: 'learn/theory/strudel-programming', icon: '💻', description: 'Variables, functions, envelopes, and signals' },
       { text: 'Harmony', link: 'learn/theory/harmony', icon: '🎶', description: 'Learn chords, voicings, and jazz harmony' },
       { text: 'Chord Composition', link: 'learn/theory/chord-composition', icon: '🎼', description: 'Compose with chord progressions and voicings' },
       { text: 'Classical Terminology', link: 'learn/theory/classical-terminology', icon: '🎻', description: 'Form, harmony, and counterpoint vocabulary' },

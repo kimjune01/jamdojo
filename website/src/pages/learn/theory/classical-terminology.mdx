@@ -1,0 +1,1673 @@
+---
+title: Classical Music Terminology
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+
+Before diving in, let's establish a **sound library** — reusable variables that embody DRY (Don't Repeat Yourself) principles. This approach, covered in depth in [Strudel Programming](/learn/theory/strudel-programming), lets us define sounds once and apply them everywhere.
+
+<MiniRepl client:idle tune={`// === THEME LIBRARY ===
+// Our main theme (Pachelbel-inspired in D major)
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const themeHigh = note("a4 b4 cs5 d5 e5 d5 cs5 b4")
+
+// === INSTRUMENT PRESETS ===
+const piano = x => x.s('piano')
+const softPiano = x => x.s('piano').gain(0.6)
+const quietPiano = x => x.s('piano').gain(0.4)
+
+// === ARTICULATION LIBRARY ===
+const art = {
+  legato: x => x.sustain(1),
+  staccato: x => x.sustain(0.2),
+  marcato: x => x.sustain(0.5).gain(0.9),
+  tenuto: x => x.sustain(0.9).gain(0.7),
+  portato: x => x.sustain(0.6)
+}
+
+// === DYNAMICS LIBRARY ===
+const dyn = {
+  pp: x => x.gain(0.1),
+  p: x => x.gain(0.3),
+  mp: x => x.gain(0.5),
+  mf: x => x.gain(0.6),
+  f: x => x.gain(0.8),
+  ff: x => x.gain(0.9)
+}
+
+// === TEMPO PRESETS (cpm values) ===
+const tempo = {
+  largo: 15,
+  adagio: 25,
+  andante: 30,
+  moderato: 40,
+  allegro: 50,
+  presto: 60
+}
+
+// === BASS PRESETS ===
+const warmBass = x => x.s('sawtooth').lpf(400).gain(0.4)
+
+// Try the theme with different presets!
+piano(theme).cpm(tempo.moderato)`} />
+
+These variables become your **instrument palette**. Now every example can reference `theme`, `piano()`, `art.legato`, and `tempo.moderato` instead of repeating `.s('piano').cpm(40)` everywhere.
+
+---
+
+Classical music is architecture in time. Like a building, it has **structure** (form), **support systems** (harmony), and **intricate details** (counterpoint). This page teaches you the vocabulary that composers, performers, and transcribers use to describe their art—and shows you how these concepts map to Strudel.
+
+**What you'll learn:**
+- How music is organized over time (Form & Structure)
+- How chords create emotional meaning (Harmony & Progression)
+- How multiple voices interact (Texture & Counterpoint)
+
+Throughout this guide, we'll use a simple theme in D major—inspired by Pachelbel's Canon—to demonstrate each concept:
+
+<MiniRepl client:idle tune={`// Using our theme variable from the library above
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+piano(theme).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+---
+
+## Part 1: The Journey of a Theme (Form & Structure)
+
+Form describes how music unfolds over time. Just as a story has a beginning, middle, and end, music has structural units that give it shape.
+
+### 1.1 The Musical Sentence: Phrases and Periods
+
+A **phrase** is the musical equivalent of a sentence—a complete musical thought with a beginning, middle, and end. Most phrases are 4 or 8 bars long.
+
+**A 4-bar phrase:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+// A complete musical thought
+const phrase = note("d4 fs4 a4 fs4 d4 a3 fs3 d3")
+
+piano(phrase).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Two phrases often pair together to form a **period**—a musical "question and answer":
+
+- The **antecedent** (first phrase) ends with a sense of incompleteness
+- The **consequent** (second phrase) provides resolution
+
+**A period with antecedent and consequent:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+// Question and answer
+const antecedent = note("d4 fs4 a4 fs4 e4 g4 fs4 e4")
+const consequent = note("d4 fs4 a4 fs4 d4 a3 fs3 d3")
+
+piano(cat(antecedent, consequent)).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+The first phrase feels like a question; the second feels like an answer. This tension and resolution is fundamental to classical music.
+
+A **cadence** is the harmonic punctuation at the end of a phrase. We'll explore cadences in depth in Part 2.
+
+---
+
+### 1.2 Building Sections: Binary and Ternary Form
+
+Phrases combine into larger sections. The simplest structures are:
+
+**Binary Form (AB)**: Two contrasting sections
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+// Define sections once, use everywhere
+const sectionA = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const sectionB = note("a4 b4 cs5 d5 e5 d5 cs5 b4")
+
+piano(slowcat(sectionA, sectionB)).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Section A presents one idea; Section B presents a contrasting idea. Many Baroque dance movements use binary form.
+
+**Ternary Form (ABA)**: A section, contrasting middle, return to A
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+const sectionA = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const sectionB = note("a4 b4 cs5 d5 e5 d5 cs5 b4")
+
+// ABA - same sectionA variable used twice!
+piano(slowcat(sectionA, sectionB, sectionA)).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+The return to A creates a satisfying sense of closure. Minuets and many song forms use ABA structure.
+
+**Rounded Binary**: A hybrid where the A material returns at the end of the B section, making it feel like A-B-A' (a modified return).
+
+In Strudel, `cat()` sequences patterns one after another, while `slowcat()` gives each pattern a full cycle—perfect for defining formal sections.
+
+---
+
+### 1.3 Large-Scale Design: Sonata and Rondo
+
+Larger works use more elaborate forms:
+
+**Rondo (ABACA or ABACABA)**: A recurring theme (refrain) alternates with contrasting sections (episodes).
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+// Refrain and episodes
+const refrain = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const episodeB = note("a4 gs4 a4 b4 cs5 b4 a4 gs4")
+const episodeC = note("d5 cs5 b4 a4 g4 fs4 e4 d4")
+
+// ABACA - refrain appears 3 times, but defined only once!
+piano(slowcat(refrain, episodeB, refrain, episodeC, refrain)).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+The **refrain** (A) keeps returning, providing unity. The **episodes** (B, C) provide variety.
+
+**Sonata Form** is the most important large-scale form in classical music. It has three main sections:
+
+1. **Exposition**: Introduces two contrasting themes, usually in different keys
+2. **Development**: Transforms and explores the themes through modulation and fragmentation
+3. **Recapitulation**: Returns both themes, now in the home key
+
+Sonata form creates a dramatic arc: departure, adventure, and homecoming.
+
+**Coda**: A concluding section that follows the main structure, providing a definitive ending.
+
+---
+
+### 1.4 Motivic Development Techniques
+
+Composers transform themes using specific techniques. These are the building blocks of development sections and variations.
+
+**Augmentation**: Stretching note durations (usually doubling them). Creates grandeur and weight.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+// Same theme - original then augmented
+cat(
+  piano(theme),
+  piano(theme).slow(2)  // .slow(2) doubles durations
+).cpm(60)`} punchcard punchcardLabels={false} />
+
+In Strudel, `.slow(2)` doubles all note durations.
+
+**Diminution**: Compressing note durations (usually halving them). Creates urgency and excitement.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+// Same theme - original then diminished
+cat(
+  piano(theme),
+  piano(theme).fast(2)  // .fast(2) halves durations
+).cpm(40)`} punchcard punchcardLabels={false} />
+
+In Strudel, `.fast(2)` halves all note durations.
+
+**Inversion**: Flipping intervals upside down. If the original goes up a 3rd, the inversion goes down a 3rd.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const softPiano = x => x.s('piano').gain(0.7)
+
+const ascending = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+const descending = note("d4 c4 b3 a3 g3 f3 e3 d3")  // inverted
+
+stack(
+  piano(ascending),
+  softPiano(descending)
+).cpm(40)`} punchcard punchcardLabels={false} />
+
+The second line mirrors the first—ascending becomes descending.
+
+**Retrograde**: Playing the melody backwards.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+// Same theme variable - forward then backward
+cat(
+  piano(theme),
+  piano(theme).rev()  // .rev() reverses the pattern
+).cpm(40)`} punchcard punchcardLabels={false} />
+
+In Strudel, `.rev()` reverses the pattern. Bach used retrograde extensively in his canons.
+
+**Fragmentation**: Breaking a theme into smaller motives and developing just those pieces.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+// Extract motives from the theme
+const motiveA = note("fs4 e4")  // first two notes
+const motiveB = note("b3 cs4")  // last two notes
+
+cat(
+  piano(theme),
+  piano(motiveA.fast(4)),  // spin out first motive
+  piano(motiveB.fast(4))   // spin out last motive
+).cpm(40)`} punchcard punchcardLabels={false} />
+
+Taking just the first two notes or last two notes and spinning them out creates coherent development.
+
+**Sequence**: Repeating a pattern at successively higher or lower pitch levels.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+
+// Define pattern once, transpose for sequence
+const motif = note("d4 e4 fs4 g4")
+
+cat(
+  piano(motif),
+  piano(motif).transpose(2),   // up a step
+  piano(motif).transpose(4),   // up again
+  piano(motif).transpose(5)    // up once more
+).cpm(50)`} punchcard punchcardLabels={false} />
+
+Sequences create momentum and can drive modulations to new keys.
+
+---
+
+## Part 2: The Language of Emotion (Harmony & Progression)
+
+Harmony is the vocabulary of emotion. It's what makes music feel tense or relaxed, happy or sad, expectant or resolved.
+
+### 2.1 Home and Journey: Tonal Function
+
+In tonal music, every piece has a "home" chord called the **tonic**. The journey away from home and back creates musical drama.
+
+The three primary functions are:
+
+- **Tonic (I)**: Home, stability, rest
+- **Dominant (V)**: Tension, needs resolution, pulls toward home
+- **Subdominant (IV)**: Departure, gentle contrast from home
+
+**The most basic progression: I - IV - V - I**
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+const tempo = { largo: 15, adagio: 20 }
+
+// I - IV - V - I in D major
+const basicProg = chord("<D G A D>")
+
+voicedPiano(basicProg).cpm(tempo.adagio)`} punchcard punchcardLabels={false} />
+
+This progression represents: home → departure → tension → home. It's the foundation of Western harmony.
+
+**Function** describes a chord's role in creating tension or stability. A chord's function matters more than its specific notes.
+
+**Resolution** is the movement from tension to stability—typically V → I. This pull toward home is what gives tonal music its sense of direction.
+
+---
+
+### 2.2 Musical Punctuation: Cadences
+
+**Cadences** are harmonic punctuation marks. They signal the end of phrases and create different degrees of finality.
+
+**Authentic Cadence (V → I)**: The strongest ending. Like a period.
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+const tempo = { largo: 15 }
+
+// Define cadence types as reusable progressions
+const cadence = {
+  authentic: chord("<A D>"),      // V → I
+  half: chord("<D G A>"),         // ends on V
+  plagal: chord("<G D>"),         // IV → I (Amen)
+  deceptive: chord("<A Bm>")      // V → vi (surprise!)
+}
+
+voicedPiano(cadence.authentic).cpm(tempo.largo)`} punchcard punchcardLabels={false} />
+
+This is also called a **perfect cadence** when both chords are in root position and the melody ends on the tonic.
+
+**Half Cadence (→ V)**: Ends on the dominant. Like a comma—pause but not complete.
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+const cadence = { half: chord("<D G A>") }
+
+voicedPiano(cadence.half).cpm(15)`} punchcard punchcardLabels={false} />
+
+The phrase feels suspended, waiting for continuation.
+
+**Plagal Cadence (IV → I)**: The "Amen" cadence. Softer than authentic.
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+const cadence = { plagal: chord("<G D>") }
+
+voicedPiano(cadence.plagal).cpm(15)`} punchcard punchcardLabels={false} />
+
+Often used at the end of hymns and to reinforce a final tonic.
+
+**Deceptive Cadence (V → vi)**: Surprise! Resolves to the relative minor instead of home.
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+const cadence = { deceptive: chord("<A Bm>") }
+
+voicedPiano(cadence.deceptive).cpm(15)`} punchcard punchcardLabels={false} />
+
+The listener expects resolution but gets an unexpected turn. Composers use this to extend phrases or create emotional surprise.
+
+---
+
+### 2.3 Tension and Release: Dissonance
+
+**Consonance** is stability—notes that sound "at rest" together.
+**Dissonance** is tension—notes that create friction and want to resolve.
+
+The interplay between them is the heartbeat of classical music.
+
+**Suspension**: A note held over from the previous chord, creating dissonance before resolving down.
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+
+// Suspension creates tension, then resolves
+const suspension = chord("<Dsus D>")
+
+voicedPiano(suspension).cpm(15)`} punchcard punchcardLabels={false} />
+
+The suspended 4th (G) clashes with the chord, then resolves to the 3rd (F#).
+
+**Non-chord tones** are melodic decorations that create momentary dissonance:
+
+- **Passing tone**: Moves stepwise between two chord tones
+- **Neighbor tone**: Steps away from and returns to a chord tone
+- **Appoggiatura**: Leaps to a dissonance, resolves by step
+
+These ornaments add expressiveness to otherwise plain melodies.
+
+**Without ornamental dissonance:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { andante: 30 }
+
+// Just chord tones - plain
+const chordTones = note("d4 fs4 a4 d5")
+
+piano(chordTones).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+**With passing tones and neighbors:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { andante: 30 }
+
+// Added passing tones fill the gaps
+const withPassingTones = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+
+piano(withPassingTones).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+---
+
+### 2.4 Changing Scenery: Modulation
+
+**Modulation** is moving from one key to another. It refreshes the listener's ear and creates large-scale harmonic drama.
+
+**Common modulations:**
+- To the **dominant** (up a 5th): D major → A major
+- To the **relative minor**: D major → B minor
+- To the **subdominant** (up a 4th): D major → G major
+
+A **pivot chord** belongs to both the old and new key, creating a smooth transition.
+
+**Modulation from D major to A major using E as pivot:**
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+const tempo = { adagio: 20 }
+
+// Pivot chord modulation: D major → A major
+const modulateToDominant = chord("<D A Bm E7 A>")
+
+voicedPiano(modulateToDominant).cpm(tempo.adagio)`} punchcard punchcardLabels={false} />
+
+The Bm chord belongs to D major, but E7 strongly suggests A major. The final A chord confirms we've arrived in a new key.
+
+A **sequence** is a pattern repeated at different pitch levels, often used to create modulations:
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+// Define once, transpose to create sequence
+const motif = note("d4 e4 fs4 g4")
+
+cat(
+  piano(motif),
+  piano(motif).transpose(2),
+  piano(motif).transpose(4)
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+The same melodic pattern moves up stepwise, naturally shifting the harmonic center.
+
+The **circle of fifths** describes the relationship between keys. Moving around the circle (C → G → D → A → E...) is the most natural way to modulate.
+
+---
+
+### 2.5 Advanced Harmony: Chromaticism and Color
+
+Beyond basic diatonic harmony, composers use chromatic techniques for richer emotional expression.
+
+**Secondary Dominants (V/V, V/vi, etc.)**: A dominant chord that temporarily "points to" a chord other than the tonic.
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+const tempo = { adagio: 20 }
+
+// Secondary dominant: E7 is V/V (pulls to A)
+const withSecondaryDom = chord("<D E7 A D>")
+
+voicedPiano(withSecondaryDom).cpm(tempo.adagio)`} punchcard punchcardLabels={false} />
+
+The E7 is V/V—the dominant of A (which is V of D). It creates a stronger pull to the A chord.
+
+**Borrowed Chords (Modal Mixture)**: Chords "borrowed" from the parallel minor or major key.
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+const tempo = { adagio: 20 }
+
+// Gm is borrowed from D minor - bittersweet color
+const withBorrowed = chord("<D G Gm D>")
+
+voicedPiano(withBorrowed).cpm(tempo.adagio)`} punchcard punchcardLabels={false} />
+
+The Gm is borrowed from D minor. This bittersweet color is common in Romantic music.
+
+**Neapolitan Chord (♭II)**: A major chord built on the lowered second scale degree. Creates intense pre-dominant tension.
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+const tempo = { adagio: 20 }
+
+// Neapolitan: Eb is bII in D minor - dramatic!
+const neapolitan = chord("<Dm Eb A7 Dm>")
+
+voicedPiano(neapolitan).cpm(tempo.adagio)`} punchcard punchcardLabels={false} />
+
+The E♭ major chord (♭II in D minor) has a darkly dramatic quality, often used before cadences.
+
+**Augmented Sixth Chords**: Chromatic chords containing an augmented sixth interval. They resolve powerfully to the dominant.
+
+The three types are named after countries:
+- **Italian 6th**: Three notes (♭6, 1, #4)
+- **French 6th**: Four notes (♭6, 1, 2, #4)
+- **German 6th**: Four notes (♭6, 1, ♭3, #4)
+
+**Pedal Point (Pedal Tone)**: A sustained or repeated note (usually the tonic or dominant) while harmonies change above it.
+
+<MiniRepl client:idle tune={`const voicedPiano = x => x.voicing().s('piano')
+const warmBass = x => x.s('sawtooth').lpf(400).gain(0.5)
+const tempo = { andante: 30 }
+
+// Harmony changes above a sustained tonic pedal
+const chords = chord("<D A Bm G A D>")
+const pedalTone = note("d2 d2 d2 d2 d2 d2")
+
+stack(
+  voicedPiano(chords),
+  warmBass(pedalTone)
+).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+The sustained D creates tension as other chords move, then release when harmony returns to D.
+
+**Tonicization**: Briefly treating a non-tonic chord as if it were the tonic, usually with its own V-I motion.
+
+**Chromaticism**: Using notes outside the diatonic scale for color and expression. Became increasingly common from Baroque through Romantic periods.
+
+For hands-on practice building progressions with these harmonic concepts, see the [Chord Composition](/learn/theory/chord-composition) guide.
+
+---
+
+## Part 3: Voices in Conversation (Texture & Counterpoint)
+
+Texture describes how musical voices interact. A single melody is simple; multiple independent melodies weaving together is complex.
+
+### 3.1 How Voices Relate: Texture Types
+
+**Monophony**: A single melodic line with no accompaniment.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+// Single unaccompanied melody
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+piano(theme).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Gregorian chant and unaccompanied folk songs are monophonic.
+
+**Homophony**: A melody with chordal accompaniment. The melody dominates; chords support.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const softPiano = x => x.s('piano').gain(0.6)
+const voicedPiano = x => x.voicing().s('piano').gain(0.6)
+const tempo = { moderato: 40 }
+
+// Melody + accompaniment (reuse theme)
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const accompaniment = chord("<D A Bm F#m G D G A>")
+
+stack(
+  piano(theme),
+  voicedPiano(accompaniment)
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Most popular music and many classical works are homophonic.
+
+**Polyphony**: Multiple independent melodic lines of equal importance.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const softPiano = x => x.s('piano').gain(0.7)
+const tempo = { moderato: 40 }
+
+// Two independent melodies - equal importance
+const voiceHigh = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const voiceLow = note("d4 cs4 b3 a3 g3 fs3 g3 a3")
+
+stack(
+  piano(voiceHigh),
+  softPiano(voiceLow)
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Each voice has its own melodic interest. Fugues and Renaissance motets are polyphonic.
+
+**Heterophony**: Multiple voices play variations of the same melody simultaneously. Common in folk traditions.
+
+Strudel's `stack()` function is the key to building textures—it layers patterns to play simultaneously.
+
+---
+
+### 3.2 Independent Lines: Voice Leading
+
+**Voice leading** is the art of moving smoothly from chord to chord. Good voice leading makes each voice sound like a melody, not just chord notes.
+
+**Types of motion between voices:**
+
+- **Parallel motion**: Voices move in the same direction by the same interval
+- **Similar motion**: Voices move in the same direction by different intervals
+- **Contrary motion**: Voices move in opposite directions
+- **Oblique motion**: One voice stays still while the other moves
+
+**Contrary motion creates independence:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+// Soprano ascends while bass descends
+const soprano = note("d4 e4 fs4 g4 a4 g4 fs4 e4")
+const bass = note("d3 cs3 b2 a2 g2 a2 b2 cs3")
+
+stack(
+  piano(soprano),
+  piano(bass)
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+When one voice ascends while another descends, each line maintains its identity.
+
+**Rules classical composers follow:**
+- Avoid parallel fifths and octaves (they weaken independence)
+- Move by step when possible (smoother than leaps)
+- Let outer voices (soprano and bass) have the most melodic interest
+
+For practical voice leading exercises and chord voicing techniques, see the [Chord Composition](/learn/theory/chord-composition) guide.
+
+---
+
+### 3.3 Echoes and Shadows: Imitation
+
+**Imitation** is when one voice echoes what another voice just played. It's a powerful way to unify a composition while maintaining independence.
+
+**Canon**: Strict imitation where a second voice enters after a delay, playing the exact same melody.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const softPiano = x => x.s('piano').gain(0.7)
+const tempo = { moderato: 40 }
+
+// Same theme, delayed - canon!
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+stack(
+  piano(theme),
+  softPiano(theme).late(0.5)  // .late() creates the delay
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Pachelbel's Canon is the most famous example. In Strudel, `.late()` creates the delay.
+
+**Fugue**: A more complex imitative form with:
+- **Subject**: The main theme
+- **Answer**: The subject transposed (usually to the dominant)
+- **Countersubject**: A contrasting melody that accompanies the answer
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const softPiano = x => x.s('piano').gain(0.7)
+const tempo = { moderato: 40 }
+
+// Define subject once, derive answer from it
+const subject = note("d4 fs4 a4 g4 fs4 e4 d4 cs4")
+const answer = note("a3 cs4 e4 d4 cs4 b3 a3 gs3")  // transposed to dominant
+
+cat(
+  piano(subject),                    // Subject enters alone
+  stack(piano(subject), softPiano(answer))  // Answer joins
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+The subject enters alone, then the answer joins with the subject continuing as counterpoint.
+
+**Stretto**: When imitative entries overlap closely, creating intensity.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+// Same motif, increasingly close entries
+const motif = note("d4 fs4 a4 d5")
+
+stack(
+  piano(motif),
+  piano(motif).late(0.25).gain(0.8),
+  piano(motif).late(0.5).gain(0.6)
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Tight overlapping creates climactic intensity. Composers often save stretto for near the end of a fugue.
+
+For a complete tutorial on writing canons and fugues, see the [Classical Music](/learn/genre/classical) genre guide.
+
+---
+
+### 3.4 Advanced Counterpoint Concepts
+
+**Species Counterpoint**: A pedagogical method for learning counterpoint, developed by Johann Fux (1725). Each "species" adds rhythmic complexity:
+
+1. **First Species**: Note against note (1:1)
+2. **Second Species**: Two notes against one (2:1)
+3. **Third Species**: Four notes against one (4:1)
+4. **Fourth Species**: Syncopated, using suspensions
+5. **Fifth Species**: "Florid" counterpoint combining all species
+
+**Invertible (Double) Counterpoint**: Two melodies that sound good when either is on top. The voices can swap positions.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const softPiano = x => x.s('piano').gain(0.7)
+const tempo = { moderato: 40 }
+
+// Define melodies once
+const melodyA = note("d4 e4 fs4 g4 a4 g4 fs4 e4")
+const melodyB = note("fs3 g3 a3 b3 cs4 b3 a3 g3")
+
+cat(
+  // Original position
+  stack(piano(melodyA), softPiano(melodyB)),
+  // Swapped - same melodies, inverted position!
+  stack(piano(melodyB), softPiano(melodyA))
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+The same two melodies, but swapped between high and low voices.
+
+**Triple/Quadruple Counterpoint**: Three or four melodies that work in any vertical arrangement.
+
+**Free Counterpoint**: Counterpoint that doesn't strictly follow species rules but maintains good voice leading principles.
+
+**Imitative Counterpoint**: Counterpoint based on imitation (canons, fugues). Voices enter with the same or similar material.
+
+**Non-Imitative Counterpoint**: Independent melodies that complement each other without direct imitation.
+
+---
+
+### 3.5 Vertical Dimension: Intervals and Spacing
+
+**Intervals** describe the distance between notes:
+
+| Interval | Half-steps | Character |
+|----------|-----------|-----------|
+| Unison | 0 | Identity |
+| Minor 2nd | 1 | Very dissonant |
+| Major 2nd | 2 | Mildly dissonant |
+| Minor 3rd | 3 | Sad, minor quality |
+| Major 3rd | 4 | Bright, major quality |
+| Perfect 4th | 5 | Open, medieval |
+| Perfect 5th | 7 | Hollow, stable |
+| Octave | 12 | Reinforcement |
+
+**Spacing** affects the sound's character:
+
+**Close position**: Notes clustered together (warm, dense)
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+
+// D major triad in close voicing
+const closeVoicing = note("[d4,fs4,a4]")
+
+piano(closeVoicing)`} punchcard punchcardLabels={false} />
+
+**Open position**: Notes spread apart (clear, majestic)
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+
+// Same notes spread across octaves
+const openVoicing = note("[d3,a3,fs4]")
+
+piano(openVoicing)`} punchcard punchcardLabels={false} />
+
+**Octave doubling**: Playing the same note in multiple octaves adds richness without changing the harmony.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+
+// Root doubled in multiple octaves
+const withDoubling = note("[d2,d3,d4,fs4,a4]")
+
+piano(withDoubling)`} punchcard punchcardLabels={false} />
+
+---
+
+## Part 4: Performance Terminology
+
+Classical scores contain Italian (and sometimes German or French) terms that tell performers how to play. Understanding these terms helps you interpret and recreate classical music in Strudel.
+
+### 4.1 Tempo Markings
+
+Tempo indicates the speed of the music, measured in beats per minute (BPM).
+
+| Term | Meaning | BPM Range |
+|------|---------|-----------|
+| **Grave** | Very slow, solemn | 25-45 |
+| **Largo** | Broad, very slow | 40-60 |
+| **Larghetto** | Rather slow | 60-66 |
+| **Lento** | Slow | 45-60 |
+| **Adagio** | Slow, at ease | 66-76 |
+| **Adagietto** | Rather slow | 72-76 |
+| **Andante** | Walking pace | 76-108 |
+| **Andantino** | Slightly faster than andante | 80-108 |
+| **Moderato** | Moderate speed | 108-120 |
+| **Allegretto** | Moderately fast | 112-120 |
+| **Allegro** | Fast, lively | 120-168 |
+| **Vivace** | Lively, brisk | 140-176 |
+| **Presto** | Very fast | 168-200 |
+| **Prestissimo** | As fast as possible | 200+ |
+
+**Tempo modifiers:**
+- **Molto**: Very (molto allegro = very fast)
+- **Poco**: A little (poco adagio = a little slow)
+- **Più**: More (più mosso = more motion/faster)
+- **Meno**: Less (meno mosso = less motion/slower)
+- **Non troppo**: Not too much (allegro non troppo = fast but not too fast)
+- **Assai**: Very/enough (allegro assai = quite fast)
+
+**Tempo changes:**
+- **Accelerando (accel.)**: Gradually getting faster
+- **Ritardando (rit.)**: Gradually getting slower
+- **Rallentando (rall.)**: Gradually slowing down
+- **Ritenuto**: Immediately slower
+- **A tempo**: Return to the original tempo
+- **Tempo primo**: Return to the first tempo
+- **Rubato**: "Stolen time"—flexible tempo for expression
+
+In Strudel, use `.cpm()` (cycles per minute) to set tempo. Here's the same phrase at different tempos:
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+
+// Define theme once, tempo library for reuse
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const tempo = {
+  largo: 15,      // very slow
+  andante: 25,    // walking pace
+  allegro: 40,    // fast
+  presto: 60      // very fast
+}
+
+// Change tempo.largo to tempo.allegro etc. to hear difference!
+piano(theme).cpm(tempo.largo)`} punchcard punchcardLabels={false} />
+
+**Largo (very slow, broad):**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const tempo = { largo: 15 }
+
+piano(theme).cpm(tempo.largo)`} punchcard punchcardLabels={false} />
+
+**Andante (walking pace):**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const tempo = { andante: 25 }
+
+piano(theme).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+**Allegro (fast, lively):**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const tempo = { allegro: 40 }
+
+piano(theme).cpm(tempo.allegro)`} punchcard punchcardLabels={false} />
+
+**Presto (very fast):**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const tempo = { presto: 60 }
+
+piano(theme).cpm(tempo.presto)`} punchcard punchcardLabels={false} />
+
+**Accelerando (gradually faster):**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+// Accelerando: tempo sweeps from slow to fast
+const accelerando = slow(8, sine.range(20, 50))
+
+piano(theme).cpm(accelerando)`} punchcard punchcardLabels={false} />
+
+**Ritardando (gradually slower):**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+// Ritardando: tempo sweeps from fast to slow
+const ritardando = slow(8, sine.range(50, 20))
+
+piano(theme).cpm(ritardando)`} punchcard punchcardLabels={false} />
+
+---
+
+### 4.2 Dynamics
+
+Dynamics indicate volume and intensity.
+
+| Symbol | Term | Meaning |
+|--------|------|---------|
+| **ppp** | Pianississimo | As soft as possible |
+| **pp** | Pianissimo | Very soft |
+| **p** | Piano | Soft |
+| **mp** | Mezzo piano | Moderately soft |
+| **mf** | Mezzo forte | Moderately loud |
+| **f** | Forte | Loud |
+| **ff** | Fortissimo | Very loud |
+| **fff** | Fortississimo | As loud as possible |
+
+**Dynamic changes:**
+- **Crescendo (cresc.)**: Gradually getting louder
+- **Decrescendo/Diminuendo (decresc./dim.)**: Gradually getting softer
+- **Sforzando (sfz)**: Sudden strong accent
+- **Sforzato (sf)**: Forced, accented
+- **Fortepiano (fp)**: Loud then immediately soft
+- **Subito (sub.)**: Suddenly (subito piano = suddenly soft)
+
+In Strudel, use `.gain()` for dynamics. Define a dynamics library:
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { andante: 30, moderato: 40 }
+
+// Dynamics library - reusable gain presets
+const dyn = {
+  pp: x => x.gain(0.1),    // pianissimo
+  p: x => x.gain(0.2),     // piano
+  mp: x => x.gain(0.4),    // mezzo piano
+  mf: x => x.gain(0.6),    // mezzo forte
+  f: x => x.gain(0.8),     // forte
+  ff: x => x.gain(0.9)     // fortissimo
+}
+
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+// Try different dynamics!
+dyn.pp(piano(theme)).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+**Piano (soft) vs Forte (loud):**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const dyn = { p: x => x.gain(0.2), f: x => x.gain(0.8) }
+const tempo = { moderato: 40 }
+
+const phraseA = note("fs4 e4 d4 cs4")
+const phraseB = note("b3 a3 b3 cs4")
+
+// Same phrases, different dynamics
+cat(
+  dyn.p(piano(phraseA)),
+  dyn.f(piano(phraseB))
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+**Pianissimo (pp) - very soft:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const dyn = { pp: x => x.gain(0.1) }
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+dyn.pp(piano(theme)).cpm(30)`} punchcard punchcardLabels={false} />
+
+**Fortissimo (ff) - very loud:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const dyn = { ff: x => x.gain(0.9) }
+const theme = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+
+dyn.ff(piano(theme)).cpm(30)`} punchcard punchcardLabels={false} />
+
+**Crescendo (gradually louder):**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { andante: 30 }
+const scale = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+
+// Signal creates gradual volume increase
+const crescendo = saw.range(0.2, 0.9)
+
+piano(scale).gain(crescendo).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+**Diminuendo (gradually softer):**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { andante: 30 }
+const scale = note("d5 cs5 b4 a4 g4 fs4 e4 d4")
+
+// Signal creates gradual volume decrease
+const diminuendo = saw.range(0.9, 0.2)
+
+piano(scale).gain(diminuendo).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+**Sforzando (sfz) - sudden accent:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+const scale = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+
+// Pattern-based accents
+const sfzPattern = "0.3 0.3 0.3 0.9 0.3 0.3 0.3 0.9"
+
+piano(scale).gain(sfzPattern).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+**Fortepiano (fp) - loud then immediately soft:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+const chord = note("[d4,fs4,a4,d5] ~ ~ ~ ~ ~ ~ ~")
+
+// fp pattern: loud first note, soft sustain
+const fpPattern = "0.9 0.3 0.3 0.3 0.3 0.3 0.3 0.3"
+
+piano(chord).gain(fpPattern).sustain(2).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+---
+
+### 4.3 Articulation
+
+Articulation describes how individual notes are attacked and released. Define an articulation library:
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+const scale = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+
+// Articulation library - reusable sustain presets
+const art = {
+  legato: x => x.sustain(1),
+  staccato: x => x.sustain(0.2),
+  tenuto: x => x.sustain(0.9).gain(0.7),
+  portato: x => x.sustain(0.6),
+  marcato: x => x.sustain(0.5).gain(0.9)
+}
+
+// Try different articulations!
+art.legato(piano(scale)).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+**Legato**: Smooth and connected. Notes flow into each other with no gaps.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const art = { legato: x => x.sustain(1) }
+const scale = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+
+art.legato(piano(scale)).cpm(40)`} punchcard punchcardLabels={false} />
+
+**Staccato**: Short and detached. Each note is crisp and separated.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const art = { staccato: x => x.sustain(0.2) }
+const scale = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+
+art.staccato(piano(scale)).cpm(40)`} punchcard punchcardLabels={false} />
+
+**Marcato**: Marked, accented. Each note is emphasized with a strong attack.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+const scale = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+
+// Marcato: accented pattern with medium sustain
+const art = { marcato: x => x.sustain(0.5).gain("0.9 0.6 0.9 0.6 0.9 0.6 0.9 0.6") }
+
+art.marcato(piano(scale)).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Each note has a pronounced attack. In Strudel, combine higher `.gain()` with moderate `.sustain()`.
+
+**Tenuto**: Held. Notes are sustained for their full value, connected but with slight separation.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+const scale = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+
+// Tenuto: nearly full sustain with moderate volume
+const art = { tenuto: x => x.sustain(0.9).gain(0.7) }
+
+art.tenuto(piano(scale)).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Notes are held nearly their full duration, creating a weighted, singing quality.
+
+**Portato (Portamento)**: Between legato and staccato—slightly detached but not as short as staccato.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+const scale = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+
+const art = { portato: x => x.sustain(0.6) }
+
+art.portato(piano(scale)).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Notes are separated but not clipped—a gentle articulation often indicated by dots under a slur.
+
+**Accent (>)**: Emphasize the note with extra attack.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+const scale = note("d4 e4 fs4 g4 a4 b4 cs5 d5")
+
+// Accent pattern emphasizes beat 1 and 5
+const accentPattern = "0.9 0.5 0.5 0.5 0.9 0.5 0.5 0.5"
+
+piano(scale).gain(accentPattern).sustain(0.7).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Accents mark structural beats or important melodic notes.
+
+**Fermata (𝄐)**: Hold the note longer than its written value, at the performer's discretion.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const art = { legato: x => x.sustain(1) }
+const tempo = { moderato: 40 }
+
+// @3 gives note 3x normal duration - fermata!
+const withFermata = note("d4 e4 fs4 g4 [a4@3] b4 cs5 d5")
+
+art.legato(piano(withFermata)).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+The `@3` gives the A three times its normal duration, simulating a fermata hold.
+
+**Combining articulations** - legato phrase followed by staccato:
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+// Articulation library
+const art = {
+  legato: x => x.sustain(1),
+  staccato: x => x.sustain(0.2)
+}
+
+const phraseA = note("d4 e4 fs4 g4")
+const phraseB = note("a4 b4 cs5 d5")
+
+// Same melody, different articulations per phrase
+cat(
+  art.legato(piano(phraseA)),
+  art.staccato(piano(phraseB))
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+---
+
+### 4.4 Expression and Mood
+
+These terms describe the character or feeling of the music. Tempo, dynamics, and articulation combine to create different moods. Here's an expression library:
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+
+// Expression presets combine tempo, dynamics, and articulation
+const mood = {
+  cantabile: x => x.sustain(1.5).gain(0.6),     // singing
+  dolce: x => x.sustain(1).gain(0.35),          // sweet
+  conBrio: x => x.sustain(0.5).gain("0.9 0.6"), // vigorous
+  leggiero: x => x.sustain(0.2).gain(0.3),      // light
+  pesante: x => x.sustain(0.8).gain(0.85)       // heavy
+}
+
+const tempo = {
+  largo: 15, adagio: 20, andante: 25,
+  allegro: 55, presto: 60
+}
+
+const melody = note("d4 ~ fs4 ~ a4 ~ fs4 ~ d4")
+
+// Try different moods!
+mood.cantabile(piano(melody)).cpm(tempo.adagio)`} punchcard punchcardLabels={false} />
+
+**Cantabile** - In a singing style. Smooth, lyrical, with long sustained notes.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const mood = { cantabile: x => x.sustain(1.5).gain(0.6) }
+const tempo = { adagio: 20 }
+const melody = note("d4 ~ fs4 ~ a4 ~ fs4 ~ d4")
+
+mood.cantabile(piano(melody)).cpm(tempo.adagio)`} punchcard punchcardLabels={false} />
+
+**Dolce** - Sweet, gentle. Soft dynamics, legato, tender.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const mood = { dolce: x => x.sustain(1).gain(0.35) }
+const tempo = { andante: 25 }
+const melody = note("fs4 e4 d4 cs4 d4 e4 fs4 d4")
+
+mood.dolce(piano(melody)).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+**Con brio** - With vigor, spirit. Fast tempo, strong accents.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const mood = { conBrio: x => x.sustain(0.5).gain("0.9 0.6 0.9 0.6 0.9 0.6 0.9 0.6") }
+const tempo = { presto: 60 }
+const melody = note("d4 fs4 a4 d5 cs5 a4 fs4 d4")
+
+mood.conBrio(piano(melody)).cpm(tempo.presto)`} punchcard punchcardLabels={false} />
+
+**Maestoso** - Majestic. Slow, broad, with weight and grandeur.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const warmBass = x => x.s('sawtooth').lpf(300).gain(0.4)
+const tempo = { largo: 15 }
+
+// Chord progression + bass - reusable patterns
+const chords = note("[d3,fs3,a3,d4] ~ [g3,b3,d4] ~ [a3,cs4,e4] ~ [d3,fs3,a3,d4]")
+const bassLine = note("d2 ~ g2 ~ a2 ~ d2")
+
+stack(
+  piano(chords).sustain(2).gain(0.8),
+  warmBass(bassLine)
+).cpm(tempo.largo)`} punchcard punchcardLabels={false} />
+
+**Agitato** - Agitated, restless. Fast, uneven, with tension.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { vivace: 70 }
+const agitatedPattern = note("d4 cs4 d4 e4 fs4 e4 d4 cs4 d4 fs4 a4 fs4 d4 a3 d4 fs4")
+const agitatedDynamics = "0.7 0.5 0.8 0.5 0.7 0.5 0.8 0.6"
+
+piano(agitatedPattern).sustain(0.3).gain(agitatedDynamics).cpm(tempo.vivace)`} punchcard punchcardLabels={false} />
+
+**Misterioso** - Mysterious. Soft, slow, with unusual intervals or harmonies.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { largo: 15 }
+
+// Two mysterious, sparse voices
+const voiceA = note("d4 ~ eb4 ~ a3 ~ d4")
+const voiceB = note("~ fs3 ~ ~ ~ c4 ~")
+
+stack(
+  piano(voiceA).sustain(1.5).gain(0.3),
+  piano(voiceB).sustain(1.2).gain(0.25)
+).cpm(tempo.largo)`} punchcard punchcardLabels={false} />
+
+**Scherzando** - Playfully. Light, quick, with humor and surprise.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { allegro: 55 }
+const playfulMelody = note("d4 fs4 ~ a4 d5 ~ cs5 ~ a4 fs4 d4 ~")
+const playfulDynamics = "0.6 0.4 0 0.7 0.5 0 0.6 0 0.5 0.4 0.7 0"
+
+piano(playfulMelody).sustain(0.3).gain(playfulDynamics).cpm(tempo.allegro)`} punchcard punchcardLabels={false} />
+
+**Morendo** - Dying away. Getting slower and softer until silence.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+
+// Arrange creates distinct bars that don't overlap
+arrange(
+  [4, piano(note("d4 cs4 b3 a3")).sustain(0.6).gain(0.7).cpm(30)],
+  [4, piano(note("g3 fs3 e3 d3")).sustain(0.8).gain(0.4).cpm(22)],
+  [4, piano(note("cs3 b2 a2 ~")).sustain(1.2).gain(0.15).cpm(15)]
+)`} punchcard punchcardLabels={false} />
+
+**Leggiero** - Light, delicate. Soft, quick, airy.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const mood = { leggiero: x => x.sustain(0.2).gain(0.3) }
+const tempo = { allegro: 55 }
+const lightMelody = note("d5 cs5 d5 e5 fs5 e5 d5 cs5")
+
+mood.leggiero(piano(lightMelody)).cpm(tempo.allegro)`} punchcard punchcardLabels={false} />
+
+**Pesante** - Heavy, weighty. Slow, loud, with emphasis on each note.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const mood = { pesante: x => x.sustain(0.8).gain(0.85) }
+const tempo = { grave: 18 }
+const heavyMelody = note("d3 a3 d4 fs4 d4 a3 d3 a2")
+
+mood.pesante(piano(heavyMelody)).cpm(tempo.grave)`} punchcard punchcardLabels={false} />
+
+**Tranquillo** - Calm, peaceful. Slow, soft, smooth.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const voicedPiano = x => x.voicing().s('piano').gain(0.25)
+const tempo = { largo: 15 }
+
+const melody = note("fs4 ~ e4 ~ d4 ~ cs4 ~ d4")
+const chords = chord("<D A Bm G>")
+
+stack(
+  piano(melody).sustain(1.5).gain(0.4),
+  voicedPiano(chords)
+).cpm(tempo.largo)`} punchcard punchcardLabels={false} />
+
+| Term | Meaning |
+|------|---------|
+| **Agitato** | Agitated, restless |
+| **Animato** | Animated, lively |
+| **Appassionato** | Passionately |
+| **Brillante** | Brilliant, sparkling |
+| **Cantabile** | In a singing style |
+| **Con amore** | With love |
+| **Con brio** | With vigor, spirit |
+| **Con fuoco** | With fire |
+| **Con moto** | With motion |
+| **Dolce** | Sweet, gentle |
+| **Doloroso** | Sorrowful |
+| **Energico** | Energetic |
+| **Espressivo** | Expressive |
+| **Giocoso** | Playful, humorous |
+| **Grandioso** | Grand, majestic |
+| **Grazioso** | Graceful |
+| **Lagrimoso** | Tearful |
+| **Leggiero** | Light, delicate |
+| **Maestoso** | Majestic |
+| **Misterioso** | Mysterious |
+| **Morendo** | Dying away |
+| **Pesante** | Heavy, weighty |
+| **Scherzando** | Playfully |
+| **Semplice** | Simple |
+| **Serioso** | Serious |
+| **Sostenuto** | Sustained |
+| **Spiritoso** | Spirited |
+| **Tranquillo** | Calm, peaceful |
+| **Vigoroso** | Vigorous |
+
+---
+
+### 4.5 Ornamentation
+
+Ornaments are decorative notes that embellish the main melody. They add expressiveness and showcase virtuosity.
+
+**Trill (tr)**: Rapid alternation between a note and the note above it.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { andante: 30 }
+
+// Trill pattern on D
+const trillOnD = note("d4 [e4 d4]*8 e4 fs4 g4 a4")
+
+piano(trillOnD).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+In Baroque music, trills typically start on the upper note. In Classical and Romantic music, they usually start on the main note.
+
+**Mordent**: A rapid alternation with an adjacent note—quicker than a trill.
+- **Upper mordent**: Main note → note above → main note
+- **Lower mordent**: Main note → note below → main note
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { andante: 30 }
+
+// Upper mordents on D and G
+const withMordents = note("[d4 e4 d4] fs4 [g4 a4 g4] b4")
+
+piano(withMordents).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+**Turn**: A four-note figure: upper neighbor → main note → lower neighbor → main note.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { andante: 30 }
+
+// Turns on D and F#
+const withTurns = note("[e4 d4 cs4 d4] fs4 [g4 fs4 e4 fs4] a4")
+
+piano(withTurns).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+**Appoggiatura**: A "leaning" note that takes time from the main note. Usually half the value of the main note.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { andante: 30 }
+
+// Appoggiaturas lean into resolution notes
+const withAppoggiaturas = note("[e4 d4] [g4 fs4] [b4 a4] [cs5 d5]")
+
+piano(withAppoggiaturas).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+The first note of each pair "leans" into the second.
+
+**Acciaccatura (Grace Note)**: A quick, crushed note played as fast as possible before the main note.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { andante: 30 }
+
+// Quick grace notes before main notes
+const withGraceNotes = note("[cs4 d4] [e4 fs4] [gs4 a4] [b4 cs5]")
+
+piano(withGraceNotes).fast(1.1).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+**Arpeggio**: Breaking a chord by playing its notes in rapid succession rather than simultaneously.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { adagio: 20 }
+
+// D major chord arpeggiated
+const arpeggioChord = note("[d3 fs3 a3 d4]")
+
+piano(arpeggioChord).arp("0 1 2 3").cpm(tempo.adagio)`} punchcard punchcardLabels={false} />
+
+**Glissando**: A slide between two notes, passing through all pitches in between.
+
+**Tremolo**: Rapid repetition of a single note or alternation between two notes.
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const art = { staccato: x => x.sustain(0.1) }
+const tempo = { adagio: 20 }
+
+// Tremolo on each chord tone
+const tremolo = note("d4*16 fs4*16 a4*16 d5*16")
+
+art.staccato(piano(tremolo)).cpm(tempo.adagio)`} punchcard punchcardLabels={false} />
+
+---
+
+### 4.6 Structural Directions
+
+These terms tell performers about navigation and repetition.
+
+| Term | Meaning |
+|------|---------|
+| **Da Capo (D.C.)** | From the beginning—return to the start |
+| **Dal Segno (D.S.)** | From the sign—return to the 𝄋 symbol |
+| **Fine** | The end—stop here on repeats |
+| **Coda** | Tail—skip to the coda section (marked with 𝄌) |
+| **Repeat signs** | Repeat the enclosed section |
+| **Prima volta (1.)** | First ending |
+| **Seconda volta (2.)** | Second ending |
+| **Bis** | Twice—repeat once |
+| **Tacet** | Silent—don't play |
+| **Attacca** | Attack immediately—proceed without pause |
+| **Segue** | Follow—continue to the next section |
+
+**Da Capo aria form (ABA)**: Common in Baroque opera. Sing A, sing B, then D.C. al Fine returns to A.
+
+In Strudel, use `slowcat()` for formal sections. Variables make repeating sections easy:
+
+**Da Capo (D.C.) - ABA form:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+// Define sections once
+const sectionA = note("fs4 e4 d4 cs4 b3 a3 b3 cs4")
+const sectionB = note("a4 b4 cs5 d5 e5 d5 cs5 b4")
+
+// Da Capo: A-B-A (sectionA defined once, used twice!)
+piano(slowcat(sectionA, sectionB, sectionA)).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+Section A returns after section B—classic da capo structure. The variable `sectionA` is defined once but used twice!
+
+**First and second endings (Prima/Seconda volta):**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { allegro: 50 }
+
+// Main phrase and endings
+const mainPhrase = note("d4 fs4 a4 d5")
+const firstEnding = note("cs5 b4 a4 gs4")
+const secondEnding = note("a4 fs4 d4 a3")
+
+cat(
+  piano(mainPhrase), piano(mainPhrase),
+  piano(firstEnding),
+  piano(mainPhrase), piano(mainPhrase),
+  piano(secondEnding)
+).cpm(tempo.allegro)`} punchcard punchcardLabels={false} />
+
+The pattern plays twice with different endings—first time continues, second time concludes.
+
+**Attacca - continue without pause:**
+
+<MiniRepl client:idle tune={`const piano = x => x.s('piano')
+const tempo = { moderato: 40 }
+
+const runningPhrase = note("d4 e4 fs4 g4 a4 g4 fs4 e4")
+const finalChord = note("[d4,fs4,a4,d5]")
+
+// Attacca: no pause between phrase and chord
+cat(
+  piano(runningPhrase).sustain(0.8),
+  piano(finalChord).sustain(2).gain(0.9)
+).cpm(tempo.moderato)`} punchcard punchcardLabels={false} />
+
+The phrase flows directly into the final chord with no break—attacca!
+
+---
+
+## Part 5: Synthesis
+
+### 5.1 Everything Together
+
+Let's see how form, harmony, and texture work together. Here's our theme developed into a complete musical phrase using all the DRY principles from this guide:
+
+<MiniRepl client:idle tune={`// === INSTRUMENT LIBRARY ===
+const piano = x => x.s('piano')
+const voicedPiano = x => x.voicing().s('piano').gain(0.5)
+const warmBass = x => x.s('sawtooth').lpf(400).gain(0.4)
+
+// === TEMPO ===
+const tempo = { andante: 30 }
+
+// === MELODIC MATERIAL ===
+const antecedent = note("fs4 e4 d4 cs4")
+const consequent = note("b3 a3 b3 cs4")
+const melody = cat(antecedent, consequent)
+
+// === HARMONIC MATERIAL ===
+const progression = chord("<D A Bm F#m G D G A>")
+
+// === TEXTURE: Stack melody, chords, bass ===
+stack(
+  piano(melody),
+  voicedPiano(progression),
+  warmBass(progression.rootNotes(2).note())
+).cpm(tempo.andante)`} punchcard punchcardLabels={false} />
+
+**What's happening:**
+- **Form**: Two phrases (antecedent + consequent) forming a period
+- **Harmony**: I-V-vi-iii-IV-I-IV-V progression with authentic cadence
+- **Texture**: Homophonic—melody over chordal accompaniment with bass line
+- **DRY**: Progression defined once, used for both chords and bass!
+
+---
+
+### 5.2 Classical Concepts in Strudel
+
+| Classical Concept | Strudel Tool | Example |
+|-------------------|--------------|---------|
+| Phrase/Section | `cat()` | `cat(phraseA, phraseB)` |
+| Large-scale form | `slowcat()` | `slowcat(A, B, A)` |
+| Chord progression | `chord()` | `chord("<D A Bm G>")` |
+| Voice leading | `.voicing()` | `chord("D").voicing()` |
+| Texture layers | `stack()` | `stack(melody, chords, bass)` |
+| Canon/imitation | `.late()` | `.late(0.5)` |
+| Modulation | `.transpose()` | `.transpose(7)` |
+| Augmentation | `.slow()` | `.slow(2)` |
+| Diminution | `.fast()` | `.fast(2)` |
+| Sequence | `cat()` + transpose | Repeating pattern shifted |
+
+---
+
+### 5.3 Where to Go Next
+
+Now that you know the terminology, put it into practice:
+
+- **[Classical Music Genre Study](/learn/genre/classical)**: Hands-on tutorial for composing canons, fugues, and theme & variations
+- **[Harmony](/learn/theory/harmony)**: Deep dive into chord construction and jazz harmony
+- **[Chord Composition](/learn/theory/chord-composition)**: Practical voice leading and composition workflow
+
+---
+
+## Quick Reference
+
+### Form Terms
+- **Phrase**: Musical sentence (usually 4-8 bars)
+- **Period**: Two phrases forming question + answer (antecedent + consequent)
+- **Binary (AB)**: Two contrasting sections
+- **Ternary (ABA)**: Statement, contrast, return
+- **Rounded Binary**: A-B-A' (A returns within B)
+- **Rondo (ABACA)**: Refrain alternating with episodes
+- **Sonata Form**: Exposition → Development → Recapitulation
+- **Coda**: Concluding section
+- **Da Capo (D.C.)**: Return to beginning
+- **Dal Segno (D.S.)**: Return to the sign
+- **Fine**: The end point
+
+### Development Techniques
+- **Augmentation**: Stretching note durations (`.slow()`)
+- **Diminution**: Compressing note durations (`.fast()`)
+- **Inversion**: Flipping intervals upside down
+- **Retrograde**: Playing backwards (`.rev()`)
+- **Fragmentation**: Using pieces of a theme
+- **Sequence**: Pattern repeated at new pitch levels
+
+### Harmony Terms
+- **Tonic (I)**: Home chord
+- **Dominant (V)**: Creates tension toward home
+- **Subdominant (IV)**: Departure from home
+- **Cadence**: Harmonic punctuation
+  - Authentic (V→I): Strongest ending
+  - Half (→V): Incomplete, like a comma
+  - Plagal (IV→I): "Amen" cadence
+  - Deceptive (V→vi): Surprise resolution
+- **Suspension**: Held note creating dissonance
+- **Modulation**: Key change
+- **Pivot chord**: Chord shared by two keys
+- **Secondary dominant (V/V)**: Dominant of a non-tonic chord
+- **Borrowed chord**: Chord from parallel key
+- **Neapolitan (♭II)**: Major chord on lowered 2nd degree
+- **Pedal point**: Sustained bass note under changing harmony
+- **Tonicization**: Briefly treating a chord as tonic
+
+### Texture & Counterpoint Terms
+- **Monophony**: Single unaccompanied melody
+- **Homophony**: Melody with accompaniment
+- **Polyphony**: Multiple independent melodies
+- **Heterophony**: Simultaneous variations of same melody
+- **Voice leading**: Smooth motion between chords
+- **Contrary motion**: Voices move opposite directions
+- **Parallel motion**: Voices move same direction, same interval
+- **Canon**: Strict melodic imitation with delay
+- **Fugue**: Imitative form with subject and answer
+- **Stretto**: Overlapping imitative entries
+- **Countersubject**: Secondary theme accompanying fugue answer
+- **Invertible counterpoint**: Melodies that work when swapped
+- **Species counterpoint**: Pedagogical counterpoint method
+
+### Tempo Terms
+- **Grave**: Very slow (25-45 BPM)
+- **Largo**: Broad, very slow (40-60 BPM)
+- **Adagio**: Slow (66-76 BPM)
+- **Andante**: Walking pace (76-108 BPM)
+- **Moderato**: Moderate (108-120 BPM)
+- **Allegro**: Fast (120-168 BPM)
+- **Vivace**: Lively (140-176 BPM)
+- **Presto**: Very fast (168-200 BPM)
+- **Accelerando**: Getting faster
+- **Ritardando**: Getting slower
+- **Rubato**: Flexible tempo for expression
+
+### Dynamic Terms
+- **ppp-pp-p**: Soft to very soft
+- **mp-mf**: Moderately soft/loud
+- **f-ff-fff**: Loud to very loud
+- **Crescendo**: Getting louder
+- **Diminuendo**: Getting softer
+- **Sforzando (sfz)**: Sudden accent
+
+### Articulation Terms
+- **Legato**: Smooth and connected
+- **Staccato**: Short and detached
+- **Marcato**: Marked, accented
+- **Tenuto**: Held full value
+- **Portato**: Between legato and staccato
+- **Fermata**: Hold longer than written
+
+### Expression Terms
+- **Cantabile**: In singing style
+- **Dolce**: Sweet
+- **Espressivo**: Expressive
+- **Con brio**: With vigor
+- **Maestoso**: Majestic
+- **Tranquillo**: Calm
+
+### Ornaments
+- **Trill**: Rapid alternation with upper note
+- **Mordent**: Quick alternation (upper or lower)
+- **Turn**: Four-note figure around main note
+- **Appoggiatura**: Leaning note, takes time from main note
+- **Acciaccatura**: Quick grace note
+- **Arpeggio**: Chord notes played in succession
+- **Tremolo**: Rapid note repetition
+
+### Common Musical Directions (Italian)
+- **A cappella**: Unaccompanied vocal music ("in chapel style")
+- **A piacere**: At the performer's pleasure (free tempo)
+- **Ad libitum (ad lib.)**: At liberty; improvise or freely
+- **A tempo**: Return to the original tempo
+- **Alla breve**: Cut time (2/2 meter)
+- **Arco**: With the bow (for strings, cancels pizzicato)
+- **Arioso**: In singing style, melodious
+- **Attacca**: Begin the next section immediately
+- **Basso continuo**: Continuous bass accompaniment (Baroque)
+- **Col legno**: With the wood of the bow
+- **Coloratura**: Elaborate vocal ornamentation
+- **Con sordino**: With mute
+- **Divisi (div.)**: Divided (string players split parts)
+- **Pizzicato (pizz.)**: Pluck the string
+- **Senza**: Without (senza sordino = without mute)
+- **Sempre**: Always (sempre forte = always loud)
+- **Simile**: Similarly; continue in the same manner
+- **Solo**: One performer
+- **Sotto voce**: In an undertone, very softly
+- **Subito**: Suddenly (subito piano = suddenly soft)
+- **Tacet**: Silent; don't play this section
+- **Tutti**: All together (full ensemble)
+- **Una corda**: One string; soft pedal on piano
+- **Unisono**: In unison
+
+### Modifiers & Qualifiers
+- **Più**: More (più mosso = more motion)
+- **Meno**: Less (meno mosso = less motion)
+- **Poco**: A little (poco a poco = little by little)
+- **Molto**: Very much (molto allegro = very fast)
+- **Assai**: Very, quite (allegro assai = quite fast)
+- **Non troppo**: Not too much (allegro non troppo)
+- **Quasi**: Almost, as if (quasi recitativo)
+- **Ma**: But (allegro ma non troppo = fast but not too fast)
+- **E/Ed**: And (allegro e vivace)
+- **Con**: With (con fuoco = with fire)
+- **Senza**: Without (senza vibrato)
+
+### Genre & Form Types
+- **Aria**: Solo vocal piece with orchestral accompaniment
+- **Cadenza**: Solo virtuosic passage, often improvised
+- **Chorale**: Hymn tune or harmonized hymn
+- **Concerto**: Work for soloist(s) with orchestra
+- **Étude**: Study piece for developing technique
+- **Fugue**: Imitative polyphonic composition
+- **Intermezzo**: Short piece between larger sections
+- **Menuet/Minuet**: Stately dance in 3/4 time
+- **Nocturne**: "Night piece"; dreamy, lyrical
+- **Overture**: Orchestral introduction
+- **Prelude**: Introductory piece
+- **Recitative**: Speech-like singing
+- **Scherzo**: "Joke"; fast, playful movement
+- **Sonata**: Multi-movement work for solo or duo
+- **Suite**: Collection of dance movements
+- **Symphony**: Large orchestral work
+- **Theme and Variations**: Theme repeated with changes
+- **Toccata**: Virtuosic keyboard showpiece
