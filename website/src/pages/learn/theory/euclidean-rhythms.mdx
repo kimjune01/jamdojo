@@ -1006,6 +1006,48 @@ Hip hop drums provide a pocket for the rapper, emphasizing groove and space over
 
 The (3,16) kick and (2,8) snare create the "boom-bap" pocket. Hi-hats stay sparse (6,8) to leave space for vocals.
 
+### Dembow / Reggaeton (90-120 BPM)
+
+The dembow rhythm is the backbone of reggaeton, Latin trap, and perreo music. Named after Shabba Ranks' "Dem Bow" track from Jamaican dancehall, it became the defining beat of Puerto Rican reggaeton in the 1990s.
+
+<MiniRepl client:idle tune={`stack(
+  sound("sd(2,8)"),                       // Snare: beats 2 & 4
+  sound("[bd bd]").euclidRot(4, 8, 1),    // Kick: syncopated dembow pattern
+  sound("cp").euclidRot(2, 16, 5).gain(0.4) // Clap: extra syncopation
+).bank("RolandTR707").cpm(29)`} punchcard punchcardLabels={false} />
+
+<Box>
+
+**Dembow Characteristics:**
+
+**Core principle:** The kick pattern creates a syncopated "boom-boom... boom-boom" feel using `[bd bd].euclidRot(4,8,1)`. The double kick (`[bd bd]`) combined with euclidean rotation creates the characteristic dembow lilt that makes the rhythm instantly recognizable.
+
+**What to listen for:**
+- **Syncopated kick:** The rotated euclidean pattern avoids straight quarter notes
+- **Steady snare:** Snare on beats 2 and 4 provides rhythmic anchor
+- **Sparse arrangement:** Dembow is minimal—kick, snare, clap. The simplicity leaves room for vocals and melodic hooks
+- **Head-nodding groove:** The uneven kick spacing creates irresistible bounce
+
+**Key parameters:**
+- Kick: `[bd bd].euclidRot(4, 8, 1)` — the double kick with rotation is essential
+- Snare: `(2,8)` — straightforward backbeat
+- Clap: `(2,16)` rotated for extra syncopation
+
+**Historical context:**
+The dembow originated in Jamaican dancehall with Shabba Ranks' 1990 track "Dem Bow." Puerto Rican DJs adopted and transformed it into reggaeton's signature rhythm. Today it dominates global pop through artists like Bad Bunny, Daddy Yankee, and J Balvin.
+
+**Classic dembow tracks:**
+- Shabba Ranks - ["Dem Bow"](https://www.youtube.com/watch?v=MhH2jbvjkPg) (the original)
+- Daddy Yankee - ["Gasolina"](https://www.youtube.com/watch?v=CCF1_jI8Prk) (global reggaeton breakthrough)
+- Bad Bunny - ["Dakiti"](https://www.youtube.com/watch?v=TmKh7lAwnBI) (modern dembow)
+
+**Variations:**
+- **Traditional dembow:** ~95 BPM, bouncy feel
+- **Perreo:** Slower (~85 BPM), heavier bass
+- **Latin trap:** Faster (~130 BPM half-time), darker sound
+
+</Box>
+
 ## Drum Machine Classics (Concise Examples)
 
 These examples showcase specific drum machines without extensive analysis. Experiment with the parameters to explore each machine's character.
