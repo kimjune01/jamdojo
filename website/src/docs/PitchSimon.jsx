@@ -229,6 +229,27 @@ export function PitchSimon() {
   }, [initAudio, startListening]);
 
   /**
+   * Play sequence fast (2x speed) - for recap on failure
+   */
+  const playSequenceFast = useCallback(async (notes, chord) => {
+    await initAudio();
+    const ac = getAudioContext();
+
+    for (let i = 0; i < notes.length; i++) {
+      const note = notes[i];
+      const buttonIndex = chord.indexOf(note);
+
+      setActiveButton(buttonIndex);
+      const t = ac.currentTime;
+      await superdough({ s: 'triangle', note }, t, 0.4);
+
+      // Half the normal delay (600ms instead of 1200ms)
+      await new Promise(resolve => setTimeout(resolve, 600));
+      setActiveButton(null);
+    }
+  }, [initAudio]);
+
+  /**
    * Play feedback sound
    */
   const playFeedback = useCallback(async (type) => {
@@ -389,6 +410,17 @@ export function PitchSimon() {
       return () => clearTimeout(timer);
     }
   }, [gameState, handleNextRound]);
+
+  // Play fast recap on failure
+  useEffect(() => {
+    if (gameState === 'failed' && targetSequence.length > 0 && currentChord) {
+      // Small delay after wrong buzzer, then play recap
+      const timer = setTimeout(() => {
+        playSequenceFast(targetSequence, currentChord);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [gameState, targetSequence, currentChord, playSequenceFast]);
 
   // Cleanup on unmount
   useEffect(() => {
