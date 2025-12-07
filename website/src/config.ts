@@ -62,8 +62,10 @@ export const ACTIVITIES: SidebarSection[] = [
     title: 'Interactive Tools',
     icon: '🎮',
     items: [
+      { text: 'Playground', link: 'learn/interactive-tools/playground', icon: '💻', description: 'Full-featured live coding environment like strudel.cc' },
       { text: 'Piano', link: 'learn/interactive-tools/piano', icon: '🎹', description: 'Play piano with your keyboard and explore different sounds' },
       { text: 'Guitar', link: 'learn/interactive-tools/guitar', icon: '🎸', description: 'Learn the guitar fretboard with keyboard controls' },
+      { text: 'Pitch Detector', link: 'learn/interactive-tools/pitch-detector', icon: '🎤', description: 'Hum or sing to detect pitch and convert to Strudel notes' },
       { text: 'Sample Explorer', link: 'learn/interactive-tools/sample-explorer', icon: '🔊', description: 'Explore and play with audio samples' },
     ],
   },
@@ -86,7 +88,8 @@ export const ACTIVITIES: SidebarSection[] = [
       { text: 'Chord Composition', link: 'learn/theory/chord-composition', icon: '🎼', description: 'Compose with chord progressions and voicings' },
       { text: 'Classical Terminology', link: 'learn/theory/classical-terminology', icon: '🎻', description: 'Form, harmony, and counterpoint vocabulary' },
       { text: 'Euclidean Rhythms', link: 'learn/theory/euclidean-rhythms', icon: '🥁', description: 'Learn about mathematical patterns in music' },
-      { text: 'Auditory Space', link: 'learn/theory/auditory-space', icon: '🎛️', description: 'Master spatial audio: width, depth, and frequency separation' },
+      { text: 'Sound Design & Timbre', link: 'learn/theory/sound-design', icon: '🎛️', description: 'Shape sounds with synthesis, filters, and effects' },
+      { text: 'Auditory Space', link: 'learn/theory/auditory-space', icon: '🔊', description: 'Master spatial audio: width, depth, and frequency separation' },
       { text: 'Sampling Composition', link: 'learn/theory/sampling-composition', icon: '🎚️', description: 'Compose with samples from Freesound and public libraries' },
       { text: 'Arranging Patterns', link: 'learn/theory/arranging', icon: '🎬', description: 'Organize patterns with cat, stack, and arrange' },
     ],
@@ -96,6 +99,7 @@ export const ACTIVITIES: SidebarSection[] = [
     icon: '🎸',
     items: [
       { text: 'Rock & Pop', link: 'learn/genre/rock-pop', icon: '🎤', description: 'Classic rock patterns and pop production' },
+      { text: 'Hip-Hop', link: 'learn/genre/hip-hop', icon: '🎤', description: 'Boom bap, trap, lo-fi, drill, and more' },
       { text: 'Electronic Dance Music', link: 'learn/genre/edm', icon: '🎧', description: 'House, techno, trance, and more' },
       { text: 'Metal', link: 'learn/genre/metal', icon: '🤘', description: 'Heavy riffs, blast beats, and power' },
       { text: 'Demoscene', link: 'learn/genre/demoscene', icon: '🖥️', description: 'Chiptune, tracker music, and keygen styles' },
