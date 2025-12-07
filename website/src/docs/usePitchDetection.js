@@ -39,12 +39,22 @@ export function usePitchDetection() {
     const buffer = new Float32Array(analyser.fftSize);
     analyser.getFloatTimeDomainData(buffer);
 
+    // Calculate RMS (volume level) to filter out silence/quiet noise
+    let sumSquares = 0;
+    for (let i = 0; i < buffer.length; i++) {
+      sumSquares += buffer[i] * buffer[i];
+    }
+    const rms = Math.sqrt(sumSquares / buffer.length);
+
+    // Minimum RMS threshold - ignore very quiet sounds (background noise)
+    const minRms = 0.001;
+
     // Detect pitch using Pitchy
     const [freq, clarityValue] = detector.findPitch(buffer, sampleRate);
 
-    // Only update if we have a clear pitch detection
+    // Only update if we have a clear pitch detection AND sufficient volume
     // Frequency range: 80Hz (roughly D#2) to 1000Hz (roughly B5)
-    if (clarityValue > 0.9 && freq > 80 && freq < 1000) {
+    if (clarityValue > 0.9 && freq > 80 && freq < 1000 && rms > minRms) {
       // Convert frequency to MIDI note number and then to note name
       const midiNum = freqToMidi(freq);
       const note = midi2note(Math.round(midiNum));
@@ -53,8 +63,9 @@ export function usePitchDetection() {
       setClarity(clarityValue);
       setCurrentNote(note);
     } else {
-      // Low confidence - keep last detected note but update clarity
-      setClarity(clarityValue);
+      // Low confidence or too quiet - keep last detected note but update clarity
+      // If too quiet, report zero clarity
+      setClarity(rms > minRms ? clarityValue : 0);
     }
 
     // Continue the detection loop
