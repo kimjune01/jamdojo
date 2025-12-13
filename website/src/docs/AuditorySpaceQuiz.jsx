@@ -912,7 +912,7 @@ export function AuditorySpaceQuiz() {
                 {currentLevel.type === 'magnitude' && currentEffectType ? (
                   <div className="text-left">
                     <p className="text-xs text-gray-500 mb-2 text-center">Try the sliders to hear the difference:</p>
-                    <MiniRepl tune={getSliderCode(currentEffectType, currentSound)} />
+                    <MiniRepl key={`repl-${round}`} tune={getSliderCode(currentEffectType, currentSound)} />
                   </div>
                 ) : (
                   <div className="bg-gray-800 rounded-lg p-3 font-mono text-sm inline-block">
