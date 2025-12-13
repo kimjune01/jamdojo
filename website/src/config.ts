@@ -84,7 +84,6 @@ export const ACTIVITIES: SidebarSection[] = [
     title: 'Music Theory',
     icon: '🎵',
     items: [
-      { text: 'Strudel Programming', link: 'learn/theory/strudel-programming', icon: '💻', description: 'Variables, functions, envelopes, and signals' },
       { text: 'Harmony', link: 'learn/theory/harmony', icon: '🎶', description: 'Learn chords, voicings, and jazz harmony' },
       { text: 'Chord Composition', link: 'learn/theory/chord-composition', icon: '🎼', description: 'Compose with chord progressions and voicings' },
       { text: 'Classical Terminology', link: 'learn/theory/classical-terminology', icon: '🎻', description: 'Form, harmony, and counterpoint vocabulary' },
@@ -93,6 +92,24 @@ export const ACTIVITIES: SidebarSection[] = [
       { text: 'Auditory Space', link: 'learn/theory/auditory-space', icon: '🔊', description: 'Master spatial audio: width, depth, and frequency separation' },
       { text: 'Sampling Composition', link: 'learn/theory/sampling-composition', icon: '🎚️', description: 'Compose with samples from Freesound and public libraries' },
       { text: 'Arranging Patterns', link: 'learn/theory/arranging', icon: '🎬', description: 'Organize patterns with cat, stack, and arrange' },
+    ],
+  },
+  {
+    title: 'Programming',
+    icon: '💻',
+    items: [
+      { text: 'Strudel Programming', link: 'learn/theory/strudel-programming', icon: '🔧', description: 'Variables, functions, envelopes, and signals' },
+      { text: 'Why Functions', link: 'learn/theory/why-functions', icon: '⚡', description: 'Functions as building blocks' },
+      { text: 'Why Containers', link: 'learn/theory/why-containers', icon: '📦', description: 'Abstraction and types' },
+      { text: 'Patterns as Containers', link: 'learn/theory/patterns-as-containers', icon: '🎵', description: 'Understanding patterns as values through time' },
+      { text: 'Transforming Patterns', link: 'learn/theory/transforming-patterns', icon: '🔄', description: 'Change values without changing timing (Functor)' },
+      { text: 'Combining Patterns', link: 'learn/theory/combining-patterns', icon: '🔗', description: 'Merge patterns with different timing strategies (Applicative)' },
+      { text: 'Patterns of Patterns', link: 'learn/theory/patterns-of-patterns', icon: '🎁', description: 'Nested patterns and flattening (Monad)' },
+      { text: 'Building with Patterns', link: 'learn/theory/building-with-patterns', icon: '🏗️', description: 'Stack, sequence, and compose (Monoid)' },
+      { text: 'Combining Events', link: 'learn/theory/combining-events', icon: '⊕', description: 'How overlapping events merge (Semigroup)' },
+      { text: 'Choice and Selection', link: 'learn/theory/choice-and-selection', icon: '🔀', description: 'Select from alternatives (Alternative)' },
+      { text: 'Context-Aware Patterns', link: 'learn/theory/context-aware-patterns', icon: '👁️', description: 'Events that see their neighborhood (Comonad)' },
+      { text: 'Flipping Structure', link: 'learn/theory/flipping-structure', icon: '🔃', description: 'Control where randomness happens (Traversable)' },
     ],
   },
   {

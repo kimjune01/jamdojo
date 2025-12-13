@@ -1,0 +1,270 @@
+---
+title: Choice and Selection
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# Selecting From Alternatives
+
+Sometimes you don't want to combine all patterns—you want to **choose** one.
+
+<MiniRepl client:visible tune={`// Select patterns by name
+"<a b [a b]>".inhabit({
+  a: sound("bd sd"),
+  b: sound("hh hh hh hh")
+})`} punchcard />
+
+The pattern `"<a b [a b]>"` selects from the lookup table. First cycle plays `a` (kick-snare), second plays `b` (hi-hats), third plays both.
+
+---
+
+# inhabit: Pattern Selection
+
+`inhabit` takes a lookup table and a selector pattern:
+
+<MiniRepl client:visible tune={`"<verse chorus verse chorus bridge chorus>".inhabit({
+  verse: note("c4 e4 g4 e4").sound("piano"),
+  chorus: note("g4 b4 d5 b4").sound("piano").gain(1.2),
+  bridge: note("a4 c5 e5 c5").sound("piano").lpf(2000)
+}).slow(6)`} />
+
+Each name in the selector picks the corresponding pattern. This is how you build song structures.
+
+**With arrays (index selection):**
+
+<MiniRepl client:visible tune={`"0 1 2 1".inhabit([
+  sound("bd"),
+  sound("sd"),
+  sound("hh hh")
+])`} punchcard />
+
+Numbers select by index. `0` picks the first pattern, `1` picks the second, etc.
+
+---
+
+# Why Selection Matters
+
+Selection solves a fundamental problem: **conditional behavior**.
+
+Without selection:
+```javascript
+// Awkward conditional
+useBass ? bassPattern : silence
+```
+
+With selection:
+```javascript
+// Clean selection
+"<bass drums melody>".inhabit({ bass, drums, melody })
+```
+
+Selection makes patterns **data-driven**. The structure comes from the selector pattern, the content from the lookup.
+
+---
+
+# Alternative: The Choice Abstraction
+
+In category theory, **Alternative** describes types with a choice operation. The key components:
+
+1. **Empty**: A "nothing" choice (`silence`)
+2. **Choice**: Pick one or the other (`<|>` or `alt`)
+
+Strudel implements this through:
+- `silence` — the empty pattern
+- `inhabit` / `pick` — selection from alternatives
+
+<QA client:load question="How is this different from stack?">
+
+`stack` combines everything: `stack(a, b)` plays both.
+
+Selection chooses one: `"<a b>".inhabit({a, b})` plays `a` first cycle, `b` second.
+
+Stack is **and**. Selection is **or**.
+
+</QA>
+
+---
+
+# pick vs inhabit
+
+Both select from alternatives, but with different timing:
+
+**inhabit** — squeezes selected pattern into the selector's event:
+
+<MiniRepl client:visible tune={`// Each selection fills its time slot
+"a b".inhabit({
+  a: sound("bd bd bd bd"),
+  b: sound("hh*8")
+})`} punchcard />
+
+The 4 kicks squeeze into the first half, 8 hi-hats into the second half.
+
+**pick** — selected pattern plays at its natural speed:
+
+<MiniRepl client:visible tune={`// Selected patterns maintain their rhythm
+"a b".pick({
+  a: sound("bd bd bd bd"),
+  b: sound("hh*8")
+})`} punchcard />
+
+The patterns play at their defined speeds, sampled at selection points.
+
+---
+
+# Dynamic Selection
+
+The selector can be any pattern, including computed ones:
+
+<MiniRepl client:visible tune={`// Random selection
+"0 1 2".fmap(() => Math.floor(Math.random() * 3)).inhabit([
+  sound("bd"),
+  sound("sd"),
+  sound("hh hh")
+])`} />
+
+<MiniRepl client:visible tune={`// Probability-based
+"<a a a b>".inhabit({
+  a: note("c4 e4").sound("piano"),
+  b: note("g4 b4 d5").sound("piano").gain(1.2)
+})`} />
+
+75% chance of `a`, 25% chance of `b` (in the slow cycle pattern).
+
+---
+
+# Building Drum Machines
+
+Selection is perfect for drum patterns:
+
+<MiniRepl client:visible tune={`const drums = {
+  k: sound("bd"),
+  s: sound("sd"),
+  h: sound("hh").gain(0.6),
+  o: sound("oh").gain(0.5),
+  c: sound("cp")
+}
+
+"[k h] [s h] [k h k h] [s o]".inhabit(drums)`} />
+
+The pattern string becomes a readable drum notation. Change the sounds by editing the lookup:
+
+<MiniRepl client:visible tune={`const drums = {
+  k: sound("bd:3"),
+  s: sound("sd:2").gain(0.9),
+  h: sound("hh:1").gain(0.5),
+  o: sound("oh:2").gain(0.4),
+  c: sound("cp:1")
+}
+
+"[k h] [s h] [k h k h] [s o]".inhabit(drums)`} />
+
+Same pattern, different sounds.
+
+---
+
+# Nested Selection
+
+Selections can contain more selections:
+
+<MiniRepl client:visible tune={`const fills = {
+  a: sound("bd sd bd sd"),
+  b: sound("sd sd sd [sd sd]")
+}
+
+const sections = {
+  verse: "[k h] [s h] [k h] [s h]".inhabit({
+    k: sound("bd"), s: sound("sd"), h: sound("hh").gain(0.5)
+  }),
+  fill: "<a b>".inhabit(fills)
+}
+
+"<verse verse verse fill>".inhabit(sections).slow(4)`} />
+
+Verse plays three times, then a fill. The fill alternates between two variations.
+
+---
+
+# Fallback Patterns
+
+What if a selection is missing? Use default values:
+
+<MiniRepl client:visible tune={`// With fallback handling
+const lookup = {
+  a: sound("bd"),
+  b: sound("sd"),
+  _: sound("hh")  // fallback
+}
+
+"a b c b".inhabit(lookup)`} />
+
+Unknown keys can fall back to a default (implementation depends on how you structure the lookup).
+
+---
+
+# The Power of Indirection
+
+Selection creates a layer of indirection:
+
+```javascript
+// Direct: pattern IS the content
+sound("bd sd hh cp")
+
+// Indirect: pattern SELECTS content
+"k s h c".inhabit({ k: sound("bd"), s: sound("sd"), ... })
+```
+
+Indirection enables:
+- **Reusability**: Same selector, different lookups
+- **Readability**: Pattern structure visible at a glance
+- **Flexibility**: Change sounds without changing structure
+
+<MiniRepl client:visible tune={`// Same structure, two sound sets
+const structure = "[k h] [s h] [k k] [s h]"
+
+const acoustic = {
+  k: sound("bd:0"), s: sound("sd:0"), h: sound("hh:0").gain(0.5)
+}
+const electronic = {
+  k: sound("bd:3"), s: sound("cp"), h: sound("hh:3").gain(0.5)
+}
+
+stack(
+  structure.inhabit(acoustic),
+  structure.inhabit(electronic).late(0.002)  // slight offset for stereo
+)`} />
+
+---
+
+# Quick Reference
+
+```javascript
+// Selection by name
+"<a b c>".inhabit({ a: patA, b: patB, c: patC })
+
+// Selection by index
+"0 1 2".inhabit([pat0, pat1, pat2])
+
+// pick variants (different timing)
+"a b".pick({ a, b })      // natural timing
+"a b".inhabit({ a, b })   // squeezed timing
+
+// Empty/silence as fallback
+silence  // the "nothing" pattern
+```
+
+---
+
+# What's Next?
+
+We've seen how to combine patterns (Semigroup) and select between them (Alternative). But what about patterns that need to see their **context**—what comes before or after?
+
+<Box>
+
+**Continue to [Context-Aware Patterns](/learn/theory/context-aware-patterns/) →**
+
+You've learned selection and combination. Next, you'll discover how patterns can access their surrounding context—enabling effects like legato detection, phrase-aware dynamics, and neighborhood-based transformations.
+
+</Box>

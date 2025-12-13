@@ -1,0 +1,285 @@
+---
+title: Building with Patterns
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# Two Directions
+
+**Vertical (simultaneous) — `stack`:**
+
+<MiniRepl client:visible tune={`stack(
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd"),
+  sound("hh*8").gain(0.5)
+)`} />
+
+Three patterns layered on top of each other. They play simultaneously.
+
+**Horizontal (sequential) — `cat`:**
+
+<MiniRepl client:visible tune={`cat(
+  sound("bd bd bd bd"),
+  sound("sd sd sd sd"),
+  sound("hh hh hh hh")
+)`} punchcard />
+
+Three patterns in sequence. The kick fills the first third of the cycle, the snare the second third, the hi-hat the last third.
+
+---
+
+# Adding Nothing (The Monoid Identity)
+
+What happens if we layer a pattern with... nothing?
+
+<MiniRepl client:visible tune={`stack(
+  sound("bd ~ bd ~"),
+  silence,
+  sound("~ sd ~ sd")
+)`} />
+
+Exactly what we had before. `silence` adds nothing—it's the musical equivalent of zero.
+
+This is the **Monoid** pattern: a way to combine things (stack, cat) plus an "empty" thing that doesn't change anything when combined (silence).
+
+<MiniRepl client:visible tune={`cat(
+  sound("bd bd"),
+  silence,
+  sound("sd sd")
+)`} punchcard />
+
+In sequence, `silence` takes up time but makes no sound—a gap. This "nothing" is surprisingly useful.
+
+---
+
+# Why Nothing Matters
+
+Conditional parts:
+
+<MiniRepl client:visible tune={`const useBass = true
+const useHats = false
+
+stack(
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd"),
+  useHats ? sound("hh*8").gain(0.5) : silence,
+  useBass ? note("c2 g1").sound("sawtooth").lpf(400) : silence
+)`} />
+
+Toggle `useBass` and `useHats` to hear parts appear and disappear. No special case logic needed—`silence` just works.
+
+Building up layers:
+
+<MiniRepl client:visible tune={`const kick = sound("bd ~ bd ~")
+const snare = sound("~ sd ~ sd")
+const hats = sound("hh*8").gain(0.4)
+
+cat(
+  kick,
+  stack(kick, hats),
+  stack(kick, hats, snare),
+  stack(kick, hats, snare, note("c2").sound("sawtooth").lpf(400))
+).slow(4)`} />
+
+A build-up from sparse to full, using `stack` and `cat` together.
+
+---
+
+# Nesting Works
+
+We can put these inside each other:
+
+<MiniRepl client:visible tune={`// Stack of cats
+stack(
+  cat(sound("bd bd"), sound("bd ~ bd ~")),
+  cat(sound("~ sd"), sound("sd sd sd sd"))
+).slow(2)`} punchcard />
+
+<MiniRepl client:visible tune={`// Cat of stacks
+cat(
+  stack(sound("bd"), sound("hh hh")),
+  stack(sound("sd"), sound("cp ~ cp ~")),
+  stack(sound("bd bd"), sound("hh*4"))
+)`} punchcard />
+
+No matter how we nest, it flattens predictably. This composability is the point.
+
+---
+
+# Grouping Doesn't Matter (Associativity)
+
+Something interesting:
+
+<MiniRepl client:visible tune={`// These produce the same result:
+stack(stack(sound("bd"), sound("sd")), sound("hh"))
+
+// stack(sound("bd"), stack(sound("sd"), sound("hh")))`} />
+
+Whether we group `(bd + sd) + hh` or `bd + (sd + hh)`, the result is identical—all three play together.
+
+<MiniRepl client:visible tune={`// Same for cat:
+cat(cat(sound("bd"), sound("sd")), sound("hh"))
+
+// cat(sound("bd"), cat(sound("sd"), sound("hh")))`} />
+
+`(bd then sd) then hh` equals `bd then (sd then hh)`. Both play bd, then sd, then hh.
+
+This **associativity** is the key property of Monoids—grouping doesn't matter. We can restructure code without changing the music.
+
+---
+
+# Building Songs
+
+With `stack` and `cat`, we can build entire arrangements:
+
+<MiniRepl client:visible tune={`// Define parts
+const kick = sound("bd ~ bd ~")
+const snare = sound("~ sd ~ sd")
+const hats = sound("hh*8").gain(0.4)
+const bass = note("c2 c2 g1 g1").sound("sawtooth").lpf(600)
+
+// Define sections
+const intro = stack(kick, hats.gain(0.2))
+const verse = stack(kick, snare, hats)
+const chorus = stack(kick.fast(2), snare, hats, bass)
+
+// Arrange
+cat(intro, intro, verse, verse, chorus, verse, chorus, chorus)
+  .slow(8)`} />
+
+Each section is a `stack`. The song is a `cat` of sections. The structure is explicit and changeable.
+
+---
+
+# Variations
+
+The mini-notation has shortcuts for these operations:
+
+<MiniRepl client:visible tune={`// [a, b] = stack    a b = cat    <a b> = slow cat
+stack(
+  sound("[bd, sd, hh]"),        // simultaneous
+  sound("cp oh"),               // sequential (spaces)
+  sound("<ride crash>")         // one per cycle
+)`} />
+
+The mini-notation is just shorthand. Underneath, it's all `stack` and `cat`.
+
+---
+
+# Quick Reference
+
+| Operation | Combine | Identity |
+|-----------|---------|----------|
+| `stack` | Layer simultaneously | `silence` |
+| `cat` | Play in sequence | `silence` |
+
+Both are associative: `(a ○ b) ○ c = a ○ (b ○ c)`
+
+<QA client:load question="Where else do monoids appear?">
+
+Numbers form a monoid under addition (identity: 0) and under multiplication (identity: 1).
+
+Strings form a monoid under concatenation (identity: empty string).
+
+The pattern `things.reduce((a, b) => combine(a, b), empty)` works for any monoid. Recognizing monoid structure means you know grouping doesn't matter and there's always an "empty" you can use.
+
+</QA>
+
+---
+
+# Combinators
+
+`stack` and `cat` are **combinators**—functions that combine values into new values of the same type. Pattern in, pattern out.
+
+The power of combinators is that they compose. Since every combinator returns a pattern, you can feed its output into another combinator:
+
+<MiniRepl client:visible tune={`// Combinators compose freely
+cat(
+  stack(sound("bd"), sound("hh hh")),
+  stack(sound("sd"), sound("hh hh hh hh"))
+).fast(2)`} />
+
+You can also create your own combinators—functions that take patterns and return patterns:
+
+<MiniRepl client:visible tune={`// Custom combinator: add echo effect
+const withEcho = pat => stack(
+  pat,
+  pat.delay(0.5).gain(0.4),
+  pat.delay(1).gain(0.2)
+)
+
+withEcho(note("c4 e4 g4").sound("piano"))`} />
+
+<MiniRepl client:visible tune={`// Custom combinator: call and response
+const callResponse = (a, b) => cat(a, b, a.fast(2), b)
+
+callResponse(
+  note("c4 e4 g4 ~").sound("piano"),
+  note("~ ~ ~ b3").sound("piano").room(0.4)
+).slow(2)`} />
+
+Because combinators always return patterns, your custom combinators work with all the built-in ones:
+
+<MiniRepl client:visible tune={`const double = pat => stack(pat, pat.add(12))
+const arpeggiate = pat => pat.arp("0 1 2 1")
+
+// Combine custom and built-in combinators
+note("[c3,e3,g3] [f3,a3,c4]")
+  .apply(double)
+  .apply(arpeggiate)
+  .sound("piano")`} />
+
+This is the combinator philosophy: small, composable functions that snap together like LEGO.
+
+---
+
+# The Complete Picture
+
+You now have four fundamental operations:
+
+| Operation | What It Does | Name |
+|-----------|--------------|------|
+| Transform contents | Change values, keep timing | **Functor** |
+| Combine patterns | Merge with timing choice | **Applicative** |
+| Flatten nesting | Resolve pattern-of-patterns | **Monad** |
+| Build from pieces | Layer or sequence | **Monoid** |
+
+These aren't just theory—they're the operations you use constantly:
+
+<MiniRepl client:visible tune={`// All four in action:
+stack(
+  n("0 2 4"
+    .add(12)                    // Functor: transform
+    .add("<0 5>")               // Applicative: combine
+    .fmap(x => x + " " + (x+7)) // Nest: create pattern of patterns
+  ).squeezeJoin()               // Monad: flatten
+   .scale("C4:major").sound("piano"),
+  note("c2").sound("sawtooth").lpf(400)
+)                               // Monoid: layer`} />
+
+---
+
+# You've Completed Pattern Thinking
+
+You started with "what is a pattern?" and discovered:
+
+1. **Patterns are containers** with timing
+2. **Functors** transform what's inside
+3. **Applicatives** combine containers with timing choices
+4. **Monads** flatten nested containers
+5. **Monoids** build larger structures from pieces
+
+These concepts aren't Strudel-specific. You'll find them in arrays, streams, promises, optionals—anywhere you work with containers. The names are the same because the patterns (in the mathematical sense) are the same.
+
+<Box>
+
+**Where to go next:**
+
+- [Strudel Programming](/learn/theory/strudel-programming/) — Build reusable sound libraries
+- [Arranging](/learn/theory/arranging/) — More composition techniques
+- [Euclidean Rhythms](/learn/theory/euclidean-rhythms/) — Algorithmic rhythm generation
+
+</Box>

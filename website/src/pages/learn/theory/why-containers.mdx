@@ -1,0 +1,214 @@
+---
+title: Why Containers
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# The Problem: Values Alone Aren't Enough
+
+A note name is just a string:
+
+```javascript
+"c4"
+```
+
+But to play music, you need more than that. When does it play? How long? What sound? A bare value has no context.
+
+---
+
+# Containers Add Context
+
+A **container** wraps values and adds behavior. You already know several:
+
+**Array** — values with position:
+
+```javascript
+[1, 2, 3]   // first, second, third
+```
+
+**Promise** — a value that arrives later:
+
+```javascript
+fetch(url).then(data => ...)
+```
+
+**Pattern** — values with timing:
+
+<MiniRepl client:visible tune={`note("c4 e4 g4").log()`} />
+
+Press play and check the console. Each note has timing information:
+
+```
+{ value: 60, begin: 0, end: 0.333... }
+{ value: 64, begin: 0.333..., end: 0.666... }
+{ value: 67, begin: 0.666..., end: 1 }
+```
+
+The container (Pattern) manages the timing so you can focus on the notes.
+
+---
+
+# Why Containers Enable Reuse
+
+Without containers, timing would infect everything:
+
+```javascript
+// Without containers: every function needs timing
+playNote("c4", startTime: 0, endTime: 0.25)
+playNote("e4", startTime: 0.25, endTime: 0.5)
+transpose(note, amount, startTime, endTime)
+// ...timing parameters everywhere
+```
+
+With containers, timing is the container's job:
+
+```javascript
+// With containers: functions just transform values
+note("c4 e4").add(7).sound("piano")
+// The pattern handles when things happen
+```
+
+This separation lets you write transformations once and apply them to any timing structure.
+
+---
+
+# Same Operations, Different Containers
+
+Here's the key insight: containers share common operations.
+
+**Transform each value:**
+
+```javascript
+// Array
+[1, 2, 3].map(x => x * 2)         // → [2, 4, 6]
+
+// Promise
+promise.then(x => x * 2)           // → promise of doubled value
+
+// Pattern
+"1 2 3".fmap(x => x * 2)           // → pattern of 2, 4, 6
+```
+
+The operation is conceptually identical. Only the container differs.
+
+<MiniRepl client:visible tune={`// Transform values inside a pattern
+n("0 2 4".fmap(x => x + 7))
+  .scale("C4:major").sound("piano")`} punchcard />
+
+This isn't a coincidence. It reflects a deep structure that all containers share.
+
+---
+
+# Types: What's Inside the Container
+
+A **type** tells you what kind of value you have:
+
+| Type | Meaning |
+|------|---------|
+| `Number` | A number like 42 |
+| `String` | Text like "c4" |
+| `Array<Number>` | Array containing numbers |
+| `Promise<String>` | Promise that resolves to string |
+| `Pattern<Note>` | Pattern containing notes |
+
+The angle brackets show what's inside. `Pattern<Note>` means "a pattern that contains notes."
+
+Why does this matter?
+
+```javascript
+// These types tell you what operations are valid:
+"c4 e4 g4".fmap(x => x + 1)     // Pattern<String> — can transform strings
+note("c4 e4 g4").sound("piano")  // Pattern<Note> — can add sound
+
+// And what isn't:
+note("c4").fmap(x => x + 1)      // ❌ note() returns a control pattern, not a string pattern
+```
+
+Types catch errors and guide composition.
+
+<QA client:load question="Why does this matter?">
+
+Types are like labels on boxes. If you know a box contains numbers, you know you can add, multiply, compare them. If it contains strings, you can uppercase, split, concatenate them.
+
+When types don't match, the operation doesn't make sense—like trying to uppercase a number. Types help you catch these mismatches before running the code.
+
+</QA>
+
+---
+
+# The Four Container Operations
+
+Containers that share certain operations have names from mathematics. These aren't scary—they're just labels for patterns you'll recognize:
+
+| Name | Operation | Example |
+|------|-----------|---------|
+| **Functor** | Transform contents | `.fmap(x => x + 1)` |
+| **Applicative** | Combine two containers | `.add("<0 7>")` |
+| **Monad** | Flatten nesting | `.squeezeJoin()` |
+| **Monoid** | Build from pieces | `stack(a, b)` |
+
+Don't worry about memorizing these. We'll explore each one in detail. The point is: these operations appear in arrays, promises, patterns, and many other containers. Learn them once, recognize them everywhere.
+
+---
+
+# What Makes Pattern Special
+
+Most containers have one obvious way to transform or combine. But Pattern has **timing**—and timing creates choices.
+
+**Combining arrays:**
+
+```javascript
+// Zip: pair up elements by position
+[1, 2, 3] + [10, 20, 30] → [11, 22, 33]
+
+// No ambiguity—position determines pairing
+```
+
+**Combining patterns:**
+
+<MiniRepl client:visible tune={`// Which timing wins?
+n("0 2 4 6".add("<0 7>"))
+  .scale("C4:major").sound("piano")`} punchcard />
+
+The melody has 4 notes. The interval has 2 values. How do they combine?
+
+- Keep the melody's 4-note rhythm?
+- Keep the interval's 2-value rhythm?
+- Only play when both have events?
+
+Pattern has multiple valid answers. That's why we have `.add()`, `.add.out()`, and `.add.mix()`—different ways to combine timing.
+
+This is what makes Pattern interesting: timing adds a dimension that other containers don't have.
+
+---
+
+# Containers as Architecture
+
+Think of containers as architectural decisions:
+
+| Container | What It Manages | You Focus On |
+|-----------|----------------|--------------|
+| Array | Position, order | Values |
+| Promise | Async timing | Eventual value |
+| Pattern | Musical timing | Notes, sounds |
+
+By choosing a container, you decide what complexity it handles for you. Strudel chose Pattern because musical timing is hard, and patterns handle it elegantly.
+
+---
+
+# What's Next?
+
+You've seen why containers exist: they wrap values and manage context, letting you write reusable transformations.
+
+Now let's look at Pattern specifically. What makes it tick?
+
+<Box>
+
+**Continue to [Patterns as Containers](/learn/theory/patterns-as-containers/) →**
+
+You understand containers in general. Next, you'll explore Pattern: how it represents time, how it computes lazily, and how to peek inside.
+
+</Box>

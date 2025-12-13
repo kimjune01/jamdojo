@@ -285,6 +285,12 @@ export function connectToDestination(input, channels) {
   controller.output.connectToDestination(input, channels);
 }
 
+// Get the master output gain node for recording purposes
+export function getDestinationGain() {
+  const controller = getSuperdoughAudioController();
+  return controller.output?.destinationGain;
+}
+
 // Orbit gain control - allows muting individual orbits
 // fadeTime: seconds to fade (default 0.015 = 15ms to avoid clicks)
 export function setOrbitGain(orbitNum, gain, fadeTime = 0.015) {

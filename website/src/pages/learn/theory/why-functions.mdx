@@ -1,0 +1,186 @@
+---
+title: Why Functions
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# Functions: The Building Blocks
+
+Before we dive into patterns, let's talk about functions. Everything in Strudel is built from functions, and understanding them unlocks the whole system.
+
+---
+
+# A Function is a Machine
+
+Put something in, get something out:
+
+```javascript
+const addSeven = x => x + 7
+addSeven(3)   // → 10
+addSeven(10)  // → 17
+```
+
+The `x => x + 7` syntax creates a function:
+- `x` is the input (whatever you pass in)
+- `x + 7` is the output (what comes back)
+
+In Strudel, you're constantly using functions:
+
+<MiniRepl client:visible tune={`note("c4")       // string → pattern
+  .sound("piano")  // pattern → pattern
+  .fast(2)         // pattern → pattern`} />
+
+Each operation takes something and returns something new. Chain them together, and you build complex behavior from simple pieces.
+
+---
+
+# Functions Can Take Functions
+
+Here's where it gets interesting. A function can receive another function as input:
+
+<MiniRepl client:visible tune={`n("0 2 4 6".fmap(x => x + 7))
+  .scale("C4:major").sound("piano")`} punchcard />
+
+The `.fmap()` function takes your function (`x => x + 7`) and applies it to every value inside the pattern.
+
+Change the function, change the result:
+
+<MiniRepl client:visible tune={`// Double each value
+n("0 2 4 6".fmap(x => x * 2))
+  .scale("C4:major").sound("piano")`} punchcard />
+
+<MiniRepl client:visible tune={`// Conditional: only shift high notes
+n("0 2 4 6".fmap(x => x > 3 ? x + 7 : x))
+  .scale("C4:major").sound("piano")`} punchcard />
+
+This pattern—passing functions to other functions—is called **higher-order functions**. It's the key to reusability.
+
+<QA client:load question="Why is this useful?">
+
+Instead of writing separate code for "add 7 to each note" and "double each note" and "conditionally shift notes," you write one function (`.fmap()`) that works with any transformation.
+
+Define the transformation once. Apply it anywhere. This is the core idea of functional programming.
+
+</QA>
+
+---
+
+# The Same Idea in JavaScript
+
+If you know JavaScript arrays, you already know this:
+
+```javascript
+// Array.map applies a function to each element
+[0, 2, 4, 6].map(x => x + 7)    // → [7, 9, 11, 13]
+
+// Pattern.fmap does the same thing
+"0 2 4 6".fmap(x => x + 7)      // → pattern of 7, 9, 11, 13
+```
+
+The operation is identical. Only the container is different—array vs. pattern.
+
+This isn't a coincidence. It's a fundamental pattern that appears everywhere in programming.
+
+---
+
+# Functions Can Return Functions
+
+A function can also create and return new functions:
+
+```javascript
+// A function that makes functions
+const addN = n => (x => x + n)
+
+const addFive = addN(5)
+const addTwelve = addN(12)
+
+addFive(3)    // → 8
+addTwelve(3)  // → 15
+```
+
+This is powerful because it lets you create specialized tools from general ones:
+
+<MiniRepl client:visible tune={`// Create reusable transformations
+const octaveUp = x => x + 7      // up one octave (in a 7-note scale)
+const octaveDown = x => x - 7    // down one octave
+const invert = x => 7 - x        // flip around middle
+
+n("0 2 4 6".fmap(octaveUp))
+  .scale("C4:major").sound("piano")`} />
+
+Try swapping `octaveUp` for `octaveDown` or `invert`.
+
+---
+
+# Composition: Chaining Transformations
+
+When you chain functions, you're composing them:
+
+```javascript
+const double = x => x * 2
+const addOne = x => x + 1
+
+// These are equivalent:
+addOne(double(3))                    // → 7
+[3].map(double).map(addOne)          // → [7]
+```
+
+The result flows through each function in sequence. In Strudel:
+
+<MiniRepl client:visible tune={`n("0 1 2 3"
+    .fmap(x => x * 2)     // double: 0, 2, 4, 6
+    .fmap(x => x + 1))    // add one: 1, 3, 5, 7
+  .scale("C4:major").sound("piano")`} punchcard />
+
+Each `.fmap()` transforms the result of the previous one. This lets you build complex transformations from simple pieces.
+
+---
+
+# Why This Matters for Music
+
+Three key benefits:
+
+**Reusability**: Define a transformation once, use it on any pattern.
+
+<MiniRepl client:visible tune={`const humanize = x => x + (Math.random() - 0.5) * 1.5
+
+n("0 2 4 6".fmap(humanize))
+  .scale("C4:major").sound("piano")`} />
+
+The same `humanize` function works on any melody.
+
+**Composability**: Chain simple transformations into complex ones.
+
+<MiniRepl client:visible tune={`n("0 1 2 3 4 5 6 7"
+    .fmap(x => x % 4)           // wrap to 0-3 range
+    .fmap(x => x * 2))          // then double
+  .scale("C4:major").sound("piano")`} punchcard />
+
+**Separation**: The transformation (what) is separate from the timing (when).
+
+<MiniRepl client:visible tune={`// Same transformation, different rhythms
+const transform = x => x + 7
+
+stack(
+  n("0 2 4 6".fmap(transform)),
+  n("0 ~ 2 ~".fmap(transform))
+).scale("C4:major").sound("piano")`} />
+
+---
+
+# What's Next?
+
+We've seen that functions transform values, and higher-order functions like `.fmap()` let us transform values inside containers.
+
+But what exactly is a "container"? Why do we wrap values in things like arrays and patterns?
+
+<Box>
+
+**Continue to [Why Containers](/learn/theory/why-containers/) →**
+
+You've seen functions transform values. Next, you'll discover why we wrap values in containers—and how this simple idea enables everything Strudel does.
+
+</Box>

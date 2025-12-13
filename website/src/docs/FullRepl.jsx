@@ -9,6 +9,7 @@ import { code2hash, logger, silence } from '@strudel/core';
 import { getDrawContext } from '@strudel/draw';
 import { transpiler } from '@strudel/transpiler';
 import {
+  getAudioContext,
   getAudioContextCurrentTime,
   webaudioOutput,
   resetGlobalEffects,
@@ -83,6 +84,11 @@ export function FullRepl({ initialCode = defaultCode }) {
   const [replState, setReplState] = useState({});
   const { started, isDirty, error, pending } = replState;
   const { isSyncEnabled, fontFamily } = useSettings();
+
+  // Recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const recordedChunksRef = useRef([]);
 
   const init = useCallback(() => {
     if (editorRef.current) return;
@@ -193,6 +199,102 @@ export function FullRepl({ initialCode = defaultCode }) {
     }
   };
 
+  const handleRender = async () => {
+    if (isRecording) {
+      // Stop recording
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+        // Stop playback
+        if (started) {
+          editorRef.current?.stop();
+        }
+      }
+      return;
+    }
+
+    // Start recording
+    try {
+      const ac = getAudioContext();
+      const { getDestinationGain } = await import('@strudel/webaudio');
+
+      // Get the master output gain node
+      const masterGain = getDestinationGain();
+      if (!masterGain) {
+        // Audio hasn't been initialized yet, start playback first
+        await editorRef.current?.evaluate();
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      const dest = ac.createMediaStreamDestination();
+
+      // Get the master gain again after initialization
+      const finalMasterGain = getDestinationGain();
+      if (!finalMasterGain) {
+        throw new Error('Audio not initialized. Please play something first.');
+      }
+
+      // Connect master output to recording destination (in addition to speakers)
+      finalMasterGain.connect(dest);
+
+      // Use MediaRecorder with the stream
+      const stream = dest.stream;
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/webm')
+          ? 'audio/webm'
+          : 'audio/ogg';
+
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
+      mediaRecorderRef.current = mediaRecorder;
+      recordedChunksRef.current = [];
+
+      // Store destination for cleanup
+      mediaRecorderRef.current._dest = dest;
+      mediaRecorderRef.current._masterGain = finalMasterGain;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          recordedChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        // Disconnect recording destination
+        try {
+          mediaRecorderRef.current._masterGain?.disconnect(mediaRecorderRef.current._dest);
+        } catch (e) {
+          // Already disconnected
+        }
+
+        const blob = new Blob(recordedChunksRef.current, { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const extension = mimeType.includes('webm') ? 'webm' : 'ogg';
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `strudel-${new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-')}.${extension}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        setIsRecording(false);
+        logger('Recording saved!', 'highlight');
+      };
+
+      mediaRecorder.start(100); // Collect data every 100ms
+      setIsRecording(true);
+      logger('Recording started... Click Render again to stop and download.', 'highlight');
+
+      // If not already playing, start playback
+      if (!started) {
+        editorRef.current?.toggle();
+      }
+    } catch (err) {
+      logger(`Recording error: ${err.message}`, 'error');
+      console.error('Recording error:', err);
+      setIsRecording(false);
+    }
+  };
+
   if (!client) {
     return (
       <div className="flex items-center justify-center h-[600px] bg-background border border-lineHighlight rounded-lg">
@@ -236,6 +338,16 @@ export function FullRepl({ initialCode = defaultCode }) {
               title="Update (Ctrl+Enter)"
             >
               Update
+            </button>
+            <button
+              onClick={handleRender}
+              className={cx(
+                'px-3 py-1.5 rounded text-sm text-foreground hover:bg-gray-700 transition-colors',
+                isRecording && 'bg-red-600 hover:bg-red-700'
+              )}
+              title={isRecording ? 'Stop recording and download' : 'Record audio to file'}
+            >
+              {isRecording ? 'Stop Rec' : 'Render'}
             </button>
             <button
               onClick={handleShare}

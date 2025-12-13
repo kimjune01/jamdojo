@@ -1,0 +1,264 @@
+---
+title: Flipping Structure
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# The Randomness Problem
+
+Here's a pattern with random notes:
+
+<MiniRepl client:visible tune={`n("0 1 2 3".fmap(() => Math.floor(Math.random() * 8)))
+  .scale("C4:minor")
+  .sound("piano")`} />
+
+Play it a few times. Each note is independently random—the melody changes unpredictably.
+
+But what if you want **one random melody** that stays consistent within a phrase? Not four independent dice rolls, but one random sequence that repeats?
+
+This is the **structure flip** problem: we have a `Pattern<Random<Note>>` but want a `Random<Pattern<Note>>`.
+
+---
+
+# Two Kinds of Random
+
+**Random per event:**
+```
+Pattern<Random>
+[rand, rand, rand, rand]  → different each time
+```
+
+**Random per pattern:**
+```
+Random<Pattern>
+rand → [note, note, note, note]  → one choice, then consistent
+```
+
+The nesting order matters. When randomness is outside, you get one random choice. When it's inside, you get independent random choices.
+
+---
+
+# Strudel's Randomness
+
+Strudel provides deterministic randomness based on cycle position:
+
+<MiniRepl client:visible tune={`// rand: different value at each query point
+n(rand.range(0, 7).segment(4).floor())
+  .scale("C4:minor")
+  .sound("piano")`} />
+
+`rand` gives values 0-1 based on time. Each position in the cycle gets a consistent value—play it again and you'll hear the same melody.
+
+<MiniRepl client:visible tune={`// irand: integer random with range
+n(irand(8).segment(4))
+  .scale("C4:minor")
+  .sound("piano")`} />
+
+---
+
+# Choosing One of Many
+
+`choose` selects one pattern from a list:
+
+<MiniRepl client:visible tune={`// Different choice each time segment samples
+choose(
+  note("c4 e4 g4"),
+  note("d4 f4 a4"),
+  note("e4 g4 b4")
+).sound("piano")`} />
+
+<MiniRepl client:visible tune={`// chooseCycles: one choice per cycle
+chooseCycles(
+  note("c4 e4 g4 e4"),
+  note("d4 f4 a4 f4"),
+  note("e4 g4 b4 g4")
+).sound("piano")`} />
+
+`chooseCycles` picks one pattern for the whole cycle—structure at the pattern level, not event level.
+
+---
+
+# Traversable: The Structure Flip
+
+In category theory, **Traversable** is the ability to flip nested structures:
+
+```
+traverse: F<G<A>> → G<F<A>>
+```
+
+For patterns and randomness:
+```
+Pattern<Random<Note>> → Random<Pattern<Note>>
+```
+
+Strudel's `sequenceP` function does this for lists of patterns:
+
+<MiniRepl client:visible tune={`// sequenceP: list of patterns → pattern of lists
+const pats = [
+  pure(1),
+  pure(2),
+  pure(3)
+]
+// sequenceP(pats) would give Pattern<[1,2,3]>`} />
+
+This flips `[Pattern, Pattern, Pattern]` into `Pattern<[value, value, value]>`.
+
+---
+
+# Controlled Variation
+
+The key insight: **where you put randomness determines what varies**.
+
+**Random notes (each note varies):**
+
+<MiniRepl client:visible tune={`// Different each cycle position
+n("0 1 2 3".add(irand(4)))
+  .scale("C4:minor")
+  .sound("piano")`} />
+
+**Random transposition (whole phrase varies):**
+
+<MiniRepl client:visible tune={`// One random offset for whole pattern
+n("0 2 4 6".add("<0 3 5 7>".fmap(() => [0,3,5,7][Math.floor(Math.random()*4)])))
+  .scale("C4:minor")
+  .sound("piano")`} />
+
+**Random selection (one of several phrases):**
+
+<MiniRepl client:visible tune={`chooseCycles(
+  n("0 2 4 7").scale("C4:major"),
+  n("0 3 5 7").scale("C4:minor"),
+  n("0 2 5 7").scale("C4:dorian")
+).sound("piano")`} />
+
+---
+
+# every: Periodic Variation
+
+`every` applies a transformation periodically:
+
+<MiniRepl client:visible tune={`note("c4 e4 g4 e4")
+  .every(4, x => x.add(12))  // octave up every 4th cycle
+  .sound("piano")`} />
+
+This is structure-aware—the variation happens at the cycle level, not event level.
+
+<MiniRepl client:visible tune={`// Combine multiple periodic variations
+note("c4 e4 g4 e4")
+  .every(4, x => x.add(12))
+  .every(3, x => x.fast(2))
+  .every(5, x => x.rev())
+  .sound("piano")`} />
+
+Different periods create evolving, non-repeating structures.
+
+---
+
+# The iter Pattern
+
+`iter` creates variations by rotating through a transformation:
+
+<MiniRepl client:visible tune={`// iter: shift pattern left each cycle
+note("c4 e4 g4 b4")
+  .iter(4)
+  .sound("piano")`} />
+
+Cycle 1: c e g b
+Cycle 2: e g b c
+Cycle 3: g b c e
+Cycle 4: b c e g
+
+Then it repeats. This is a **structural iteration**—same notes, different starting point.
+
+---
+
+# Generative Structures
+
+Combining these tools creates rich generative music:
+
+<MiniRepl client:visible tune={`// Evolving melody with controlled randomness
+n("0 2 4 <5 6 7>")
+  .scale("C4:minor")
+  .every(4, x => x.add(7))
+  .every(3, x => x.rev())
+  .sound("piano")
+  .room(0.3)`} />
+
+<MiniRepl client:visible tune={`// Drum pattern with periodic variations
+sound("bd sd bd sd")
+  .every(4, x => x.fast(2))
+  .every(3, x => stack(x, sound("hh*4").gain(0.4)))
+  .every(5, x => x.slow(2))`} />
+
+---
+
+# Why Structure Matters
+
+The position of randomness and variation in the structure determines:
+
+| Structure | Behavior |
+|-----------|----------|
+| `Pattern<Random>` | Each event varies |
+| `Random<Pattern>` | One choice, then consistent |
+| `every(n, f)` | Periodic variation |
+| `iter(n)` | Rotating through positions |
+| `chooseCycles` | One pattern per cycle |
+
+Understanding this lets you control **what level** variation happens at.
+
+---
+
+# Quick Reference
+
+```javascript
+// Random per event
+rand                    // 0-1 based on time
+irand(n)               // integer 0 to n-1
+rand.range(lo, hi)     // scaled range
+
+// Random selection
+choose(a, b, c)        // random choice per query
+chooseCycles(a, b, c)  // one choice per cycle
+
+// Periodic variation
+pattern.every(n, fn)   // apply fn every n cycles
+pattern.iter(n)        // rotate through n positions
+
+// Structure flip (conceptual)
+sequenceP([pats])      // [Pattern] → Pattern<[values]>
+```
+
+---
+
+# The Complete Picture
+
+You now have a comprehensive toolkit for pattern manipulation:
+
+| Concept | Operation | Purpose |
+|---------|-----------|---------|
+| **Functor** | `fmap` | Transform values |
+| **Applicative** | `add`/`add.out` | Combine with timing choice |
+| **Monad** | `join` variants | Flatten nesting |
+| **Monoid** | `stack`/`cat` | Build from pieces |
+| **Semigroup** | `stack`/`cat` | Combine events |
+| **Alternative** | `inhabit`/`pick` | Select from options |
+| **Comonad** | `withContext` | Access neighborhood |
+| **Traversable** | `sequenceP`/`every` | Flip structure |
+
+These aren't just abstract concepts—they're the operations you use every time you write a Strudel pattern. The vocabulary helps you recognize what's possible and communicate with precision.
+
+<Box>
+
+**You've completed the Pattern Thinking sequence.**
+
+From functions to containers to advanced abstractions, you now have a mental model for how patterns work. These concepts transfer to other domains—databases, streams, reactive systems—anywhere you work with structured data.
+
+**Next steps:**
+- [Strudel Programming](/learn/theory/strudel-programming/) — Build reusable code
+- [Arranging Patterns](/learn/theory/arranging/) — Compose full pieces
+- Experiment and create!
+
+</Box>

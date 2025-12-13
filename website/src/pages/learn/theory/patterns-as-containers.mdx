@@ -1,0 +1,234 @@
+---
+title: Patterns as Containers
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# Same Content, Different Timing
+
+Here's a drum pattern:
+
+<MiniRepl client:visible tune={`sound("bd sd hh cp")`} punchcard />
+
+Now watch the punchcard as we stretch it:
+
+<MiniRepl client:visible tune={`sound("bd sd hh cp").slow(2)`} punchcard />
+
+Same four sounds, but now they take twice as long. The sounds didn't change—only *when* they play changed.
+
+And if we compress it:
+
+<MiniRepl client:visible tune={`sound("bd sd hh cp").fast(2)`} punchcard />
+
+Same sounds, twice as fast. This works for anything—notes, numbers, sounds:
+
+<MiniRepl client:visible tune={`note("c4 e4 g4 b4").slow(2)`} punchcard />
+
+**What's going on here?** The values seem to live *inside* something that controls their timing. Change the container, and you change when things happen—without touching what's inside.
+
+---
+
+# What's Inside?
+
+Let's peek inside. Add `.log()` and open your browser console:
+
+- **Chrome/Edge**: `F12` or `Ctrl+Shift+J` (Mac: `Cmd+Option+J`)
+- **Firefox**: `F12` or `Ctrl+Shift+K` (Mac: `Cmd+Option+K`)
+- **Safari**: `Cmd+Option+C` (enable Developer menu first)
+
+<MiniRepl client:visible tune={`note("c4 e4 g4").log()`} />
+
+Press play, then look at the console. You'll see something like:
+
+```
+{ value: 60, begin: 0, end: 0.333... }
+{ value: 64, begin: 0.333..., end: 0.666... }
+{ value: 67, begin: 0.666..., end: 1 }
+```
+
+Each note has a **value** and a **time span**. The three notes divide one cycle evenly.
+
+Now try the slow version:
+
+<MiniRepl client:visible tune={`note("c4 e4 g4").slow(2).log()`} />
+
+The values are the same, but the time spans are different—they now stretch across two cycles.
+
+---
+
+# Independent Containers
+
+Listen to how the brightness changes on each note:
+
+<MiniRepl client:visible tune={`note("c2 e2 g2 b2")
+  .sound("sawtooth")
+  .lpf("400 800 1600 3200")`} />
+
+The filter cutoff (`lpf`) is *also* in a container, cycling through values: 400, 800, 1600, 3200.
+
+Now slow down just the filter while keeping the notes fast:
+
+<MiniRepl client:visible tune={`note("c2 e2 g2 b2")
+  .sound("sawtooth")
+  .lpf("400 3200".slow(2))`} />
+
+Four notes per cycle, but the filter only changes twice. They're independent.
+
+Or make the filter change faster than the notes:
+
+<MiniRepl client:visible tune={`note("c2 ~ ~ ~")
+  .sound("sawtooth")
+  .lpf("400 800 1600 3200")`} />
+
+One note, four filter values—you hear the brightness sweep within a single sustained note.
+
+**The insight**: Notes are in a container. Filter values are in a container. Gain, pan, effects—all in their own containers. Each moves through time independently.
+
+---
+
+# Layering Containers
+
+Multiple containers can run simultaneously, each with its own clock:
+
+<MiniRepl client:visible tune={`stack(
+  sound("hh*8"),
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd")
+)`} />
+
+Three drum patterns layered. The hi-hat plays 8 times per cycle, kick plays twice, snare plays twice—all independent.
+
+Now give one layer a different speed:
+
+<MiniRepl client:visible tune={`stack(
+  sound("hh*8"),
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd").slow(2)
+)`} />
+
+The snare now plays half as often. The other layers don't notice—they keep their own timing.
+
+---
+
+# What Have We Discovered?
+
+We've been observing a consistent behavior:
+
+1. Values (notes, numbers, sounds) live inside *something*
+2. That something has timing information
+3. We can stretch or compress the timing without changing the values
+4. Multiple of these things can run independently
+
+In Strudel, this "something" is called a **Pattern**. A pattern is a container that holds values and knows when to reveal them.
+
+---
+
+# Pattern is a Container
+
+Remember [Why Containers](/learn/theory/why-containers/)? Containers wrap values and manage context. Pattern is Strudel's container, and it manages **timing**:
+
+| Container | Context It Manages |
+|-----------|-------------------|
+| Array | Position (first, second, third...) |
+| Promise | Async timing (arrives later) |
+| **Pattern** | Musical timing (begin, end, cycle) |
+
+This separation is what makes `.slow()` and `.fast()` work. The timing is the container's job; the values inside don't care how fast the container moves.
+
+<Box>
+
+**Why "container"?**
+
+Think of a pattern like a box moving on a conveyor belt. Inside the box are your values—notes, sounds, numbers. The conveyor belt is time.
+
+- `.slow(2)` makes the conveyor belt move half as fast
+- `.fast(2)` doubles the belt speed
+- The contents of the box don't care how fast the belt moves
+
+This separation—*what's inside* vs. *how it moves through time*—is what makes patterns powerful.
+
+</Box>
+
+---
+
+# Everything is a Pattern
+
+Once you see it, you see it everywhere:
+
+<MiniRepl client:visible tune={`// Notes in a pattern
+note("c4 e4 g4 b4").sound("piano")`} />
+
+<MiniRepl client:visible tune={`// Sounds in a pattern
+sound("bd sd hh cp")`} />
+
+<MiniRepl client:visible tune={`// Numbers in a pattern (scale degrees)
+n("0 2 4 7").scale("C:minor").sound("piano")`} />
+
+<MiniRepl client:visible tune={`// Even a single value is a pattern
+note("c4").sound("piano")`} punchcard />
+
+That single note is a pattern containing one event that fills the whole cycle.
+
+This uniformity is why the same operations work everywhere—`.slow()`, `.fast()`, `.rev()` all work on any pattern.
+
+---
+
+# Patterns Don't Compute Until Asked
+
+Here's a subtle but important behavior:
+
+<MiniRepl client:visible tune={`// Define a pattern
+const melody = note("c4 e4 g4 b4")
+
+// Nothing happens yet...
+
+// Only when we use it:
+melody.sound("piano")`} />
+
+The first line creates a pattern, but produces no sound. The pattern is a *description* of what to play, not the playing itself. Only when Strudel's scheduler asks "what happens now?" does the pattern compute its events.
+
+This is why you can:
+- Define patterns and reuse them
+- Build complex patterns from simple ones
+- Change patterns while music is playing
+
+<QA client:load question="Why does this matter?">
+
+Patterns are *lazy*—they only compute what's needed, when it's needed.
+
+An infinitely looping pattern doesn't consume infinite memory. It just computes the next few events, plays them, then computes more.
+
+This also means patterns can depend on the current moment. Random variations, time-based modulations, live input—all possible because patterns compute on demand.
+
+</QA>
+
+---
+
+# Where This Leads
+
+We've discovered that patterns are containers with timing. This raises new questions:
+
+- What if I want to change **what's inside** the container without changing timing?
+- What if I want to **combine** two containers—whose timing wins?
+- What if a container holds **other containers**?
+- What if I want to **build** larger containers from smaller pieces?
+
+Each question leads to a powerful idea:
+
+| Question | Concept | Next Page |
+|----------|---------|-----------|
+| Transform contents, keep timing | Functor | [Transforming Patterns](/learn/theory/transforming-patterns/) |
+| Combine containers, choose timing | Applicative | [Combining Patterns](/learn/theory/combining-patterns/) |
+| Containers of containers | Monad | [Patterns of Patterns](/learn/theory/patterns-of-patterns/) |
+| Build from pieces | Monoid | [Building with Patterns](/learn/theory/building-with-patterns/) |
+
+<Box>
+
+**Continue to [Transforming Patterns](/learn/theory/transforming-patterns/) →**
+
+You've seen how patterns contain values through time. Next, you'll discover how to transform what's inside without disturbing the timing.
+
+</Box>

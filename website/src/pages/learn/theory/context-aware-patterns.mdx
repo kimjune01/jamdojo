@@ -1,0 +1,241 @@
+---
+title: Context-Aware Patterns
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# Beyond Individual Events
+
+So far, every transformation we've seen works on events in isolation. `.fmap(x => x + 7)` adds 7 to each note—it doesn't know or care what the neighboring notes are.
+
+But music often depends on context:
+- **Legato**: Is this note connected to the next?
+- **Accents**: Is this the first beat of a phrase?
+- **Dynamics**: Should this note crescendo based on its position?
+
+These require seeing beyond the single event.
+
+---
+
+# Events Carry Context
+
+Every event in Strudel carries metadata in its `context`:
+
+<MiniRepl client:visible tune={`note("c4 e4 g4")
+  .withContext(ctx => ({ ...ctx, custom: "hello" }))
+  .log()`} />
+
+Check the console. Each event has a `context` field. This is where Strudel tracks information like source location, tags, and custom data.
+
+---
+
+# withContext: Transforming Metadata
+
+`.withContext()` lets you modify the context of each event:
+
+<MiniRepl client:visible tune={`note("c4 e4 g4 b4")
+  .withContext((ctx, i) => ({ ...ctx, index: i }))
+  .log()`} />
+
+The second parameter is the event index within the cycle. This gives you position awareness.
+
+---
+
+# Tagging Events
+
+Tags let you identify events for later filtering or processing:
+
+<MiniRepl client:visible tune={`stack(
+  sound("bd sd bd sd").tag("drums"),
+  note("c4 e4 g4 e4").sound("piano").tag("melody")
+).log()`} />
+
+Check the context—each event carries its tag. You can filter by tag:
+
+<MiniRepl client:visible tune={`stack(
+  sound("bd sd bd sd").tag("drums"),
+  note("c4 e4 g4 e4").sound("piano").tag("melody")
+).filterByTag("melody")`} />
+
+Only the melody survives.
+
+---
+
+# The Comonad Intuition
+
+In category theory, a **Comonad** is the dual of a Monad. Where Monad lets you flatten nested containers, Comonad lets you **extend** context to each position.
+
+Think of it this way:
+- **Functor**: Transform each value independently
+- **Comonad**: Transform each value with awareness of its neighborhood
+
+Strudel's context system is an implicit Comonad. Events carry context, and that context can include information about surrounding events.
+
+<QA client:load question="What's the formal definition?">
+
+A Comonad has two operations:
+- `extract`: Get the current value from a context
+- `extend`: Apply a function that sees context to every position
+
+If Monad is "wrap and flatten," Comonad is "duplicate and extract."
+
+In Strudel, events are the "positions" and context is the "neighborhood." The `withContext` function is a limited form of `extend`.
+
+</QA>
+
+---
+
+# Position-Based Transformations
+
+Using the index parameter, you can create position-aware effects:
+
+<MiniRepl client:visible tune={`// Crescendo through the phrase
+note("c4 d4 e4 f4 g4 a4 b4 c5")
+  .sound("piano")
+  .gain("0 1 2 3 4 5 6 7".fmap(i => 0.3 + (i / 7) * 0.7))`} />
+
+<MiniRepl client:visible tune={`// Accent every 4th note
+note("c4 d4 e4 f4 g4 a4 b4 c5")
+  .sound("piano")
+  .gain("0 1 2 3 4 5 6 7".fmap(i => i % 4 === 0 ? 1 : 0.5))`} />
+
+---
+
+# Collecting Neighbors
+
+The `.collect()` method groups events that overlap in time:
+
+<MiniRepl client:visible tune={`// Stack creates overlapping events
+stack(
+  note("c4"),
+  note("e4"),
+  note("g4")
+).collect().log()`} />
+
+Instead of three separate events, you get one event containing an array of all three. This is useful for chord detection and voicing operations.
+
+---
+
+# arpWith: Context-Aware Arpeggiation
+
+`arpWith` uses `.collect()` internally to see all notes at once, then selects from them:
+
+<MiniRepl client:visible tune={`note("[c4,e4,g4,b4]")
+  .arpWith((notes, i) => notes[i % notes.length])
+  .sound("piano")`} />
+
+The function receives the full chord and an index. You decide how to walk through:
+
+<MiniRepl client:visible tune={`// Custom arpeggio pattern
+note("[c4,e4,g4,b4]")
+  .arpWith((notes, i) => {
+    const patterns = [0, 2, 1, 3, 2, 0]  // custom walk
+    return notes[patterns[i % patterns.length]]
+  })
+  .fast(1.5)
+  .sound("piano")`} />
+
+---
+
+# Building Context-Aware Effects
+
+Here's how to build effects that depend on musical context:
+
+**First note accent:**
+
+<MiniRepl client:visible tune={`note("c4 e4 g4 e4 c4 e4 g4 b4")
+  .sound("piano")
+  .gain(pure(i => i === 0 ? 1 : 0.6).squeeze(8))`} />
+
+**Alternating pan:**
+
+<MiniRepl client:visible tune={`note("c4 d4 e4 f4 g4 a4 b4 c5")
+  .sound("piano")
+  .pan("0 1 2 3 4 5 6 7".fmap(i => i % 2 === 0 ? 0.3 : 0.7))`} />
+
+**Position-based filter sweep:**
+
+<MiniRepl client:visible tune={`note("c3 e3 g3 c4".fast(2))
+  .sound("sawtooth")
+  .lpf("0 1 2 3 4 5 6 7".fmap(i => 400 + i * 200))`} />
+
+---
+
+# Location Tracking
+
+Strudel automatically tracks where each event came from:
+
+<MiniRepl client:visible tune={`stack(
+  note("c4").tag("first"),
+  note("e4").tag("second")
+).log()`} />
+
+The `context.locations` field shows the chain of transformations that produced each event. This is used for debugging and the visual highlighter.
+
+---
+
+# Why Context Matters
+
+Context enables effects that understand musical structure:
+
+| Effect | Requires |
+|--------|----------|
+| Legato | Knowing if next note overlaps |
+| Phrase dynamics | Position within phrase |
+| Voicing | Seeing all notes in chord |
+| Humanization | Varying by position |
+| Following | Knowing what came before |
+
+Without context, every note is an island. With context, notes understand their place in the musical fabric.
+
+---
+
+# Limitations
+
+Strudel's context system is **implicit** rather than fully comonadic:
+- You can't directly query neighboring events by time offset
+- Context is per-event, not a sliding window
+- Full comonad operations (`extend`, `duplicate`) aren't exposed
+
+For most musical purposes, tags, indices, and `.collect()` provide enough context awareness. True comonadic patterns would require deeper API changes.
+
+---
+
+# Quick Reference
+
+```javascript
+// Add custom context
+pattern.withContext(ctx => ({ ...ctx, key: value }))
+
+// Tag events
+pattern.tag("name")
+
+// Filter by tag
+pattern.filterByTag("name")
+
+// Group overlapping events
+pattern.collect()
+
+// Context-aware arpeggiation
+chord.arpWith((notes, index) => notes[index % notes.length])
+
+// Position-based values
+"0 1 2 3".fmap(i => /* use index */)
+```
+
+---
+
+# What's Next?
+
+We've explored how events can carry and use context. The final advanced concept: what happens when you need to **flip the structure** of nested patterns?
+
+<Box>
+
+**Continue to [Flipping Structure](/learn/theory/flipping-structure/) →**
+
+You've seen context-aware patterns. Next, you'll discover Traversable—how to turn a pattern of possibilities into possibilities of patterns, essential for controlled randomness and generative music.
+
+</Box>

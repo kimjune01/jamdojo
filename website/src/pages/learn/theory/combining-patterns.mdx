@@ -1,0 +1,215 @@
+---
+title: Combining Patterns
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# Two Patterns, One Question
+
+Here's a melody with 4 notes:
+
+<MiniRepl client:visible tune={`n("0 2 4 6").scale("C4:major").sound("piano")`} punchcard />
+
+And here's a pattern of intervals with 2 values—one for each half of the cycle:
+
+<MiniRepl client:visible tune={`// "<0 7>" means: 0 for first half, 7 for second half
+n("0 2 4 6".add("<0 7>")).scale("C4:major").sound("piano")`} punchcard />
+
+Look at the punchcard. We still have 4 notes. The first two stay the same (added 0), the last two go up a fifth (added 7).
+
+But why 4 notes? The interval pattern only had 2 values. What decided to keep the melody's rhythm?
+
+---
+
+# Who Leads? (The Applicative Question)
+
+When two patterns combine, we must decide whose structure survives. This is the **Applicative** question—and Strudel gives you three answers:
+
+**`.add()` — The melody leads (4 notes):**
+
+<MiniRepl client:visible tune={`n("0 2 4 6".add("<0 7>")).scale("C4:major").sound("piano")`} punchcard />
+
+Each melody note gets the interval that's "active" at that moment.
+
+**`.add.out()` — The interval leads (2 notes):**
+
+<MiniRepl client:visible tune={`n("0 2 4 6".add.out("<0 7>")).scale("C4:major").sound("piano")`} punchcard />
+
+Now we only have 2 notes! Each interval picks up the melody note that's active at that moment.
+
+**`.add.mix()` — Both must agree (intersection):**
+
+<MiniRepl client:visible tune={`n("0 2 4 6".add.mix("<0 7 12>")).scale("C4:major").sound("piano")`} punchcard />
+
+Events only where both patterns have something happening at the same time.
+
+| Mode | Suffix | Structure From |
+|------|--------|----------------|
+| Left | (none) | Left pattern |
+| Right | `.out` | Right pattern |
+| Both | `.mix` | Intersection |
+
+---
+
+# Hearing the Difference
+
+Let's make this audible with longer patterns:
+
+<MiniRepl client:visible tune={`// Left leads: fast melody, slow harmony
+n("0 1 2 3 4 3 2 1".add("0 3 5 3"))
+  .scale("C4:major").sound("piano")`} />
+
+The melody plays 8 notes per cycle. The harmony changes 4 times per cycle. We hear: fast melody with slow harmonic movement underneath.
+
+<MiniRepl client:visible tune={`// Right leads: slow output, fast sampling
+n("0 1 2 3 4 3 2 1".add.out("0 3 5 3"))
+  .scale("C4:major").sound("piano")`} />
+
+Now we only hear 4 notes per cycle—one per harmony change. Each harmony picks a note from the melody.
+
+Completely different musical results. Same source patterns.
+
+---
+
+# Not Just Addition
+
+Every combining operation has these three modes:
+
+<MiniRepl client:visible tune={`// Multiplication
+note("c2 e2 g2 b2")
+  .sound("sawtooth")
+  .gain("0.3 0.5 0.8 1.0")
+  .lpf("400 800 1200".mul("<1 2>"))`} />
+
+<MiniRepl client:visible tune={`// Even non-numeric combinations
+sound("bd sd hh cp")
+  .bank("<RolandTR808 RolandTR909>")`} />
+
+The first half uses 808 samples, the second half uses 909 samples.
+
+---
+
+# Evolving Patterns
+
+The power shows when patterns have different lengths:
+
+<MiniRepl client:visible tune={`// 3 notes + 4 intervals = evolving combination
+n("0 2 4".add("0 3 5 7"))
+  .scale("C4:major").sound("piano")`} punchcard />
+
+Three melody notes. Four interval values. Since 3 and 4 don't divide evenly, the combination takes 12 cycles to repeat (3 × 4 = 12). Each cycle sounds different as the intervals "rotate" against the melody.
+
+---
+
+# A Fourth Mode: Squeeze
+
+There's one more way to combine—fit the entire right pattern into each event of the left:
+
+<MiniRepl client:visible tune={`n("0 2 4".add.squeeze("0 4 7"))
+  .scale("C4:major").sound("piano")`} punchcard />
+
+Each of the 3 melody notes becomes a rapid 3-note arpeggio. The interval pattern is *squeezed* into each event's time slot. This is how you create arpeggios and fills.
+
+---
+
+# Building Musical Ideas
+
+With these modes, you can express precise musical intentions:
+
+<MiniRepl client:visible tune={`// A riff with changing root notes
+n("0 2 4 7 4 2".add("<0 5 7 5>"))   // Left leads: riff rhythm preserved
+  .scale("C:minor")
+  .sound("sawtooth")
+  .lpf(800)`} />
+
+The riff plays its 6 notes. The root changes 4 times per cycle. We hear the riff transposed to different scale degrees.
+
+<MiniRepl client:visible tune={`// Chord stabs with melody sampled
+n("0 1 2 3 4 5 6 7".add.out("<0 3 5>"))   // Right leads: chord rhythm wins
+  .scale("C4:major").sound("piano")`} />
+
+Three chord hits per cycle, each picking up a different melody note.
+
+---
+
+# Quick Reference
+
+```javascript
+// Left structure (default)
+n("0 2 4".add("<0 7>"))          // 3 notes out
+"1 2 3".mul("<1 2>")             // works on any numbers
+
+// Right structure
+n("0 2 4".add.out("<0 7>"))      // 2 notes out
+
+// Intersection
+n("0 2 4".add.mix("0 7"))        // varies
+
+// Squeeze (fit right into each left event)
+n("0 2 4".add.squeeze("0 4 7"))  // 9 notes out (3 × 3)
+```
+
+<QA client:load question="Where else do applicatives appear?">
+
+The same question appears everywhere containers combine:
+
+- **Spreadsheet**: When merging two columns of different lengths, do you extend, truncate, or align?
+- **Databases**: When joining tables, do you want inner join, left join, right join?
+- **Signals**: When combining streams, do you sample one from another, merge, or zip?
+
+Recognizing this as a general pattern helps you see the same choice appearing in different contexts—and make it deliberately rather than accidentally.
+
+</QA>
+
+---
+
+# Why Timing Creates a Choice
+
+Most containers have one obvious way to combine:
+
+```javascript
+// Arrays: zip by position
+[1, 2, 3].map((x, i) => x + [10, 20, 30][i])  // → [11, 22, 33]
+
+// Position determines pairing—no ambiguity
+```
+
+But patterns have **timing**, and timing creates a choice that other containers don't face:
+
+| Mode | Who Decides When |
+|------|-----------------|
+| `.add()` | Left pattern |
+| `.add.out()` | Right pattern |
+| `.add.mix()` | Both must agree |
+| `.add.squeeze()` | Left events, right squeezed in |
+
+This is the **Applicative** question: when combining two containers, whose structure do we keep?
+
+In databases, this is inner join vs. left join vs. right join. In streams, it's merge vs. zip vs. sample. In patterns, it's the choice between these four modes.
+
+Different domains, same fundamental question. The Pattern type makes it explicit.
+
+---
+
+# What's Next?
+
+We've combined patterns where each contains simple values. But what if a pattern contains... other patterns?
+
+<MiniRepl client:visible tune={`// A pattern of patterns
+cat(
+  note("c4 e4 g4"),
+  note("d4 f4 a4 c5")
+)`} />
+
+Two patterns, played in sequence. But now the outer structure holds inner structures. How do we "flatten" this?
+
+<Box>
+
+**Continue to [Patterns of Patterns](/learn/theory/patterns-of-patterns/) →**
+
+You've seen how to combine patterns and choose whose rhythm wins. Next, you'll discover what happens when patterns contain other patterns—and the many ways to flatten them.
+
+</Box>

@@ -617,7 +617,305 @@ acidBass(note("c2 eb2 g2 bb2"))`} />
 
 ---
 
-## Part 6: Sliders as Variables
+## Part 6: Higher-Order Functions
+
+Higher-order functions are functions that take other functions as arguments or return new functions. They're the key to building flexible, reusable sound design tools in Strudel.
+
+### Functions That Return Functions (Factories)
+
+Create parameterized effect builders:
+
+<MiniRepl client:visible tune={`// Filter sweep factory — returns a configured effect function
+const sweep = (min, max, speed) =>
+  x => x.lpf(sine.range(min, max).slow(speed)).lpq(10)
+
+// Create specific sweeps from the factory
+const slowSweep = sweep(200, 2000, 8)
+const fastSweep = sweep(400, 3000, 2)
+const subtleSweep = sweep(600, 1200, 4)
+
+// Use them
+note("c2 eb2 g2 bb2").s("sawtooth")
+  .apply(slowSweep)`} />
+
+Now try replacing `slowSweep` with `fastSweep`:
+
+<MiniRepl client:visible tune={`const sweep = (min, max, speed) =>
+  x => x.lpf(sine.range(min, max).slow(speed)).lpq(10)
+
+const fastSweep = sweep(400, 3000, 2)
+
+note("c2 eb2 g2 bb2").s("sawtooth")
+  .apply(fastSweep)`} />
+
+**More factory examples:**
+
+<MiniRepl client:visible tune={`// Tremolo factory
+const tremolo = (rate, depth) =>
+  x => x.gain(sine.range(1 - depth, 1).fast(rate))
+
+// Vibrato factory
+const vibrato = (rate, cents) =>
+  x => x.detune(sine.range(-cents, cents).fast(rate))
+
+// Delay factory
+const echo = (time, feedback, wet) =>
+  x => x.delay(wet).delaytime(time).delayfeedback(feedback)
+
+// Combine factories
+note("c4")
+  .s("sawtooth")
+  .sustain(2)
+  .apply(vibrato(5, 15))
+  .apply(tremolo(4, 0.3))
+  .apply(echo(0.375, 0.4, 0.3))`} />
+
+### Composing Functions Together
+
+Chain multiple effect functions into one:
+
+<MiniRepl client:visible tune={`// Compose: apply functions left to right
+const compose = (...fns) => x => fns.reduce((acc, fn) => fn(acc), x)
+
+// Individual effects
+const pluck = x => x.attack(0.001).decay(0.15).sustain(0)
+const acid = x => x.lpf(sine.range(300, 2000).slow(2)).lpq(12)
+const space = x => x.room(0.3).delay(0.2)
+
+// Combine into one sound
+const acidBass = compose(
+  x => x.s("sawtooth"),
+  pluck,
+  acid,
+  space
+)
+
+// Use like any other effect
+acidBass(note("c2 c2 eb2 g2"))`} />
+
+**Alternative: right-to-left composition (like math notation):**
+
+<MiniRepl client:visible tune={`// Pipe: left to right (reads like a chain)
+const pipe = (...fns) => x => fns.reduce((v, f) => f(v), x)
+
+// Compose: right to left (like f(g(x)))
+const compose = (...fns) => x => fns.reduceRight((v, f) => f(v), x)
+
+const pluck = x => x.attack(0.001).decay(0.12).sustain(0)
+const filter = x => x.lpf(800).lpq(8)
+
+// These are equivalent:
+const sound1 = pipe(pluck, filter)      // pluck first, then filter
+const sound2 = compose(filter, pluck)   // same: filter(pluck(x))
+
+sound1(note("c2 eb2 g2").s("sawtooth"))`} />
+
+### Conditional Effects
+
+Apply effects based on conditions:
+
+<MiniRepl client:visible tune={`// Per-event probability using degradeBy
+// 50% chance each note gets distortion
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(800)
+  .distort(brandBy(0.5).mul(0.5))`} />
+
+Or use `sometimesBy` for probabilistic effect application:
+
+<MiniRepl client:visible tune={`// sometimesBy: apply effect to some events
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(800)
+  .sometimesBy(0.5, x => x.distort(0.5))`} />
+
+<MiniRepl client:visible tune={`// Either: blend between two effects based on random signal
+// Use rand (per-event) or perlin (smooth) for variation
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(rand.range(400, 3000))  // random filter per event
+  .room(rand.range(0, 0.4))`} />
+
+For more control, use `chooseCycles` or conditional stacking:
+
+<MiniRepl client:visible tune={`// Alternate between effect chains every N cycles
+const bright = x => x.lpf(3000).room(0.4)
+const dark = x => x.lpf(400).delay(0.3)
+
+// Switch every 2 cycles
+cat(
+  bright(note("c2 eb2 g2 bb2").s("sawtooth")),
+  dark(note("c2 eb2 g2 bb2").s("sawtooth"))
+)`} />
+
+<MiniRepl client:visible tune={`// When: apply effect only if condition is true
+const when = (condition, fx) => x => condition ? fx(x) : x
+
+const useDist = true
+const useReverb = false
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .lpf(800)
+  .apply(when(useDist, x => x.distort(0.4)))
+  .apply(when(useReverb, x => x.room(0.5)))`} />
+
+### Parallel Effect Chains
+
+Run the same source through multiple effect paths:
+
+<MiniRepl client:visible tune={`// Parallel: split signal through multiple chains, then stack
+const parallel = (...fxChains) => pattern =>
+  stack(...fxChains.map(fx => fx(pattern)))
+
+// Three parallel paths
+const wideChorus = parallel(
+  x => x.pan(0.2).detune(-10),           // left, detuned down
+  x => x.pan(0.5),                        // center, dry
+  x => x.pan(0.8).detune(10).delay(0.01)  // right, detuned up + tiny delay
+)
+
+note("[c3,e3,g3]")
+  .s("sawtooth")
+  .apply(wideChorus)
+  .gain(0.4)`} />
+
+<MiniRepl client:visible tune={`// Frequency splitting: different effects for different bands
+const multiband = (lowFx, highFx, crossover) => pattern =>
+  stack(
+    lowFx(pattern.lpf(crossover)),
+    highFx(pattern.hpf(crossover))
+  )
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .apply(multiband(
+    x => x.distort(0.6).gain(0.8),  // distort the lows
+    x => x.room(0.4).gain(0.5),     // reverb the highs
+    800                              // crossover frequency
+  ))`} />
+
+### Effect Modifiers
+
+Functions that modify other effect functions:
+
+<MiniRepl client:visible tune={`// Intensify: scale an effect's parameters
+const intensify = (fx, amount) => x => {
+  // Apply effect, then boost key parameters
+  const processed = fx(x)
+  return processed.gain(0.7 + amount * 0.3)
+}
+
+const baseSweep = x => x.lpf(sine.range(300, 2000).slow(4)).lpq(8)
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .apply(intensify(baseSweep, 0.8))`} />
+
+<MiniRepl client:visible tune={`// Repeat: apply an effect multiple times
+const repeat = (n, fx) => x => {
+  let result = x
+  for (let i = 0; i < n; i++) result = fx(result)
+  return result
+}
+
+// Stack 3 layers of slight detune = thick chorus
+const thicken = x => x.detune(rand.range(-8, 8))
+
+note("[c3,e3,g3]")
+  .s("sawtooth")
+  .apply(repeat(3, thicken))
+  .gain(0.3)`} />
+
+### Building an Effect Rack
+
+Combine these patterns into a modular effect system:
+
+<MiniRepl client:visible tune={`// === EFFECT FACTORIES ===
+const fx = {
+  // Filters
+  sweep: (min, max, speed) => x => x.lpf(sine.range(min, max).slow(speed)).lpq(8),
+  resonant: (freq, q) => x => x.lpf(freq).lpq(q),
+
+  // Time-based
+  echo: (time, fb, wet) => x => x.delay(wet).delaytime(time).delayfeedback(fb),
+  verb: (size, wet) => x => x.room(wet).roomsize(size),
+
+  // Modulation
+  trem: (rate, depth) => x => x.gain(sine.range(1-depth, 1).fast(rate)),
+  vib: (rate, cents) => x => x.detune(sine.range(-cents, cents).fast(rate)),
+
+  // Dynamics
+  drive: (amount) => x => x.distort(amount),
+  crush: (bits) => x => x.crush(bits)
+}
+
+// === UTILITY ===
+const chain = (...fns) => x => fns.reduce((v, f) => f(v), x)
+
+// === PRESETS (composed from factories) ===
+const preset = {
+  lofi: chain(fx.crush(6), fx.resonant(2000, 2), fx.verb(0.5, 0.3)),
+  acid: chain(fx.sweep(300, 2500, 2), fx.drive(0.3)),
+  ambient: chain(fx.vib(3, 8), fx.echo(0.5, 0.5, 0.4), fx.verb(0.8, 0.5)),
+  aggro: chain(fx.drive(0.6), fx.resonant(1200, 12), fx.trem(8, 0.4))
+}
+
+// === USE ===
+note("c2 c2 eb2 g2")
+  .s("sawtooth")
+  .apply(preset.acid)`} />
+
+Try swapping `preset.acid` with `preset.lofi`, `preset.ambient`, or `preset.aggro`.
+
+### Higher-Order Pattern Manipulation
+
+Functions that transform entire patterns:
+
+<MiniRepl client:visible tune={`// Double: run pattern at two speeds
+const double = (pattern, fx1, fx2) =>
+  stack(
+    fx1(pattern),
+    fx2(pattern.fast(2))
+  )
+
+double(
+  note("c3 eb3 g3").s("sawtooth"),
+  x => x.lpf(600).gain(0.6),      // slow: dark
+  x => x.lpf(2000).gain(0.3)      // fast: bright
+)`} />
+
+<MiniRepl client:visible tune={`// Spread: play pattern across pan positions
+const spread = (pattern, positions) =>
+  stack(...positions.map((p, i) =>
+    pattern.pan(p).slow(positions.length).late(i / positions.length)
+  ))
+
+spread(
+  note("c4 e4 g4").s("piano"),
+  [0.1, 0.5, 0.9]  // left, center, right
+).gain(0.5)`} />
+
+<MiniRepl client:visible tune={`// Evolve: gradually morph between two effect states
+const evolve = (fx1, fx2, cycles) => pattern => {
+  const progress = saw.slow(cycles)
+  return stack(
+    fx1(pattern).gain(progress.range(1, 0)),
+    fx2(pattern).gain(progress.range(0, 1))
+  )
+}
+
+note("c2 eb2 g2 bb2")
+  .s("sawtooth")
+  .apply(evolve(
+    x => x.lpf(400),           // start dark
+    x => x.lpf(3000).room(0.4), // end bright + reverb
+    8                           // over 8 cycles
+  ))`} />
+
+---
+
+## Part 7: Sliders as Variables
 
 ### Storing Control Parameters
 
@@ -752,6 +1050,56 @@ note("c4 e4 g4 b4")
 
 At 0: clean and stable. At 1: wild variation in volume, pan, and pitch.
 
+### Crossfade Between Signal Chains
+
+Use a slider to blend between two parallel effect chains—like a DJ crossfader between "dry" and "wet" versions of a sound:
+
+<MiniRepl client:visible tune={`const mix = slider(0.5, 0, 1, 0.01)
+
+const dry = note("c3 e3 g3").s("sawtooth").lpf(800)
+const wet = note("c3 e3 g3").s("sawtooth").delay(0.5).room(0.7).hpf(400)
+
+stack(
+  dry.gain(1 - mix),
+  wet.gain(mix)
+)`} />
+
+Move the slider: 0 = fully dry, 1 = fully wet, 0.5 = equal mix.
+
+**As a reusable higher-order function:**
+
+<MiniRepl client:visible tune={`// Crossfade factory: blend any two effect chains
+const crossfade = (dryFx, wetFx, mix) => pattern =>
+  stack(
+    dryFx(pattern).gain(1 - mix),
+    wetFx(pattern).gain(mix)
+  )
+
+const mix = slider(0.5, 0, 1, 0.01)
+
+note("c2 e2 g2 c3").s("supersaw")
+  .apply(crossfade(
+    x => x.lpf(600),                           // dry: filtered
+    x => x.delay(0.4).room(0.6).distort(0.3),  // wet: effects chain
+    mix
+  ))`} />
+
+Now you can crossfade between *any* two effect chains by swapping the functions.
+
+**Equal-power crossfade** — for smoother volume during the transition:
+
+<MiniRepl client:visible tune={`const mix = slider(0.5, 0, 1, 0.01)
+
+const dry = note("c3 e3 g3").s("sawtooth").lpf(800)
+const wet = note("c3 e3 g3").s("sawtooth").delay(0.5).room(0.7)
+
+stack(
+  dry.gain(Math.cos(mix * Math.PI / 2)),
+  wet.gain(Math.sin(mix * Math.PI / 2))
+)`} />
+
+Equal-power crossfade eliminates the volume dip at the midpoint—perceived loudness stays constant as you sweep.
+
 ### Math with Sliders
 
 Sliders support math operations just like signals:
@@ -783,7 +1131,7 @@ One "macro" slider, but each parameter responds with its own range.
 
 ---
 
-## Part 7: Pattern Variables for Live Performance
+## Part 8: Pattern Variables for Live Performance
 
 ### The `.p()` System
 
@@ -833,7 +1181,7 @@ all(x => x.room(0.2))`} />
 
 ---
 
-## Part 8: Full Example — Library in Action
+## Part 9: Full Example — Library in Action
 
 <MiniRepl client:visible tune={`// === ENVELOPE LIBRARY ===
 const env = {

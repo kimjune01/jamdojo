@@ -1,0 +1,178 @@
+---
+title: Transforming Patterns
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# The Same Rhythm, Different Notes
+
+Here's a bass line using scale degrees:
+
+<MiniRepl client:visible tune={`n("0 2 4 7").scale("C2:major").sound("sawtooth").lpf(800)`} punchcard />
+
+Now I want the same rhythm, but an octave higher (7 scale degrees up in a 7-note scale):
+
+<MiniRepl client:visible tune={`n("0 2 4 7".add(7)).scale("C2:major").sound("sawtooth").lpf(800)`} punchcard />
+
+Look at the punchcard. The blocks are in the same positions—same rhythm. But the notes are higher.
+
+What happened? `.add(7)` reached *inside* the pattern and added 7 to every scale degree, without touching when they play.
+
+This operation has a name: **Functor**. A functor is a container you can "map over"—transform what's inside without changing the container's structure. The timing *is* the structure, and it stayed intact.
+
+---
+
+# Custom Transformations with fmap
+
+`.add()` is a shortcut, but `.fmap()` lets you apply *any* function:
+
+<MiniRepl client:visible tune={`n("0 2 4 6 8 10 12".fmap(x => x > 6 ? x + 12 : x))
+  .scale("C4:major").sound("piano")`} punchcard />
+
+Notes above scale degree 6 get shifted up an octave. Notes below stay put. Conditional logic, math functions, randomness—anything goes:
+
+<MiniRepl client:visible tune={`// Invert the melody around degree 4
+n("0 2 4 6".fmap(x => 8 - x))
+  .scale("C4:major").sound("piano")`} punchcard />
+
+<MiniRepl client:visible tune={`// Add random humanization to filter
+n("0 2 4 6").scale("C2:major").sound("sawtooth")
+  .lpf("800 1200 1600 2000".fmap(x => x + (Math.random() - 0.5) * 200))`} />
+
+The function receives each value, one at a time, and returns a new value. The timing is untouched—that's the functor guarantee.
+
+---
+
+# What Can We Transform?
+
+Not just notes. Anything inside a pattern:
+
+**Filter frequencies:**
+
+<MiniRepl client:visible tune={`note("c2 e2 g2 b2")
+  .sound("sawtooth")
+  .lpf("400 800 1200 1600".fmap(x => x * 2))`} />
+
+The filter pattern `400 800 1200 1600` becomes `800 1600 2400 3200`.
+
+**Gain values:**
+
+<MiniRepl client:visible tune={`note("c4 e4 g4 b4")
+  .sound("piano")
+  .gain("1 0.8 0.6 0.4".fmap(x => Math.sqrt(x)))`} />
+
+Square root compression on the velocity curve.
+
+**Pan position:**
+
+<MiniRepl client:visible tune={`note("c4 e4 g4 b4")
+  .sound("piano")
+  .pan("0 0.25 0.75 1".fmap(x => x * 0.8 + 0.1))`} />
+
+Compress the stereo field—pan values squeezed toward center.
+
+---
+
+# Why This Matters
+
+This separation of *what* from *when* is powerful:
+
+<MiniRepl client:visible tune={`// Same transformation, different rhythms
+stack(
+  n("0 2 4 6".add(7)),
+  n("0 ~ 2 ~".add(7))
+).scale("C4:major").sound("piano")`} />
+
+The `.add(7)` works on any mini-notation string, regardless of its rhythm. We've defined *what* to do (add 7) separately from *when* it happens.
+
+<MiniRepl client:visible tune={`// Build a library of transformations using mini-notation
+stack(
+  n("0 2 4".add(7)),           // fifth up
+  n("0 2 4".add(7).add(12)),   // fifth + octave up
+  n("0 2 4".fmap(x => 8 - x))  // inverted around 4
+).scale("C3:major").sound("piano")`} />
+
+Transformations become reusable building blocks.
+
+---
+
+# Quick Reference
+
+```javascript
+"0 2 4".add(7)           // same as: "0 2 4".fmap(x => x + 7)
+"1 2 3".mul(2)           // same as: "1 2 3".fmap(x => x * 2)
+"4 5 6".sub(3)           // same as: "4 5 6".fmap(x => x - 3)
+```
+
+<QA client:load question="Where else do functors appear?">
+
+Arrays are functors—`[1,2,3].map(x => x * 2)` gives `[2,4,6]`. Same length, same positions, different values.
+
+Promises are functors—`.then(x => x * 2)` transforms the eventual value without changing when it resolves.
+
+Recognizing this pattern helps you transfer knowledge between contexts. The concept is the same; only the container changes.
+
+</QA>
+
+---
+
+# The Same Operation Everywhere
+
+Notice that `.fmap()` on patterns does exactly what `.map()` does on arrays:
+
+```javascript
+// Array: transform each element, keep positions
+[0, 2, 4, 7].map(x => x + 7)    // → [7, 9, 11, 14]
+
+// Pattern: transform each value, keep timing
+"0 2 4 7".fmap(x => x + 7)      // → pattern of 7, 9, 11, 14
+```
+
+This is the **Functor** operation: transform contents without changing structure. Arrays preserve position. Patterns preserve timing. The principle is identical.
+
+When you learn to think in functors, you can apply the same intuition to any container—arrays, promises, streams, optionals, or patterns.
+
+---
+
+# Fun Things to Try
+
+## Generative Melodies
+
+Use math functions to generate note patterns:
+
+<MiniRepl client:visible tune={`n("0 1 2 3 4 5 6 7".fmap(i => Math.round(Math.sin(i * 0.8) * 4)))
+  .scale("C:minor")
+  .sound("piano")`} />
+
+## Probability-Based Octave Jumps
+
+<MiniRepl client:visible tune={`n("0 2 4 6".fmap(x => Math.random() > 0.7 ? x + 12 : x))
+  .scale("C4:major").sound("piano")`} />
+
+## Dynamic Range Compression
+
+<MiniRepl client:visible tune={`n("0 2 4 6").scale("C4:major").sound("piano")
+  .velocity("0.3 0.5 0.8 1.0".fmap(v => Math.pow(v, 0.5)))`} />
+
+---
+
+# What's Next?
+
+We've learned to transform what's inside a pattern. But what about combining two patterns?
+
+<MiniRepl client:visible tune={`n("0 2 4 6".add("<0 7>")).scale("C4:major").sound("piano")`} punchcard />
+
+The melody has 4 notes. The interval pattern has 2 values. What happens?
+
+This is a different kind of operation—not transforming, but *combining*. And it raises a new question: whose rhythm wins?
+
+<Box>
+
+**Continue to [Combining Patterns](/learn/theory/combining-patterns/) →**
+
+You've seen how to transform values inside patterns. Next, you'll discover how to combine patterns—and why there's more than one way to do it.
+
+</Box>

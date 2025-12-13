@@ -1,0 +1,251 @@
+---
+title: Patterns of Patterns
+layout: ../../../layouts/JamDojoLayout.astro
+---
+
+import { MiniRepl } from '../../../docs/MiniRepl';
+import Box from '@components/Box.astro';
+import QA from '@components/QA';
+
+# Patterns Can Contain Patterns
+
+What happens when we put patterns inside patterns?
+
+<MiniRepl client:visible tune={`cat(
+  note("c4 e4 g4"),
+  note("d4 f4 a4")
+)`} punchcard />
+
+Two patterns, played in sequence. `cat` receives two patterns and produces one flat result.
+
+<MiniRepl client:visible tune={`cat(
+  note("c4 e4 g4"),
+  note("d4"),
+  note("e4 g4 b4 d5")
+)`} punchcard />
+
+Three inner patterns with different lengths: 3, 1, and 4 notes. But the output is one flat sequence.
+
+---
+
+# Thinking in Types
+
+Before we solve the nesting problem, let's talk about **types**.
+
+A type tells you what kind of value you have. In Strudel:
+- `"c4"` is a **String**
+- `note("c4")` is a **Pattern** (specifically, a Pattern of note values)
+- `sound("bd sd")` is also a **Pattern** (a Pattern of sound values)
+
+Pattern is a **container type**—it wraps other values and adds timing. We write this as `Pattern<String>` or `Pattern<Number>` to show what's inside.
+
+Now here's the key insight:
+
+```javascript
+// This transforms each note into a Pattern
+"c4 e4 g4".fmap(n => note(n + " " + (n + 7)))
+```
+
+What's the type of the result? Each string becomes a Pattern, so we have a Pattern of Patterns:
+
+```
+Pattern<String>  →  Pattern<Pattern<Note>>
+```
+
+This is **nested**. And Strudel can't play a `Pattern<Pattern<Note>>` directly—it needs a `Pattern<Note>`.
+
+---
+
+# Why Types Matter
+
+Types aren't just labels—they tell you what operations are valid:
+
+| Type | Can you `.sound()` it? | Can you play it? |
+|------|------------------------|------------------|
+| `Pattern<Note>` | Yes | Yes |
+| `Pattern<Pattern<Note>>` | No—wrong type | No—nested |
+
+Functional programming leans heavily on types because they:
+- **Catch errors early**: Trying to play a nested pattern? The types don't match.
+- **Guide composition**: If function A returns `Pattern<X>` and function B needs `Pattern<X>`, they connect.
+- **Document behavior**: The type signature `Pattern<a> → Pattern<Pattern<b>>` tells you nesting will happen.
+
+The Functor, Applicative, and Monad abstractions are all about **what operations preserve or change types**:
+- Functor: `Pattern<a> → Pattern<b>` (transform contents, keep structure)
+- Applicative: `Pattern<a>` + `Pattern<b>` → `Pattern<c>` (combine containers)
+- Monad: `Pattern<Pattern<a>>` → `Pattern<a>` (flatten nesting)
+
+---
+
+# The Problem: Nesting Needs Flattening
+
+When you have a `Pattern<Pattern<a>>`—a pattern containing patterns—you can't play it directly. You need to **flatten** it to `Pattern<a>`.
+
+Think about it: a pattern of patterns is like a playlist of albums. To actually listen, you need to turn it into a single track list. But how?
+
+- Play each album in full before moving to the next?
+- Squeeze each album into a fixed time slot?
+- Sample one track from each album?
+
+There's no single "right" answer. It depends on what you want.
+
+---
+
+# Two Ways to Flatten
+
+The most common question when flattening: should the inner pattern fit *inside* each outer event, or *replace* it entirely?
+
+**`squeezeJoin` — Compress inner into each outer event**
+
+<MiniRepl client:visible tune={`"x ~ x ~"
+  .fmap(() => note("c4 e4 g4 c5").sound("piano"))
+  .squeezeJoin()`} punchcard />
+
+Each of the 2 outer events becomes a rapid 4-note arpeggio. You hear 8 notes total.
+
+**`innerJoin` — Inner pattern plays at its own pace**
+
+<MiniRepl client:visible tune={`"x ~ x ~"
+  .fmap(() => note("c4 e4 g4 c5").sound("piano"))
+  .innerJoin()`} punchcard />
+
+The inner pattern's 4-note rhythm plays once per cycle, not compressed. You hear 4 notes.
+
+The key difference: `squeezeJoin` fits the inner pattern into each outer event's timeslot. `innerJoin` lets the inner pattern play at its natural speed.
+
+<QA client:load question="What about outerJoin and resetJoin?">
+
+Strudel has several join variants for different use cases:
+
+- `squeezeJoin` — compress inner to fit (most common)
+- `innerJoin` — inner timing wins
+- `outerJoin` — outer timing, sample from inner
+- `resetJoin` — restart inner at each trigger
+
+For most musical purposes, `squeezeJoin` is what you want—it's how arpeggios and fills work.
+
+</QA>
+
+---
+
+# The Pattern Here
+
+Notice what both examples have in common:
+
+1. We start with a **nested structure** (pattern of patterns)
+2. We end with a **flat structure** (single pattern)
+3. The join decides **how to flatten**
+
+This ability to flatten nested containers is what makes Pattern a **Monad**.
+
+A Monad is a container type that:
+- Can hold values (Pattern holds events)
+- Can be nested (patterns containing patterns)
+- Has a join operation to flatten
+
+Pattern is the Monad. `squeezeJoin` and `innerJoin` are different *implementations* of the join operation—different ways to flatten the same nested structure.
+
+---
+
+# Why Monads Matter
+
+Without a monad, transformations that *produce containers* quickly become unwieldy:
+
+```javascript
+// fmap alone creates nesting
+"c4 e4 g4".fmap(n => note(n + " " + (n + 12)))
+// Result: Pattern of Patterns — can't play this directly!
+```
+
+Every time your transformation returns a pattern (not just a value), you get another layer of nesting. Without join, you'd have patterns of patterns of patterns...
+
+The monad's join operation lets you **chain transformations that produce patterns** without accumulating nesting:
+
+```javascript
+// fmap + join = bind (flat chain of transformations)
+"c4 e4 g4".bind(n => note(n + " " + (n + 12)))
+// Result: flat Pattern — plays fine
+```
+
+This is why `cat` works seamlessly with patterns of different lengths, why `arp` can turn chords into arpeggios, and why you can nest musical structures arbitrarily deep—the monad flattens them back down.
+
+The Functor let us transform values inside. The Applicative let us combine containers. The Monad lets us flatten nesting—which means we can build complex structures from simple transformations without drowning in layers.
+
+---
+
+# When to Use Each
+
+| Join | Result | Best For |
+|------|--------|----------|
+| `squeezeJoin` | Compress to fit | Arpeggios, fills, ornaments |
+| `outerJoin` | Outer rhythm, sampled content | Slow modulation |
+| `innerJoin` | Inner rhythm takes over | Sequencing different patterns |
+| `resetJoin` | Restart at triggers | Retriggered loops |
+
+---
+
+# Real Musical Examples
+
+**Arpeggiated chords:**
+
+<MiniRepl client:visible tune={`// Each chord becomes an arpeggio
+note("<[c4,e4,g4] [d4,f4,a4] [e4,g4,b4]>")
+  .arp("0 1 2 1")
+  .sound("piano")`} />
+
+The `arp` function uses `squeezeJoin` internally—it fits the arpeggio pattern into each chord.
+
+**Song sections:**
+
+<MiniRepl client:visible tune={`const verse = note("c4 e4 g4 e4")
+const chorus = note("g4 b4 d5 b4")
+
+cat(verse, chorus, verse, chorus)
+  .sound("piano")`} />
+
+`cat` flattens the sequence of patterns into one playable result.
+
+---
+
+# Quick Reference
+
+```javascript
+// Create nested pattern, then flatten:
+pattern.fmap(x => ...)      // Transform each value into a pattern
+       .squeezeJoin()       // Flatten with compression
+
+// Or combined in one step:
+pattern.bind(x => ...)      // fmap + join together
+```
+
+<QA client:load question="Why so many join variants?">
+
+In most programming, there's one obvious way to flatten. Nested arrays become one array. Nested optionals become one optional.
+
+But patterns have *timing*. When inner patterns and outer patterns both have timing, they can interact in multiple ways. There's no single correct answer—it depends on musical intent.
+
+Each join is a valid Monad. They just resolve time differently.
+
+</QA>
+
+---
+
+# What's Next?
+
+We've learned to transform, combine, and flatten patterns. One question remains: how do we *build* patterns from pieces?
+
+<MiniRepl client:visible tune={`stack(
+  sound("bd ~ bd ~"),
+  sound("~ sd ~ sd"),
+  sound("hh*8").gain(0.5)
+)`} />
+
+Three patterns becoming one. This is different from flattening—we're *layering*, not unwrapping. What are the rules?
+
+<Box>
+
+**Continue to [Building with Patterns](/learn/theory/building-with-patterns/) →**
+
+You've seen how to flatten nested patterns. Next, you'll discover how to build larger structures from smaller pieces—and why the rules are so predictable.
+
+</Box>
