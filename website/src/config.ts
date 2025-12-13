@@ -76,6 +76,7 @@ export const ACTIVITIES: SidebarSection[] = [
       { text: 'Sample Quiz', link: 'learn/quizzes/sample-guessing', icon: '🎯', description: 'Test your ability to identify drum and sample sounds' },
       { text: 'Waveform Quiz', link: 'learn/quizzes/waveform-guessing', icon: '〰', description: 'Identify different waveforms by sound' },
       { text: 'Effect Quiz', link: 'learn/quizzes/effect-guessing', icon: '🎛', description: 'Recognize audio effects by ear' },
+      { text: 'Auditory Space Quiz', link: 'learn/quizzes/auditory-space', icon: '🔊', description: 'Identify pan, reverb, and delay effects' },
       { text: 'Ear Training', link: 'learn/quizzes/ear-training', icon: '👂', description: 'Train your ear to recognize musical intervals' },
       { text: 'Pitch Simon', link: 'learn/quizzes/pitch-simon', icon: '🎵', description: 'Memory game - sing back note sequences' },
     ],
