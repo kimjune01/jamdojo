@@ -64,26 +64,27 @@ const MAGNITUDE_MAP = {
 
 // Generate MiniRepl code with sliders for each effect type
 const getSliderCode = (effectType, sound) => {
-  const note = sound?.note || 'C4';
   const s = sound?.s || 'sawtooth';
+  const hasNote = !!sound?.note;
+  const baseCode = hasNote ? `note("${sound.note}").s("${s}")` : `s("${s}")`;
 
   if (effectType === 'pan') {
     return `const pan = slider(0.5, 0, 1)
 
-note("${note}").s("${s}").pan(pan)`;
+${baseCode}.pan(pan)`;
   } else if (effectType === 'room') {
     return `const room = slider(0.5, 0, 1)
 const size = slider(4, 0.5, 12)
 
-note("${note}").s("${s}").room(room).size(size)`;
+${baseCode}.room(room).size(size)`;
   } else if (effectType === 'delay') {
     return `const amount = slider(0.5, 0, 1)
 const time = slider(0.25, 0.1, 0.5)
 const feedback = slider(0.5, 0, 0.8)
 
-note("${note}").s("${s}").delay(amount).delaytime(time).delayfeedback(feedback)`;
+${baseCode}.delay(amount).delaytime(time).delayfeedback(feedback)`;
   }
-  return `note("${note}").s("${s}")`;
+  return baseCode;
 };
 
 // Difficulty levels
@@ -119,13 +120,19 @@ const STORAGE_KEY = 'auditoryspace-progress';
 // Module-level flag to track if sounds are preloaded
 let soundsPreloaded = false;
 
-// Sound sources for Level 1 and 2
+// Sound sources for Level 1 and 2 - mix of synths and percussion
 const SOUND_SOURCES = [
+  // Synths (with note)
   { s: 'sawtooth', note: 'C4', duration: 1.5 },
   { s: 'square', note: 'E4', duration: 1.5 },
   { s: 'triangle', note: 'G3', duration: 1.5 },
   { s: 'piano', note: 'C4', duration: 1.5 },
-  { s: 'piano', note: 'E4', duration: 1.5 },
+  // Percussion (no note)
+  { s: 'bd', duration: 1.0 },
+  { s: 'sd', duration: 1.0 },
+  { s: 'cp', duration: 1.0 },
+  { s: 'hh', duration: 0.8 },
+  { s: 'rim', duration: 1.0 },
 ];
 
 // Sound pairs for Level 3 (layered sounds)
@@ -216,7 +223,9 @@ export function AuditorySpaceQuiz() {
 
     // Preload single sounds
     for (const sound of SOUND_SOURCES) {
-      await superdough({ s: sound.s, note: sound.note, gain: 0 }, t, 0.01);
+      const params = { s: sound.s, gain: 0 };
+      if (sound.note) params.note = sound.note;
+      await superdough(params, t, 0.01);
     }
 
     // Preload layered sounds
@@ -235,9 +244,12 @@ export function AuditorySpaceQuiz() {
 
     const params = {
       s: sound.s,
-      note: sound.note,
       gain: 0.6,
     };
+
+    if (sound.note) {
+      params.note = sound.note;
+    }
 
     if (effectParams) {
       Object.assign(params, effectParams);
@@ -917,8 +929,16 @@ export function AuditorySpaceQuiz() {
                 ) : (
                   <div className="bg-gray-800 rounded-lg p-3 font-mono text-sm inline-block">
                     <code>
-                      note("<span className="text-cyan-400">{currentSound?.note}</span>")
-                      .sound("<span className="text-yellow-400">{currentSound?.s}</span>")
+                      {currentSound?.note ? (
+                        <>
+                          note("<span className="text-cyan-400">{currentSound.note}</span>")
+                          .sound("<span className="text-yellow-400">{currentSound?.s}</span>")
+                        </>
+                      ) : (
+                        <>
+                          sound("<span className="text-yellow-400">{currentSound?.s}</span>")
+                        </>
+                      )}
                       <span className="text-green-400">{currentEffect?.code}</span>
                     </code>
                   </div>
